@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import LoginAction from "@/app/(auth)/login/action";
 import { useActionState, useEffect } from "react";
 import { toast } from "sonner";
-import { redirect, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 export function LoginForm({
   className,
