@@ -31,6 +31,7 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
+import { usePathname } from "next/navigation";
 
 // This is sample data.
 const data = {
@@ -61,7 +62,6 @@ const data = {
       title: "Crypto",
       url: "/crypto",
       icon: Coins,
-      isActive: false,
       items: [
         {
           title: "Dashboard",
