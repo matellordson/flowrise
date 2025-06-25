@@ -1,6 +1,7 @@
 "use server";
 
 import { auth } from "@/lib/auth";
+import { redirect } from "next/navigation";
 
 export default async function SignupAction(formData: FormData) {
   const email = formData.get("email") as string;
@@ -15,5 +16,5 @@ export default async function SignupAction(formData: FormData) {
     },
   });
 
-  console.log("account created");
+  redirect("/login");
 }
