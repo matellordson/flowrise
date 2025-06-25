@@ -1,19 +1,34 @@
 "use client";
 
-import { GalleryVerticalEnd } from "lucide-react";
+import type React from "react";
+
+import { GalleryVerticalEnd, Loader } from "lucide-react";
+import { useActionState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
 import SignupAction from "@/app/(auth)/signup/action";
 
-export function LoginForm({
+export default function SignupForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+  const [state, formAction, isPending] = useActionState(SignupAction, {
+    message: "",
+  });
+
+  // Show toast when there's an error message
+  useEffect(() => {
+    if (state?.message) {
+      toast(state.message);
+    }
+  }, [state?.message, toast]);
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <form action={SignupAction}>
+      <form action={formAction}>
         <div className="flex flex-col gap-6">
           <div className="flex flex-col items-center gap-2">
             <a
@@ -46,8 +61,8 @@ export function LoginForm({
               <Label htmlFor="password">Password</Label>
               <Input id="password" name="password" type="password" required />
             </div>
-            <Button type="submit" className="w-full">
-              Signup
+            <Button type="submit" className="w-full" disabled={isPending}>
+              {isPending ? <Loader className="animate-spin" /> : "Signup"}
             </Button>
           </div>
           <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">

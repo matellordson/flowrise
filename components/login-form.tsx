@@ -1,18 +1,36 @@
-import { GalleryVerticalEnd } from "lucide-react";
+"use client";
+
+import { GalleryVerticalEnd, Loader } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import LoginAction from "@/app/(auth)/login/action";
+import { useActionState, useEffect } from "react";
+import { toast } from "sonner";
+import { redirect, useRouter } from "next/navigation";
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+  const [state, formAction, isPending] = useActionState(LoginAction, {
+    message: "",
+  });
+
+  const router = useRouter();
+
+  // Show toast when there's an error message
+  useEffect(() => {
+    if (state?.message) {
+      toast(state.message);
+    }
+  }, [state?.message, toast]);
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <form action={LoginAction}>
+      <form action={formAction}>
         <div className="flex flex-col gap-6">
           <div className="flex flex-col items-center gap-2">
             <a
@@ -42,7 +60,7 @@ export function LoginForm({
               <Input id="password" type="password" name="password" required />
             </div>
             <Button type="submit" className="w-full">
-              Login
+              {isPending ? <Loader className="animate-spin" /> : "Login"}
             </Button>
           </div>
           <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
