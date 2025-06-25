@@ -9,7 +9,7 @@ export default async function AuthLayout({
   const { data: session } = await authClient.getSession();
 
   if (session) {
-    redirect("/dashboard");
+    redirect("/portfolio");
   }
 
   return <main>{children}</main>;

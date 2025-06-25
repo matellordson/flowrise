@@ -1,12 +1,12 @@
-"use client"
+"use client";
 
-import { ChevronRight, type LucideIcon } from "lucide-react"
+import { ChevronRight, type LucideIcon } from "lucide-react";
 
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "@/components/ui/collapsible"
+} from "@/components/ui/collapsible";
 import {
   SidebarGroup,
   SidebarGroupLabel,
@@ -16,21 +16,22 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
-} from "@/components/ui/sidebar"
+} from "@/components/ui/sidebar";
 
 export function NavMain({
   items,
 }: {
   items: {
-    title: string
-    url: string
-    icon?: LucideIcon
-    isActive?: boolean
+    title: string;
+    url: string;
+    icon?: LucideIcon;
+    isActive?: boolean;
     items?: {
-      title: string
-      url: string
-    }[]
-  }[]
+      title: string;
+      url: string;
+      icon?: LucideIcon;
+    }[];
+  }[];
 }) {
   return (
     <SidebarGroup>
@@ -57,6 +58,7 @@ export function NavMain({
                     <SidebarMenuSubItem key={subItem.title}>
                       <SidebarMenuSubButton asChild>
                         <a href={subItem.url}>
+                          {subItem.icon && <subItem.icon />}
                           <span>{subItem.title}</span>
                         </a>
                       </SidebarMenuSubButton>
@@ -69,5 +71,5 @@ export function NavMain({
         ))}
       </SidebarMenu>
     </SidebarGroup>
-  )
+  );
 }
