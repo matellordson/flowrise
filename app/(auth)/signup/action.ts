@@ -1,7 +1,6 @@
 "use server";
 
 import { auth } from "@/lib/auth";
-import { redirect } from "next/navigation";
 import { APIError } from "better-auth/api";
 
 export default async function SignupAction(prevState: any, formData: FormData) {

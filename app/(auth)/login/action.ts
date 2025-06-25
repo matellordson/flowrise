@@ -2,8 +2,6 @@
 
 import { auth } from "@/lib/auth";
 import { APIError } from "better-auth/api";
-import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 
 export default async function LoginAction(prevState: any, formData: FormData) {
   const email = formData.get("email") as string;
