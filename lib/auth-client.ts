@@ -2,5 +2,6 @@ import { createAuthClient } from "better-auth/react"; // make sure to import fro
 
 export const authClient = createAuthClient({
   //you can pass client configuration here
-  baseURL: "http://localhost:3000",
+  baseURL:
+    "https://fantastic-rotary-phone-97qq9x55pj6pc75pp-3000.app.github.dev",
 });

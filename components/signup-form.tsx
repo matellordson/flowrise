@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import LoginAction from "@/app/(auth)/login/action";
+import SignupAction from "@/app/(auth)/signup/action";
 
 export function LoginForm({
   className,
@@ -12,7 +12,7 @@ export function LoginForm({
 }: React.ComponentProps<"div">) {
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <form action={LoginAction}>
+      <form action={SignupAction}>
         <div className="flex flex-col gap-6">
           <div className="flex flex-col items-center gap-2">
             <a
@@ -26,23 +26,27 @@ export function LoginForm({
             </a>
             <h1 className="text-xl font-bold">Welcome to Flowrise Co.</h1>
             <div className="text-center text-sm">
-              Don&apos;t have an account?{" "}
-              <a href="/signup" className="underline underline-offset-4">
-                Sign up
+              Already have an account?{" "}
+              <a href="/login" className="underline underline-offset-4">
+                Sign in
               </a>
             </div>
           </div>
           <div className="flex flex-col gap-6">
             <div className="grid gap-3">
+              <Label htmlFor="username">Username</Label>
+              <Input id="username" name="username" type="text" required />
+            </div>
+            <div className="grid gap-3">
               <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" name="email" required />
+              <Input id="email" name="email" type="email" required />
             </div>
             <div className="grid gap-3">
               <Label htmlFor="password">Password</Label>
-              <Input id="password" type="password" name="password" required />
+              <Input id="password" name="password" type="password" required />
             </div>
             <Button type="submit" className="w-full">
-              Login
+              Signup
             </Button>
           </div>
           <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
