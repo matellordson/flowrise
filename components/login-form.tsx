@@ -59,7 +59,12 @@ export function LoginForm({
               <Label htmlFor="password">Password</Label>
               <Input id="password" type="password" name="password" required />
             </div>
-            <Button type="submit" className="w-full">
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={isPending}
+              onClick={router.refresh}
+            >
               {isPending ? <Loader className="animate-spin" /> : "Login"}
             </Button>
           </div>
