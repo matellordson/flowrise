@@ -90,29 +90,7 @@ export default function DepositBTC() {
               appear in your wallet.
             </AlertDescription>
           </Alert>
-          {/* copy address */}
-          <div className="">
-            <div className="bg-muted w-full py-2 flex justify-center items-center rounded font-mono relative">
-              <span className="select-all flex-1 text-center overflow-hidden text-muted-forground text-sm">
-                <span className="inline-block max-w-full">
-                  <span className="inline">{textToCopy.slice(0, 6)}</span>
-                  <span className="inline text-muted-foreground/60">...</span>
-                  <span className="inline">{textToCopy.slice(-6)}</span>
-                </span>
-              </span>
-              <button
-                onClick={handleCopy}
-                className="absolute right-3 p-1 rounded hover:bg-background/80 transition-colors"
-                title={copied ? "Copied!" : "Copy to clipboard"}
-              >
-                {copied ? (
-                  <Check className="h-4 w-4 text-green-600" />
-                ) : (
-                  <Copy className="h-4 w-4 text-muted-foreground hover:text-foreground" />
-                )}
-              </button>
-            </div>
-          </div>
+    
           {/* form */}
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -137,6 +115,29 @@ export default function DepositBTC() {
               </Button>
             </form>
           </Form>
+                {/* copy address */}
+          <div className="">
+            <div className="bg-muted w-full py-2 flex justify-center items-center rounded font-mono relative">
+              <span className="select-all flex-1 text-center overflow-hidden text-muted-forground text-sm">
+                <span className="inline-block max-w-full">
+                  <span className="inline">{textToCopy.slice(0, 6)}</span>
+                  <span className="inline text-muted-foreground/60">...</span>
+                  <span className="inline">{textToCopy.slice(-6)}</span>
+                </span>
+              </span>
+              <button
+                onClick={handleCopy}
+                className="absolute right-3 p-1 rounded hover:bg-background/80 transition-colors"
+                title={copied ? "Copied!" : "Copy to clipboard"}
+              >
+                {copied ? (
+                  <Check className="h-4 w-4 text-green-600" />
+                ) : (
+                  <Copy className="h-4 w-4 text-muted-foreground hover:text-foreground" />
+                )}
+              </button>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
     );
