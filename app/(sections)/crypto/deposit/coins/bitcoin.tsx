@@ -37,6 +37,7 @@ import {
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { TokenBTC } from "@web3icons/react";
 
 const formSchema = z.object({
   amount: z.string({ required_error: "Amount is required" }),
@@ -74,7 +75,10 @@ export default function DepositBTC() {
     return (
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
-          <Button variant="outline">Bitcoin</Button>
+          <Button variant="outline">
+            <TokenBTC variant="branded" className="size-5" />
+            Bitcoin
+          </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
@@ -90,7 +94,7 @@ export default function DepositBTC() {
               appear in your wallet.
             </AlertDescription>
           </Alert>
-    
+
           {/* form */}
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -110,34 +114,36 @@ export default function DepositBTC() {
                   </FormItem>
                 )}
               />
+              {/* copy address */}
+              <div className="">
+                <div className="bg-muted w-full py-2 flex justify-center items-center rounded font-mono relative">
+                  <span className="select-all flex-1 text-center overflow-hidden text-muted-forground text-sm">
+                    <span className="inline-block max-w-full">
+                      <span className="inline">{textToCopy.slice(0, 6)}</span>
+                      <span className="inline text-muted-foreground/60">
+                        ...
+                      </span>
+                      <span className="inline">{textToCopy.slice(-6)}</span>
+                    </span>
+                  </span>
+                  <button
+                    onClick={handleCopy}
+                    className="absolute right-3 p-1 rounded hover:bg-background/80 transition-colors"
+                    title={copied ? "Copied!" : "Copy to clipboard"}
+                  >
+                    {copied ? (
+                      <Check className="h-4 w-4 text-green-600" />
+                    ) : (
+                      <Copy className="h-4 w-4 text-muted-foreground hover:text-foreground" />
+                    )}
+                  </button>
+                </div>
+              </div>
               <Button type="submit" className="w-full">
                 Make Deposit
               </Button>
             </form>
           </Form>
-                {/* copy address */}
-          <div className="">
-            <div className="bg-muted w-full py-2 flex justify-center items-center rounded font-mono relative">
-              <span className="select-all flex-1 text-center overflow-hidden text-muted-forground text-sm">
-                <span className="inline-block max-w-full">
-                  <span className="inline">{textToCopy.slice(0, 6)}</span>
-                  <span className="inline text-muted-foreground/60">...</span>
-                  <span className="inline">{textToCopy.slice(-6)}</span>
-                </span>
-              </span>
-              <button
-                onClick={handleCopy}
-                className="absolute right-3 p-1 rounded hover:bg-background/80 transition-colors"
-                title={copied ? "Copied!" : "Copy to clipboard"}
-              >
-                {copied ? (
-                  <Check className="h-4 w-4 text-green-600" />
-                ) : (
-                  <Copy className="h-4 w-4 text-muted-foreground hover:text-foreground" />
-                )}
-              </button>
-            </div>
-          </div>
         </DialogContent>
       </Dialog>
     );
@@ -163,29 +169,6 @@ export default function DepositBTC() {
               appear in your wallet.
             </AlertDescription>
           </Alert>
-          {/* copy address */}
-          <div className="">
-            <div className="bg-muted w-full py-2 flex justify-center items-center rounded font-mono relative">
-              <span className="select-all flex-1 text-center overflow-hidden text-muted-forground text-sm">
-                <span className="inline-block max-w-full">
-                  <span className="inline">{textToCopy.slice(0, 6)}</span>
-                  <span className="inline text-muted-foreground/60">...</span>
-                  <span className="inline">{textToCopy.slice(-6)}</span>
-                </span>
-              </span>
-              <button
-                onClick={handleCopy}
-                className="absolute right-3 p-1 rounded hover:bg-background/80 transition-colors"
-                title={copied ? "Copied!" : "Copy to clipboard"}
-              >
-                {copied ? (
-                  <Check className="h-4 w-4 text-green-600" />
-                ) : (
-                  <Copy className="h-4 w-4 text-muted-foreground hover:text-foreground" />
-                )}
-              </button>
-            </div>
-          </div>
           {/* form */}
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -205,6 +188,31 @@ export default function DepositBTC() {
                   </FormItem>
                 )}
               />
+              {/* copy address */}
+              <div className="">
+                <div className="bg-muted w-full py-2 flex justify-center items-center rounded font-mono relative">
+                  <span className="select-all flex-1 text-center overflow-hidden text-muted-forground text-sm">
+                    <span className="inline-block max-w-full">
+                      <span className="inline">{textToCopy.slice(0, 6)}</span>
+                      <span className="inline text-muted-foreground/60">
+                        ...
+                      </span>
+                      <span className="inline">{textToCopy.slice(-6)}</span>
+                    </span>
+                  </span>
+                  <button
+                    onClick={handleCopy}
+                    className="absolute right-3 p-1 rounded hover:bg-background/80 transition-colors"
+                    title={copied ? "Copied!" : "Copy to clipboard"}
+                  >
+                    {copied ? (
+                      <Check className="h-4 w-4 text-green-600" />
+                    ) : (
+                      <Copy className="h-4 w-4 text-muted-foreground hover:text-foreground" />
+                    )}
+                  </button>
+                </div>
+              </div>
               <Button type="submit" className="w-full">
                 Make Deposit
               </Button>
