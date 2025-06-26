@@ -38,8 +38,6 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import { usePathname } from "next/navigation";
-import Link from "next/link";
 
 // This is sample data.
 const data = {
@@ -82,8 +80,8 @@ const data = {
           icon: ArrowUpRight,
         },
         {
-          title: "Recieve",
-          url: "#",
+          title: "Receive",
+          url: "/crypto/receive",
           icon: ArrowDownRight,
         },
         {
@@ -189,12 +187,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <Link href={"/portfolio"}>
+            <a href={"/portfolio"}>
               <SidebarMenuButton>
                 <LayoutGrid />
                 <span>Porfolio</span>
               </SidebarMenuButton>
-            </Link>
+            </a>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
