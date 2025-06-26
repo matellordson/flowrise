@@ -80,8 +80,8 @@ const data = {
           icon: ArrowUpRight,
         },
         {
-          title: "Receive",
-          url: "/crypto/receive",
+          title: "Deposit",
+          url: "/crypto/deposit",
           icon: ArrowDownRight,
         },
         {

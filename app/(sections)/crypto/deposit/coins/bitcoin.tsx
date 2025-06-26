@@ -39,10 +39,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
 const formSchema = z.object({
-  amount: z.number().min(0.0005),
+  amount: z.string({ required_error: "Amount is required" }),
 });
 
-export default function ReceiveBTC() {
+export default function DepositBTC() {
   const [open, setOpen] = React.useState(false);
   const isDesktop = useMediaQuery("(min-width: 768px)");
 
@@ -62,7 +62,7 @@ export default function ReceiveBTC() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      amount: 0.0005,
+      amount: "0.0005",
     },
   });
 
@@ -78,7 +78,7 @@ export default function ReceiveBTC() {
         </DialogTrigger>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle>Receive Bitcoin</DialogTitle>
+            <DialogTitle>Deposit Bitcoin</DialogTitle>
           </DialogHeader>
           {/* alert */}
           <Alert variant="default">
@@ -125,7 +125,9 @@ export default function ReceiveBTC() {
                     <FormControl>
                       <Input placeholder="shadcn" {...field} />
                     </FormControl>
-                    <FormDescription>Amount of Bitcoin.</FormDescription>
+                    <FormDescription>
+                      Minimum amount of Bitcoin is 0.0005.
+                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -147,9 +149,9 @@ export default function ReceiveBTC() {
       </DrawerTrigger>
       <DrawerContent>
         <DrawerHeader className="text-left">
-          <DrawerTitle>Receive Bitcoin</DrawerTitle>
+          <DrawerTitle>Deposit Bitcoin</DrawerTitle>
         </DrawerHeader>
-        <div className="px-5 space-y-5">
+        <div className="px-4 space-y-5">
           {/* alert */}
           <Alert variant="default">
             <OctagonAlert />
@@ -195,16 +197,20 @@ export default function ReceiveBTC() {
                     <FormControl>
                       <Input placeholder="shadcn" {...field} />
                     </FormControl>
-                    <FormDescription>Amount of Bitcoin.</FormDescription>
+                    <FormDescription>
+                      Minimum amount of Bitcoin is 0.0005.
+                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              <Button type="submit" className="w-full">Make Deposit</Button>
+              <Button type="submit" className="w-full">
+                Make Deposit
+              </Button>
             </form>
           </Form>
         </div>
-        <DrawerFooter className="pt-2">
+        <DrawerFooter className="pt-2 pb-5">
           <DrawerClose asChild>
             <Button variant="outline">Cancel</Button>
           </DrawerClose>

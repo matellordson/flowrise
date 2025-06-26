@@ -1,9 +1,9 @@
-import ReceiveBTC from "./coins/bitcoin";
+import DepositBTC from "./coins/bitcoin";
 
 export default function RecieveCoin() {
   return (
     <div className="">
-      <ReceiveBTC />
+      <DepositBTC />
     </div>
   );
 }

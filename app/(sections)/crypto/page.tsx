@@ -35,12 +35,12 @@ export default function CryptoDashboard() {
             </div>
             <div className="flex flex-col justify-center items-center gap-y-1">
               <Link
-                href={"/crypto/receive"}
+                href={"/crypto/deposit"}
                 className="bg-muted rounded flex justify-center items-center h-11 w-11"
               >
                 <ArrowDownRight />
               </Link>
-              <span>Receive</span>
+              <span>Deposit</span>
             </div>
             <div className="flex flex-col justify-center items-center gap-y-1">
               <Link
