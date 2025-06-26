@@ -15,6 +15,8 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
+import { Hexagon } from "lucide-react";
+import Link from "next/link";
 
 export default function SectionLayout({
   children,
@@ -32,19 +34,13 @@ export default function SectionLayout({
               orientation="vertical"
               className="mr-2 data-[orientation=vertical]:h-4"
             />
-            <Breadcrumb>
-              <BreadcrumbList>
-                <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbLink href="#">
-                    Building Your Application
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator className="hidden md:block" />
-                <BreadcrumbItem>
-                  <BreadcrumbPage>Data Fetching</BreadcrumbPage>
-                </BreadcrumbItem>
-              </BreadcrumbList>
-            </Breadcrumb>
+            <Link
+              href={"/portfolio"}
+              className="flex items-center gap-x-1 lg:text-lg text-base"
+            >
+              <Hexagon className="size-5 lg:size-6" />
+              Flowrise Co.
+            </Link>
           </div>
         </header>
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">{children}</div>

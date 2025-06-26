@@ -2,8 +2,8 @@
 
 import * as React from "react";
 import {
+  ArrowDownRight,
   ArrowLeftRight,
-  ArrowUpLeft,
   ArrowUpRight,
   AudioWaveform,
   BookOpen,
@@ -12,26 +12,34 @@ import {
   Command,
   Frame,
   GalleryVerticalEnd,
+  Hexagon,
+  Landmark,
+  LayoutGrid,
   LayoutPanelTop,
   Map,
+  MoveDownRight,
   Newspaper,
   PieChart,
   Settings2,
-  SquareTerminal,
+  Target,
 } from "lucide-react";
 
 import { NavMain } from "@/components/nav-main";
 import { NavProjects } from "@/components/nav-projects";
 import { NavUser } from "@/components/nav-user";
-import { TeamSwitcher } from "@/components/team-switcher";
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
+  SidebarGroup,
   SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar";
 import { usePathname } from "next/navigation";
+import Link from "next/link";
 
 // This is sample data.
 const data = {
@@ -42,7 +50,7 @@ const data = {
   },
   teams: [
     {
-      name: "Acme Inc",
+      name: "Flowrise Co.",
       logo: GalleryVerticalEnd,
       plan: "Enterprise",
     },
@@ -65,18 +73,18 @@ const data = {
       items: [
         {
           title: "Dashboard",
-          url: "#",
+          url: "/crypto",
           icon: LayoutPanelTop,
         },
         {
-          title: "Sell",
+          title: "Send",
           url: "#",
           icon: ArrowUpRight,
         },
         {
           title: "Recieve",
           url: "#",
-          icon: ArrowUpLeft,
+          icon: ArrowDownRight,
         },
         {
           title: "Swap",
@@ -84,9 +92,9 @@ const data = {
           icon: ArrowLeftRight,
         },
         {
-          title: "News",
+          title: "Sell",
           url: "#",
-          icon: Newspaper,
+          icon: Landmark,
         },
       ],
     },
@@ -179,8 +187,18 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <TeamSwitcher teams={data.teams} />
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <Link href={"/portfolio"}>
+              <SidebarMenuButton>
+                <LayoutGrid />
+                <span>Porfolio</span>
+              </SidebarMenuButton>
+            </Link>
+          </SidebarMenuItem>
+        </SidebarMenu>
       </SidebarHeader>
+
       <SidebarContent>
         <NavMain items={data.navMain} />
         <NavProjects projects={data.projects} />
