@@ -152,7 +152,10 @@ export default function DepositBTC() {
   return (
     <Drawer open={open} onOpenChange={setOpen}>
       <DrawerTrigger asChild>
-        <Button variant="outline">Bitcoin</Button>
+        <Button variant="outline">
+          <TokenBTC variant="branded" className="size-5" />
+          Bitcoin
+        </Button>
       </DrawerTrigger>
       <DrawerContent>
         <DrawerHeader className="text-left">
