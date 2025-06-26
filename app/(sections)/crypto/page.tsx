@@ -16,7 +16,7 @@ export default function CryptoDashboard() {
         <div className="flex flex-col justify-center items-center gap-y-5">
           {/* balance */}
           <div className="text-center">
-            <p className="text-xl font-semibold font-mono lg:text-3xl">
+            <p className="text-2xl font-semibold font-mono lg:text-3xl">
               $200.40
             </p>
             <p className="text-sm text-muted-foreground">$0.00 (0.00%)</p>
