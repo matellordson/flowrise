@@ -10,5 +10,19 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
   },
+  // ... your other config options
+  trustedOrigins: [
+    "https://fantastic-rotary-phone-97qq9x55pj6pc75pp-3000.app.github.dev", // GitHub Codespaces
+    "https://localhost:3000", // Local development
+    "http://localhost:3000", // Local development (HTTP)
+    // Add your production domain here when you deploy
+    // "https://yourdomain.com"
+  ],
+  // Disable origin checking in development (optional)
+  advanced: {
+    crossSubDomainCookies: {
+      enabled: process.env.NODE_ENV === "development",
+    },
+  },
   plugins: [nextCookies()], // make sure this is the last plugin in the array
 });

@@ -6,11 +6,5 @@ export default async function AuthLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { data: session } = await authClient.getSession();
-
-  if (session) {
-    redirect("/portfolio");
-  }
-
   return <main>{children}</main>;
 }

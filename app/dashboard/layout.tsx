@@ -35,7 +35,7 @@ export default function SectionLayout({
               className="mr-2 data-[orientation=vertical]:h-4"
             />
             <Link
-              href={"/portfolio"}
+              href={"/dashboard"}
               className="flex items-center gap-x-1 lg:text-lg text-base"
             >
               <Hexagon className="size-5 lg:size-6" />

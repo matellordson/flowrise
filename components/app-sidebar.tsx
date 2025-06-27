@@ -66,12 +66,12 @@ const data = {
   navMain: [
     {
       title: "Crypto",
-      url: "/crypto",
+      url: "/dashboard/crypto",
       icon: Coins,
       items: [
         {
           title: "Dashboard",
-          url: "/crypto",
+          url: "/dashboard/crypto",
           icon: LayoutPanelTop,
         },
         {
@@ -81,7 +81,7 @@ const data = {
         },
         {
           title: "Deposit",
-          url: "/crypto/deposit",
+          url: "/dashboard/crypto/deposit",
           icon: ArrowDownRight,
         },
         {
@@ -190,7 +190,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             <a href={"/portfolio"}>
               <SidebarMenuButton>
                 <LayoutGrid />
-                <span>Porfolio</span>
+                <span>Portfolio</span>
               </SidebarMenuButton>
             </a>
           </SidebarMenuItem>

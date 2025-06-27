@@ -28,6 +28,9 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { TokenBTC } from "@web3icons/react";
+import { sql } from "@/lib/sql";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 const formSchema = z.object({
   amount: z.coerce.number().gte(0.0005),
@@ -36,8 +39,10 @@ const formSchema = z.object({
 export default function DepositBTC() {
   const [open, setOpen] = React.useState(false);
 
+  const router = useRouter();
+
   const [copied, setCopied] = React.useState(false);
-  const textToCopy = "fjihjgfjjhfufhfihharhrhuj";
+  const textToCopy = "1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2";
 
   const handleCopy = async () => {
     try {
@@ -56,8 +61,15 @@ export default function DepositBTC() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    const userId = "Matel Lordson";
+    const amount = values.amount;
+    const coin = "bitcoin";
+    await sql`INSERT INTO crypto_deposit (user_id, amount, coin) VALUES (${userId}, ${amount}, ${coin})`;
+
+    toast("Kindly proceed to make a deposit");
+
+    router.push("/dashboard/crypto");
   }
 
   // if (isDesktop) {

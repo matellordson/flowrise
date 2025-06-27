@@ -26,6 +26,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { authClient } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
 
 export function NavUser({
   user,
@@ -38,9 +39,17 @@ export function NavUser({
 }) {
   const { isMobile } = useSidebar();
 
+  const router = useRouter()
+
   const handleLogout = async () => {
     try {
-      await authClient.signOut();
+      await authClient.signOut({
+        fetchOptions: {
+          onSuccess: () => {
+            router.push("/login"); // redirect to login page
+          },
+        },
+      });
     } catch (error) {
       console.error("Logout failed:", error);
     }
