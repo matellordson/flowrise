@@ -7,7 +7,7 @@ export const revalidate = 0;
 async function getData(): Promise<Payment[]> {
   // Fetch data from your API here.
   const data =
-    (await sql`SELECT user_id, amount, coin FROM crypto_deposit`) as Payment[];
+    (await sql`SELECT id, user_id, amount, coin FROM crypto_deposit WHERE funded = false ORDER BY created_at DESC`) as Payment[];
   return data;
 }
 
