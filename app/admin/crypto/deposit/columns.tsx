@@ -15,6 +15,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { sql } from "@/lib/sql";
+import { useRouter } from "next/navigation";
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -44,6 +45,8 @@ export const columns: ColumnDef<Payment>[] = [
     cell: ({ row }) => {
       const payment = row.original;
 
+      const router = useRouter();
+
       return (
         <AlertDialog>
           <AlertDialogTrigger asChild>
@@ -64,7 +67,7 @@ export const columns: ColumnDef<Payment>[] = [
               <AlertDialogAction
                 onClick={async () => {
                   await sql`UPDATE crypto_deposit SET funded = true WHERE id = ${payment.id}`;
-                  console.log(payment.id);
+                  router.refresh();
                 }}
               >
                 Confirm
