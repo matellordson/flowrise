@@ -1,5 +1,3 @@
-"use client";
-
 import { auth } from "@/auth";
 import { AppSidebar } from "@/components/app-sidebar";
 import { Separator } from "@/components/ui/separator";
@@ -9,17 +7,15 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { Hexagon } from "lucide-react";
-import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
-export default function SectionLayout({
+export default async function SectionLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const { data: session } = useSession();
-
+  const session = await auth();
   if (!session?.user) {
     redirect("/sign-in");
   }
