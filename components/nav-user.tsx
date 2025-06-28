@@ -25,34 +25,13 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { useRouter } from "next/navigation";
+import { signOut } from "next-auth/react";
+import { useSession } from "next-auth/react";
 
-export function NavUser({
-  user,
-}: {
-  user: {
-    name: string;
-    email: string;
-    avatar: string;
-  };
-}) {
+export function NavUser() {
   const { isMobile } = useSidebar();
 
-  const router = useRouter();
-
-  const handleLogout = async () => {
-    try {
-      // await authClient.signOut({
-      //   fetchOptions: {
-      //     onSuccess: () => {
-      //       router.push("/login"); // redirect to login page
-      //     },
-      //   },
-      // });
-    } catch (error) {
-      console.error("Logout failed:", error);
-    }
-  };
+  const { data: session } = useSession();
 
   return (
     <SidebarMenu>
@@ -65,14 +44,16 @@ export function NavUser({
             >
               <Avatar className="h-8 w-8 rounded-lg">
                 <AvatarImage
-                  src={user.avatar || "/placeholder.svg"}
-                  alt={user.name}
+                  src={session?.user?.image || "/placeholder.svg"}
+                  alt={"user image"}
                 />
-                <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                <AvatarFallback className="rounded-lg">):</AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">{user.name}</span>
-                <span className="truncate text-xs">{user.email}</span>
+                <span className="truncate font-medium">
+                  {session?.user?.name}
+                </span>
+                <span className="truncate text-xs">{session?.user?.email}</span>
               </div>
               <ChevronsUpDown className="ml-auto size-4" />
             </SidebarMenuButton>
@@ -87,14 +68,18 @@ export function NavUser({
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
                   <AvatarImage
-                    src={user.avatar || "/placeholder.svg"}
-                    alt={user.name}
+                    src={session?.user?.image || "/placeholder.svg"}
+                    alt={"user image"}
                   />
-                  <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                  <AvatarFallback className="rounded-lg">):</AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">{user.name}</span>
-                  <span className="truncate text-xs">{user.email}</span>
+                  <span className="truncate font-medium">
+                    {session?.user?.name}
+                  </span>
+                  <span className="truncate text-xs">
+                    {session?.user?.email}
+                  </span>
                 </div>
               </div>
             </DropdownMenuLabel>
@@ -121,7 +106,7 @@ export function NavUser({
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleLogout}>
+            <DropdownMenuItem onClick={() => signOut({ redirectTo: "/" })}>
               <LogOut />
               Log out
             </DropdownMenuItem>

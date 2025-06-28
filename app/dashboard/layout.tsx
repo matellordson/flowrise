@@ -16,13 +16,21 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { Hexagon } from "lucide-react";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
+import {redirect} from "next/navigation"
 
 export default function SectionLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const { data: session } = useSession();
+
+  if(!session) {
+    redirect("/sign-in")
+  }
+
   return (
     <SidebarProvider>
       <AppSidebar />

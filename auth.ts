@@ -12,6 +12,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth(() => {
   return {
     adapter: NeonAdapter(pool as any),
     providers: [Resend, Google],
+    pages: {
+      signIn: "/sign-in",
+    },
+
     session: {
       strategy: "database", // Uses database sessions (good with Neon)
     },
