@@ -31,6 +31,8 @@ import { TokenBTC } from "@web3icons/react";
 import { sql } from "@/lib/sql";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { auth } from "@/auth";
+import { useSession } from "next-auth/react";
 
 const formSchema = z.object({
   amount: z.coerce.number().gte(0.0005),
@@ -54,6 +56,8 @@ export default function DepositBTC() {
     }
   };
 
+  const { data: session } = useSession();
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -62,10 +66,11 @@ export default function DepositBTC() {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    const userId = "Matel Lordson";
+    const userEmail = session?.user?.email;
     const amount = values.amount;
     const coin = "bitcoin";
-    await sql`INSERT INTO crypto_deposit (user_id, amount, coin) VALUES (${userId}, ${amount}, ${coin})`;
+    await sql`INSERT INTO crypto_deposit (user_email, amount, coin) VALUES (${userEmail}, ${amount}, ${coin})`;
+    await sql`INSERT INTO crypto (user_email) VALUES (${userEmail})`;
 
     toast("Kindly proceed to make a deposit");
 
