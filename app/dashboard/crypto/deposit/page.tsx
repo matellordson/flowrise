@@ -12,7 +12,6 @@ import DepositBNB from "./coins/binance";
 import DepositUSDT from "./coins/usdt";
 import DepositUSDC from "./coins/usdc";
 import DepositXRP from "./coins/xrp";
-import DepositDOGE from "./coins/dodge";
 
 export default function RecieveCoin() {
   return (
@@ -32,7 +31,6 @@ export default function RecieveCoin() {
           <DepositUSDT />
           <DepositUSDC />
           <DepositXRP />
-          <DepositDOGE />
         </CardContent>
       </Card>
     </div>
