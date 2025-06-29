@@ -85,8 +85,7 @@ export default function DepositBNB() {
         >
           <TokenBNB variant="branded" className="size-24" />
           <p className="text-sm font-semibold">
-            BNB{" "}
-            <span className="text-xs font-normal">Binance Beacon CHain</span>
+            BNB <span className="text-xs font-normal">Binance</span>
           </p>
         </Button>
       </DialogTrigger>

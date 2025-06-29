@@ -15,10 +15,10 @@ export default async function SectionLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const session = await auth();
-  if (!session?.user) {
-    redirect("/sign-in");
-  }
+  // const session = await auth();
+  // if (!session?.user) {
+  //   redirect("/sign-in");
+  // }
 
   return (
     <SidebarProvider>
