@@ -1,3 +1,6 @@
+"use client";
+
+import { sql } from "@/lib/sql";
 import {
   TokenBNB,
   TokenBTC,
@@ -7,9 +10,14 @@ import {
   TokenUSDT,
   TokenXRP,
 } from "@web3icons/react";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 
-export default function Coins() {
+export default async function Coins() {
+  const { data: session } = useSession();
+  const data: Record<string, any> =
+    await sql`SELECT (bitcoin, ethereum, solana, bnb, usdc, usdt, xrp) FROM crypto WHERE user_email=${session?.user?.email}`;
+
   return (
     <div className="">
       {/* Bitcoin */}
@@ -28,7 +36,9 @@ export default function Coins() {
 
           {/* right */}
           <div className="text-end">
-            <p className="font-semibold tracking-tight font-mono">0</p>
+            <p className="font-semibold tracking-tight font-mono">
+              {data.bitcoin}
+            </p>
             <p className="text-sm">$0.00</p>
           </div>
         </div>
@@ -50,7 +60,9 @@ export default function Coins() {
 
           {/* right */}
           <div className="text-end">
-            <p className="font-semibold tracking-tight font-mono">0</p>
+            <p className="font-semibold tracking-tight font-mono">
+              {data.ethereum}
+            </p>
             <p className="text-sm">$0.00</p>
           </div>
         </div>
@@ -72,7 +84,9 @@ export default function Coins() {
 
           {/* right */}
           <div className="text-end">
-            <p className="font-semibold tracking-tight font-mono">0</p>
+            <p className="font-semibold tracking-tight font-mono">
+              {data.solana}
+            </p>
             <p className="text-sm">$0.00</p>
           </div>
         </div>
@@ -94,7 +108,7 @@ export default function Coins() {
 
           {/* right */}
           <div className="text-end">
-            <p className="font-semibold tracking-tight font-mono">0</p>
+            <p className="font-semibold tracking-tight font-mono">{data.bnb}</p>
             <p className="text-sm">$0.00</p>
           </div>
         </div>
@@ -116,7 +130,9 @@ export default function Coins() {
 
           {/* right */}
           <div className="text-end">
-            <p className="font-semibold tracking-tight font-mono">0</p>
+            <p className="font-semibold tracking-tight font-mono">
+              {data.usdc}
+            </p>
             <p className="text-sm">$0.00</p>
           </div>
         </div>
@@ -138,7 +154,9 @@ export default function Coins() {
 
           {/* right */}
           <div className="text-end">
-            <p className="font-semibold tracking-tight font-mono">0</p>
+            <p className="font-semibold tracking-tight font-mono">
+              {data.usdt}
+            </p>
             <p className="text-sm">$0.00</p>
           </div>
         </div>
@@ -160,7 +178,7 @@ export default function Coins() {
 
           {/* right */}
           <div className="text-end">
-            <p className="font-semibold tracking-tight font-mono">0</p>
+            <p className="font-semibold tracking-tight font-mono">{data.xrp}</p>
             <p className="text-sm">$0.00</p>
           </div>
         </div>

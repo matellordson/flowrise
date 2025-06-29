@@ -21,19 +21,15 @@ export default function CryptoDashboard() {
         <div className="flex flex-col justify-center items-center gap-y-5">
           {/* balance */}
           <div className="text-center">
-            <p className="text-2xl font-semibold font-mono lg:text-4xl">
+            <p className="text-3xl font-semibold font-mono lg:text-4xl">
               $200.40
             </p>
           </div>
           {/* actions */}
-          <div className="flex justify-between items-center w-full">
+          <div className="flex justify-between items-center w-full lg:px-10">
             <DepositDrawer />
             <SendDrawer />
             <SwapDrawer />
-            <Button variant="outline">
-              <ChartLine />
-              Market
-            </Button>
           </div>
         </div>
 
