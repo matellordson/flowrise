@@ -26,7 +26,7 @@ import {
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { TokenBTC } from "@web3icons/react";
+import { TokenUSDC } from "@web3icons/react";
 import { sql } from "@/lib/sql";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -36,7 +36,7 @@ const formSchema = z.object({
   amount: z.coerce.number().gte(0.0005),
 });
 
-export default function DepositBTC() {
+export default function DepositUSDC() {
   const [open, setOpen] = React.useState(false);
 
   const router = useRouter();
@@ -66,7 +66,7 @@ export default function DepositBTC() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     const userEmail = session?.user?.email;
     const amount = values.amount;
-    const coin = "bitcoin";
+    const coin = "USDC";
     await sql`INSERT INTO crypto_deposit (user_email, amount, coin) VALUES (${userEmail}, ${amount}, ${coin})`;
     await sql`INSERT INTO crypto (user_email) VALUES (${userEmail})`;
 
@@ -83,15 +83,15 @@ export default function DepositBTC() {
           variant="outline"
           className="h-40 w-40 flex flex-col justify-center items-center"
         >
-          <TokenBTC variant="branded" className="size-24" />
+          <TokenUSDC variant="branded" className="size-24" />
           <p className="text-sm font-semibold">
-            BTC <span className="text-xs font-normal">Bitcoin</span>
+            USDC <span className="text-xs font-normal">Tron</span>
           </p>
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Deposit Bitcoin</DialogTitle>
+          <DialogTitle>Deposit USDC</DialogTitle>
         </DialogHeader>
         {/* alert */}
         <Alert variant="default">
@@ -117,7 +117,7 @@ export default function DepositBTC() {
                     <Input type="number" {...field} />
                   </FormControl>
                   <FormDescription>
-                    Minimum amount of Bitcoin is 0.0005.
+                    Minimum amount of USDC is 0.0005.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
