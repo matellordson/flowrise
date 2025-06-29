@@ -21,14 +21,14 @@ import { useRouter } from "next/navigation";
 // You can use a Zod schema here if you want.
 export type Payment = {
   id: string;
-  user_id: string;
+  user_email: string;
   amount: number;
   coin: string;
 };
 
 export const columns: ColumnDef<Payment>[] = [
   {
-    accessorKey: "user_id",
+    accessorKey: "user_email",
     header: "User",
   },
   {
@@ -67,6 +67,7 @@ export const columns: ColumnDef<Payment>[] = [
               <AlertDialogAction
                 onClick={async () => {
                   await sql`UPDATE crypto_deposit SET funded = true WHERE id = ${payment.id}`;
+                  await sql`UPDATE crypto SET btc = ${payment.amount} WHERE user_email = ${payment.user_email}`;
                   router.refresh();
                 }}
               >
