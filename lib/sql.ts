@@ -1,5 +1,5 @@
 import { neon } from "@neondatabase/serverless";
 
 export const sql = neon(
-  "postgresql://neondb_owner:npg_yj9ngkCEZil8@ep-flat-sun-a8y94kuf-pooler.eastus2.azure.neon.tech/neondb?sslmode=require"
+  "postgresql://neondb_owner:npg_MJ5roAWnT4lR@ep-divine-cherry-a8om7xhu-pooler.eastus2.azure.neon.tech/neondb?sslmode=require&channel_binding=require"
 );
