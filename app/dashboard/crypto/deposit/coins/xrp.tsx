@@ -79,14 +79,9 @@ export default function DepositXRP() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button
-          variant="outline"
-          className="h-40 w-40 flex flex-col justify-center items-center"
-        >
-          <TokenXRP variant="branded" className="size-24" />
-          <p className="text-sm font-semibold">
-            XRP <span className="text-xs font-normal">XRP</span>
-          </p>
+        <Button variant="outline">
+          <TokenXRP variant="mono" className="size-10" />
+          XRP
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">

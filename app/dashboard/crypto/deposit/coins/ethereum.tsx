@@ -79,14 +79,9 @@ export default function DepositETH() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button
-          variant="outline"
-          className="h-40 w-40 flex flex-col justify-center items-center"
-        >
-          <TokenETH variant="branded" className="size-24" />
-          <p className="text-sm font-semibold">
-            ETH <span className="text-xs font-normal">Ethereum</span>
-          </p>
+        <Button variant="outline">
+          <TokenETH variant="mono" className="size-10" />
+          Ethereum
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">

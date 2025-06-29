@@ -3,7 +3,6 @@ import Link from "next/link";
 export default function Coins() {
   return (
     <div className="">
-      <p className="font-semibold tracking-tight hidden lg:block">Crypto</p>
       <Link href={"#"}>
         <div className="flex justify-between items-center hover:bg-muted rounded px-1 py-2">
           {/* left */}

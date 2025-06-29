@@ -79,14 +79,9 @@ export default function DepositSOL() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button
-          variant="outline"
-          className="h-40 w-40 flex flex-col justify-center items-center"
-        >
-          <TokenSOL variant="branded" className="size-24" />
-          <p className="text-sm font-semibold">
-            SOL <span className="text-xs font-normal">Solana</span>
-          </p>
+        <Button variant="outline">
+          <TokenSOL variant="mono" className="size-10" />
+          Solana
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">

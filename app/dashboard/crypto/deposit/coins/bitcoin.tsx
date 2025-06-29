@@ -79,14 +79,9 @@ export default function DepositBTC() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button
-          variant="outline"
-          className="h-40 w-40 flex flex-col justify-center items-center"
-        >
-          <TokenBTC variant="branded" className="size-24" />
-          <p className="text-sm font-semibold">
-            BTC <span className="text-xs font-normal">Bitcoin</span>
-          </p>
+        <Button variant="outline">
+          <TokenBTC variant="mono" className="size-10" />
+          Bitcoin
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">

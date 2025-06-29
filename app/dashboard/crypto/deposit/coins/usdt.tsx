@@ -79,14 +79,9 @@ export default function DepositUSDT() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button
-          variant="outline"
-          className="h-40 w-40 flex flex-col justify-center items-center"
-        >
-          <TokenUSDT variant="branded" className="size-24" />
-          <p className="text-sm font-semibold">
-            USDT <span className="text-xs font-normal">Tron</span>
-          </p>
+        <Button variant="outline">
+          <TokenUSDT variant="mono" className="size-10" />
+          USDT (tron)
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">

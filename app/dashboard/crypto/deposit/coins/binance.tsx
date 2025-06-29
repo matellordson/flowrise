@@ -79,14 +79,9 @@ export default function DepositBNB() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button
-          variant="outline"
-          className="h-40 w-40 flex flex-col justify-center items-center"
-        >
-          <TokenBNB variant="branded" className="size-24" />
-          <p className="text-sm font-semibold">
-            BNB <span className="text-xs font-normal">Binance</span>
-          </p>
+        <Button variant="outline">
+          <TokenBNB variant="mono" className="size-10" />
+          BNB
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">

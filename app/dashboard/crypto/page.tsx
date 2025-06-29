@@ -2,10 +2,15 @@ import {
   ArrowDownRight,
   ArrowLeftRight,
   ArrowUpRight,
+  ChartLine,
   Landmark,
 } from "lucide-react";
 import Link from "next/link";
 import Coins from "./coins";
+import { DepositDrawer } from "./deposit";
+import { SwapDrawer } from "./swap";
+import { SendDrawer } from "./send";
+import { Button } from "@/components/ui/button";
 
 export default function CryptoDashboard() {
   return (
@@ -16,50 +21,19 @@ export default function CryptoDashboard() {
         <div className="flex flex-col justify-center items-center gap-y-5">
           {/* balance */}
           <div className="text-center">
-            <p className="text-2xl font-semibold font-mono lg:text-3xl">
+            <p className="text-2xl font-semibold font-mono lg:text-4xl">
               $200.40
             </p>
-            <p className="text-sm text-muted-foreground">$0.00 (0.00%)</p>
           </div>
-
           {/* actions */}
-          <div className="flex justify-evenly items-center w-full text-sm">
-            <div className="flex flex-col justify-center items-center gap-y-1">
-              <Link
-                href={"#"}
-                className="bg-muted rounded flex justify-center items-center h-11 w-11"
-              >
-                <ArrowUpRight />
-              </Link>
-              <span>Send</span>
-            </div>
-            <div className="flex flex-col justify-center items-center gap-y-1">
-              <Link
-                href={"crypto/deposit"}
-                className="bg-muted rounded flex justify-center items-center h-11 w-11"
-              >
-                <ArrowDownRight />
-              </Link>
-              <span>Deposit</span>
-            </div>
-            <div className="flex flex-col justify-center items-center gap-y-1">
-              <Link
-                href={"#"}
-                className="bg-muted rounded flex justify-center items-center h-11 w-11"
-              >
-                <ArrowLeftRight />
-              </Link>
-              <span>Swap</span>
-            </div>
-            <div className="flex flex-col justify-center items-center gap-y-1">
-              <Link
-                href={"#"}
-                className="bg-muted rounded flex justify-center items-center h-11 w-11"
-              >
-                <Landmark />
-              </Link>
-              <span>Sell</span>
-            </div>
+          <div className="flex justify-between items-center w-full">
+            <DepositDrawer />
+            <SendDrawer />
+            <SwapDrawer />
+            <Button variant="outline">
+              <ChartLine />
+              Market
+            </Button>
           </div>
         </div>
 
