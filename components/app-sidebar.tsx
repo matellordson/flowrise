@@ -81,7 +81,7 @@ const data = {
         },
         {
           title: "Deposit",
-          url: "/dashboard/crypto/deposit",
+          url: "/dashboard/crypto",
           icon: ArrowDownRight,
         },
         {
