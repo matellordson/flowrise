@@ -24,7 +24,7 @@ export default function RecieveCoin() {
             Make a deposit and fund your crypto investment.
           </CardDescription>
         </CardHeader>
-        <CardContent className="flex flex-wrap max-w-full mx-auto justify-center items-center gap-3">
+        <CardContent className="flex flex-wrap max-w-full mx-auto justify-center items-center gap-3 scale-90 lg:scale-100">
           <DepositBTC />
           <DepositETH />
           <DepositSOL />
