@@ -80,7 +80,7 @@ export default function DepositETH() {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="outline">
-          <TokenETH variant="mono" className="size-10" />
+          <TokenETH variant="mono" className="size-8" />
           Ethereum
         </Button>
       </DialogTrigger>

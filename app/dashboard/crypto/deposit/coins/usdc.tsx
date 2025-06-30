@@ -80,7 +80,7 @@ export default function DepositUSDC() {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="outline">
-          <TokenUSDC variant="mono" className="size-10" />
+          <TokenUSDC variant="mono" className="size-8" />
           USDC (tron)
         </Button>
       </DialogTrigger>

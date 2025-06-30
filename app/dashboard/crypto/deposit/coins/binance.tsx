@@ -80,7 +80,7 @@ export default function DepositBNB() {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="outline">
-          <TokenBNB variant="mono" className="size-10" />
+          <TokenBNB variant="mono" className="size-8" />
           BNB
         </Button>
       </DialogTrigger>

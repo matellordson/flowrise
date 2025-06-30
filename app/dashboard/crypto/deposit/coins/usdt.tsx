@@ -80,7 +80,7 @@ export default function DepositUSDT() {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="outline">
-          <TokenUSDT variant="mono" className="size-10" />
+          <TokenUSDT variant="mono" className="size-8" />
           USDT (tron)
         </Button>
       </DialogTrigger>

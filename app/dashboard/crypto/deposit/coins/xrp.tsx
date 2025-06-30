@@ -80,7 +80,7 @@ export default function DepositXRP() {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="outline">
-          <TokenXRP variant="mono" className="size-10" />
+          <TokenXRP variant="mono" className="size-8" />
           XRP
         </Button>
       </DialogTrigger>

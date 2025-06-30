@@ -1,6 +1,7 @@
 "use client";
 
 import { sql } from "@/lib/sql";
+import { useState, useEffect } from "react";
 import {
   TokenBNB,
   TokenBTC,
@@ -13,10 +14,53 @@ import {
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 
-export default async function Coins() {
+interface DataType {
+  bitcoin: string;
+  ethereum: string;
+  solana: string;
+  usdc: string;
+  usdt: string;
+  bnb: string;
+  xrp: string;
+}
+
+export default function Coins() {
   const { data: session } = useSession();
-  const data: Record<string, any> =
-    await sql`SELECT (bitcoin, ethereum, solana, bnb, usdc, usdt, xrp) FROM crypto WHERE user_email=${session?.user?.email}`;
+  const [data, setData] = useState<DataType>({
+    bitcoin: "0",
+    ethereum: "0",
+    solana: "0",
+    usdc: "0",
+    usdt: "0",
+    bnb: "0",
+    xrp: "0",
+  });
+
+  useEffect(() => {
+    async function getData() {
+      if (!session?.user?.email) return;
+
+      const result = await sql`
+        SELECT bitcoin, ethereum, solana, bnb, usdc, usdt, xrp
+        FROM crypto
+        WHERE user_email = ${session.user.email}
+      `;
+
+      if (result[0]) {
+        setData({
+          bitcoin: result[0].bitcoin?.toString() || "0",
+          ethereum: result[0].ethereum?.toString() || "0",
+          solana: result[0].solana?.toString() || "0",
+          usdc: result[0].usdc?.toString() || "0",
+          usdt: result[0].usdt?.toString() || "0",
+          bnb: result[0].bnb?.toString() || "0",
+          xrp: result[0].xrp?.toString() || "0",
+        });
+      }
+    }
+
+    getData();
+  }, [session]);
 
   return (
     <div className="">
@@ -33,7 +77,6 @@ export default async function Coins() {
               <p className="text-sm">$107,198.58</p>
             </div>
           </div>
-
           {/* right */}
           <div className="text-end">
             <p className="font-semibold tracking-tight font-mono">
@@ -57,7 +100,6 @@ export default async function Coins() {
               <p className="text-sm">$107,198.58</p>
             </div>
           </div>
-
           {/* right */}
           <div className="text-end">
             <p className="font-semibold tracking-tight font-mono">
@@ -81,7 +123,6 @@ export default async function Coins() {
               <p className="text-sm">$107,198.58</p>
             </div>
           </div>
-
           {/* right */}
           <div className="text-end">
             <p className="font-semibold tracking-tight font-mono">
@@ -105,7 +146,6 @@ export default async function Coins() {
               <p className="text-sm">$107,198.58</p>
             </div>
           </div>
-
           {/* right */}
           <div className="text-end">
             <p className="font-semibold tracking-tight font-mono">{data.bnb}</p>
@@ -127,7 +167,6 @@ export default async function Coins() {
               <p className="text-sm">$107,198.58</p>
             </div>
           </div>
-
           {/* right */}
           <div className="text-end">
             <p className="font-semibold tracking-tight font-mono">
@@ -151,7 +190,6 @@ export default async function Coins() {
               <p className="text-sm">$107,198.58</p>
             </div>
           </div>
-
           {/* right */}
           <div className="text-end">
             <p className="font-semibold tracking-tight font-mono">
@@ -175,7 +213,6 @@ export default async function Coins() {
               <p className="text-sm">$107,198.58</p>
             </div>
           </div>
-
           {/* right */}
           <div className="text-end">
             <p className="font-semibold tracking-tight font-mono">{data.xrp}</p>

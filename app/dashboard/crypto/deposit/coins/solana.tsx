@@ -80,7 +80,7 @@ export default function DepositSOL() {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="outline">
-          <TokenSOL variant="mono" className="size-10" />
+          <TokenSOL variant="mono" className="size-8" />
           Solana
         </Button>
       </DialogTrigger>

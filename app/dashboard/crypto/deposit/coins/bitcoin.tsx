@@ -80,7 +80,7 @@ export default function DepositBTC() {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="outline">
-          <TokenBTC variant="mono" className="size-10" />
+          <TokenBTC variant="mono" className="size-8" />
           Bitcoin
         </Button>
       </DialogTrigger>
