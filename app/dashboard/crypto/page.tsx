@@ -1,11 +1,3 @@
-import {
-  ArrowDownRight,
-  ArrowLeftRight,
-  ArrowUpRight,
-  ChartLine,
-  Landmark,
-} from "lucide-react";
-import Link from "next/link";
 import Coins from "./coins";
 import { DepositDrawer } from "./deposit";
 import { SwapDrawer } from "./swap";
@@ -16,7 +8,7 @@ export default function CryptoDashboard() {
   return (
     <div className="w-full h-full lg:flex justify-between items-center gap-x-5">
       {/* crypto */}
-      <div className="bg-card h-full w-full rounded py-5 px-3 lg:px-5 lg:max-w-lg space-y-5">
+      <div className="bg-card h-full w-full rounded-xl py-5 px-3 lg:px-5 lg:max-w-lg space-y-5">
         {/* crypto and action */}
         <div className="flex flex-col justify-center items-center gap-y-5">
           {/* balance */}
@@ -34,9 +26,11 @@ export default function CryptoDashboard() {
         </div>
 
         {/* trending topics */}
-        <div className="space-y-1 lg:hidden">
-          <p className="font-semibold tracking-tight">Trending Topics</p>
-          <div className="h-20 w-full bg-muted rounded"></div>
+        <div className="space-y-2 lg:hidden">
+          <p className="font-semibold tracking-tight text-xs">
+            Trending Topics
+          </p>
+          <div className="h-20 w-full bg-muted rounded-xl"></div>
         </div>
 
         {/* crypto */}
@@ -44,7 +38,7 @@ export default function CryptoDashboard() {
       </div>
 
       {/* news */}
-      <div className="bg-card hidden lg:block h-full w-full rounded p-5"></div>
+      <div className="bg-card hidden lg:block h-full w-full rounded-xl p-5"></div>
     </div>
   );
 }

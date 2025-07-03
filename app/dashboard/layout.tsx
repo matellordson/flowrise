@@ -1,5 +1,9 @@
 import { auth } from "@/auth";
 import { AppSidebar } from "@/components/app-sidebar";
+import { ChartAreaInteractive } from "@/components/chart-area-interactive";
+import { DataTable } from "@/components/data-table";
+import { SectionCards } from "@/components/section-cards";
+import { SiteHeader } from "@/components/site-header";
 import { Separator } from "@/components/ui/separator";
 import {
   SidebarInset,
@@ -15,32 +19,28 @@ export default async function SectionLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // const session = await auth();
-  // if (!session?.user) {
-  //   redirect("/sign-in");
-  // }
+  const session = await auth();
+  if (!session?.user) {
+    redirect("/sign-in");
+  }
 
   return (
-    <SidebarProvider>
-      <AppSidebar />
+    <SidebarProvider
+      style={
+        {
+          "--sidebar-width": "calc(var(--spacing) * 72)",
+          "--header-height": "calc(var(--spacing) * 12)",
+        } as React.CSSProperties
+      }
+    >
+      <AppSidebar variant="inset" />
       <SidebarInset>
-        <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
-          <div className="flex items-center gap-2 px-4">
-            <SidebarTrigger className="-ml-1" />
-            <Separator
-              orientation="vertical"
-              className="mr-2 data-[orientation=vertical]:h-4"
-            />
-            <Link
-              href={"/dashboard"}
-              className="flex items-center gap-x-1 lg:text-lg text-base"
-            >
-              <Hexagon className="size-5 lg:size-6" />
-              Flowrise Co.
-            </Link>
+        <SiteHeader />
+        <div className="flex flex-1 flex-col">
+          <div className="@container/main flex flex-1 flex-col gap-2">
+            <div className="p-4 lg:px-6">{children}</div>
           </div>
-        </header>
-        <div className="flex flex-1 flex-col gap-4 p-4 pt-0">{children}</div>
+        </div>
       </SidebarInset>
     </SidebarProvider>
   );

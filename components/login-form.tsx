@@ -45,11 +45,11 @@ export function LoginForm({
               <div className="flex size-8 items-center justify-center rounded-md">
                 <GalleryVerticalEnd className="size-6" />
               </div>
-              <span className="sr-only">Acme Inc.</span>
+              <span className="sr-only">Flowrise Co.</span>
             </a>
             <h1 className="text-xl font-bold">Welcome to Flowrise Co.</h1>
             <div className="text-center text-sm">
-             Please Login or Signup a new account
+              Please Login or Signup a new account
             </div>
           </div>
           <div className="flex flex-col gap-6">
@@ -86,9 +86,7 @@ export function LoginForm({
               variant="outline"
               type="button"
               className="w-full"
-              onClick={() =>
-                signIn("google", { redirectTo: "/dashboard/portfolio" })
-              }
+              onClick={() => signIn("google", { redirectTo: "/dashboard" })}
             >
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                 <path
