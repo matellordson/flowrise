@@ -1,17 +1,11 @@
 import { auth } from "@/auth";
 import { AppSidebar } from "@/components/app-sidebar";
-import { ChartAreaInteractive } from "@/components/chart-area-interactive";
-import { DataTable } from "@/components/data-table";
-import { SectionCards } from "@/components/section-cards";
 import { SiteHeader } from "@/components/site-header";
-import { Separator } from "@/components/ui/separator";
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { Hexagon } from "lucide-react";
-import Link from "next/link";
 import { redirect } from "next/navigation";
 
 export default async function SectionLayout({
