@@ -47,7 +47,7 @@ const data = {
     },
     {
       title: "Crypto",
-      url: "/crypto",
+      url: "/dashboard/crypto",
       icon: IconCoinBitcoin,
     },
     {
