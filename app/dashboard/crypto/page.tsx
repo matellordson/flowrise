@@ -2,23 +2,38 @@ import Coins from "./coins";
 import { DepositDrawer } from "./deposit";
 import { SwapDrawer } from "./swap";
 import { SendDrawer } from "./send";
-import { Button } from "@/components/ui/button";
+import { sql } from "@/lib/sql";
 
-export default function CryptoDashboard() {
+export default async function CryptoDashboard() {
+  // const totalBalance = await sql`
+  // SELECT
+  //   (SELECT COALESCE(SUM(amount), 0) FROM bitcoin) +
+  //   (SELECT COALESCE(SUM(amount), 0) FROM ethereum) +
+  //   (SELECT COALESCE(SUM(amount), 0) FROM solana) AS total_amount;
+  // `;
+
+  const totalAmount = await sql`
+SELECT 
+  (SELECT COALESCE(SUM(amount), 0) FROM bitcoin) AS total_amount;
+`;
+
   return (
-    <div className="w-full h-full lg:flex justify-between items-center gap-x-5">
+    <div className="h-full w-full items-center justify-between gap-x-5 lg:flex">
       {/* crypto */}
-      <div className="bg-card h-full w-full rounded-xl py-5 px-3 lg:px-5 lg:max-w-lg space-y-5">
+      <div className="bg-card h-full w-full space-y-5 rounded-xl px-3 py-5 lg:max-w-lg lg:px-5">
         {/* crypto and action */}
-        <div className="flex flex-col justify-center items-center gap-y-5">
+        <div className="flex flex-col items-center justify-center gap-y-5">
           {/* balance */}
           <div className="text-center">
-            <p className="text-3xl font-semibold font-mono lg:text-4xl">
-              $200.40
+            <p className="font-mono text-3xl font-semibold lg:text-4xl">
+              {Number(totalAmount[0].total_amount).toLocaleString("en-US", {
+                style: "currency",
+                currency: "USD",
+              })}
             </p>
           </div>
           {/* actions */}
-          <div className="flex justify-between items-center w-full lg:px-10">
+          <div className="flex w-full items-center justify-between lg:px-10">
             <DepositDrawer />
             <SendDrawer />
             <SwapDrawer />
@@ -27,10 +42,10 @@ export default function CryptoDashboard() {
 
         {/* trending topics */}
         <div className="space-y-2 lg:hidden">
-          <p className="font-semibold tracking-tight text-xs">
+          <p className="text-xs font-semibold tracking-tight">
             Trending Topics
           </p>
-          <div className="h-20 w-full bg-muted rounded-xl"></div>
+          <div className="bg-muted h-20 w-full rounded-xl"></div>
         </div>
 
         {/* crypto */}
@@ -38,7 +53,7 @@ export default function CryptoDashboard() {
       </div>
 
       {/* news */}
-      <div className="bg-card hidden lg:block h-full w-full rounded-xl p-5"></div>
+      <div className="bg-card hidden h-full w-full rounded-xl p-5 lg:block"></div>
     </div>
   );
 }

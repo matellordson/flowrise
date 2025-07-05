@@ -11,6 +11,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
+import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Check, Copy, OctagonAlert } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -32,14 +33,25 @@ import { redirect, useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useSession } from "next-auth/react";
 
+async function getBtcPrice() {
+  const url =
+    "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd";
+  const response = await fetch(url);
+  const price = await response.json();
+  const data = price?.bitcoin?.usd || "0.00";
+
+  return data;
+}
+
+const btcPrice = await getBtcPrice();
+
 const formSchema = z.object({
   amount: z.coerce.number(),
 });
 
 export default function DepositBTC() {
-  const [open, setOpen] = React.useState(false);
-
-  const router = useRouter();
+  const [open, setOpen] = useState(false);
+  const [amount, setAmount] = useState<number>(100);
 
   const [copied, setCopied] = React.useState(false);
   const textToCopy = "1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2";
@@ -58,19 +70,13 @@ export default function DepositBTC() {
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: { amount: 0 },
+    defaultValues: { amount: 100 },
   });
 
-  const user = session?.user;
-
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    const user = session?.user;
     const amount = values.amount;
     const coin = "bitcoin";
-    // await sql`INSERT INTO crypto_deposit (user_email, amount, coin) VALUES (${userEmail}, ${amount}, ${coin})`;
-    // await sql`INSERT INTO crypto (user_email) VALUES (${userEmail})`;
-
-    await sql`UPDATE bitcoin SET amount = amount + ${amount} WHERE "user" = ${user?.id}`;
+    await sql`INSERT INTO crypto_deposit (user_email, amount, coin) VALUES (${session?.user?.email}, ${amount}, ${coin})`;
 
     toast("Kindly proceed to make a deposit");
 
@@ -82,7 +88,6 @@ export default function DepositBTC() {
       <DialogTrigger asChild>
         <Button variant="outline">
           <TokenBTC variant="mono" className="size-8" />
-          <p>{user?.id || "null"}</p>
           Bitcoin
         </Button>
       </DialogTrigger>
@@ -91,10 +96,13 @@ export default function DepositBTC() {
           <DialogTitle>Deposit Bitcoin</DialogTitle>
         </DialogHeader>
         {/* alert */}
-        <Alert variant="default">
+        <Alert
+          variant="default"
+          className="border border-[--warning-borde] bg-[var(--warning)] text-[var(--warning-forground)]"
+        >
           <OctagonAlert />
           <AlertTitle>Deposit Instructions</AlertTitle>
-          <AlertDescription>
+          <AlertDescription className="text-[var(--warning-forground)">
             Please copy the wallet address and send the coins to it. Once the
             transaction is confirmed on the network, your deposited coins will
             appear in your wallet.
@@ -109,9 +117,38 @@ export default function DepositBTC() {
               name="amount"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Amount</FormLabel>
+                  <p className="text-muted-foreground text-sm">
+                    <span className="text-primary font-semibold">
+                      {Number(amount || 0).toLocaleString("en-US", {
+                        currency: "USD",
+                        style: "currency",
+                      })}
+                    </span>{" "}
+                    ≈{" "}
+                    <span className="text-primary font-semibold">
+                      {Number(amount / btcPrice)
+                        .toFixed(8)
+                        .replace(/\.?0+$/, "")}{" "}
+                      BTC
+                    </span>
+                  </p>
+                  <FormLabel>Amount </FormLabel>
                   <FormControl>
-                    <Input type="number" {...field} />
+                    <Input
+                      type="number"
+                      {...field}
+                      min={100}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        const num = Number(value);
+
+                        // Only allow positive numbers
+                        if (num >= 0 || value === "") {
+                          field.onChange(value); // Update form value
+                          setAmount(value as any); // Update local state
+                        }
+                      }}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -119,23 +156,23 @@ export default function DepositBTC() {
             />
             {/* copy address */}
             <div className="">
-              <div className="bg-muted w-full py-2 flex justify-center items-center rounded font-mono relative">
-                <span className="select-all flex-1 text-center overflow-hidden text-muted-forground text-sm">
+              <div className="bg-muted relative flex w-full items-center justify-center rounded py-2 font-mono">
+                <span className="text-muted-forground flex-1 overflow-hidden text-center text-sm select-all">
                   <span className="inline-block max-w-full">
                     <span className="inline">{textToCopy.slice(0, 6)}</span>
-                    <span className="inline text-muted-foreground/60">...</span>
+                    <span className="text-muted-foreground/60 inline">...</span>
                     <span className="inline">{textToCopy.slice(-6)}</span>
                   </span>
                 </span>
                 <button
                   onClick={handleCopy}
-                  className="absolute right-3 p-1 rounded hover:bg-background/80 transition-colors"
+                  className="hover:bg-background/80 absolute right-3 rounded p-1 transition-colors"
                   title={copied ? "Copied!" : "Copy to clipboard"}
                 >
                   {copied ? (
                     <Check className="h-4 w-4 text-green-600" />
                   ) : (
-                    <Copy className="h-4 w-4 text-muted-foreground hover:text-foreground" />
+                    <Copy className="text-muted-foreground hover:text-foreground h-4 w-4" />
                   )}
                 </button>
               </div>

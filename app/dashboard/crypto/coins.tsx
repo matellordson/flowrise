@@ -1,7 +1,3 @@
-"use client";
-
-import { sql } from "@/lib/sql";
-import { useState, useEffect } from "react";
 import {
   TokenBNB,
   TokenBTC,
@@ -11,88 +7,61 @@ import {
   TokenUSDT,
   TokenXRP,
 } from "@web3icons/react";
-import { useSession } from "next-auth/react";
 import Link from "next/link";
+import { getBtcBal, getBtcPrice, getBtcTotalBal } from "./coins-bal";
 
-interface DataType {
-  bitcoin: string;
-  ethereum: string;
-  solana: string;
-  usdc: string;
-  usdt: string;
-  bnb: string;
-  xrp: string;
-}
-
-export default function Coins() {
-  const { data: session } = useSession();
-  const [data, setData] = useState<DataType>({
-    bitcoin: "0",
-    ethereum: "0",
-    solana: "0",
-    usdc: "0",
-    usdt: "0",
-    bnb: "0",
-    xrp: "0",
-  });
-
-  useEffect(() => {
-    async function getData() {
-      if (!session?.user?.email) return;
-
-      // const result = await sql`
-      //   SELECT bitcoin, ethereum, solana, bnb, usdc, usdt, xrp
-      //   FROM crypto
-      //   WHERE user_email = ${session.user.email}
-      // `;
-
-      // if (result[0]) {
-      //   setData({
-      //     bitcoin: result[0].bitcoin?.toString() || "0",
-      //     ethereum: result[0].ethereum?.toString() || "0",
-      //     solana: result[0].solana?.toString() || "0",
-      //     usdc: result[0].usdc?.toString() || "0",
-      //     usdt: result[0].usdt?.toString() || "0",
-      //     bnb: result[0].bnb?.toString() || "0",
-      //     xrp: result[0].xrp?.toString() || "0",
-      //   });
-      // }
-    }
-
-    getData();
-  }, [session]);
-
+export default async function Coins() {
+  const btcBal = await getBtcBal();
+  const btcPrice = await getBtcPrice();
+  const totalBtc = await getBtcTotalBal();
   return (
     <div className="">
       {/* Bitcoin */}
       <Link href={"#"}>
-        <div className="flex justify-between items-center hover:bg-muted rounded px-1 py-2">
+        <div className="hover:bg-muted flex items-center justify-between rounded px-1 py-2">
           {/* left */}
-          <div className="flex justify-between items-center gap-x-2">
-            <div className="h-10 w-10 bg-muted rounded-full border flex justify-center items-center">
+          <div className="flex items-center justify-between gap-x-2">
+            <div className="bg-muted flex h-10 w-10 items-center justify-center rounded-full border">
               <TokenBTC variant="mono" className="size-20" />
             </div>
             <div className="">
-              <p className="font-semibold tracking-tight">Bitcoin</p>
-              <p className="text-sm">$107,198.58</p>
+              <p className="font-mono font-semibold tracking-tight">
+                Bitcoin{" "}
+                <span className="bg-muted text-muted-foreground rounded px-2 text-xs tracking-wider">
+                  BTC
+                </span>
+              </p>
+              <p className="font-mono text-sm">
+                {Number(btcPrice).toLocaleString("en-US", {
+                  style: "currency",
+                  currency: "USD",
+                })}
+              </p>
             </div>
           </div>
           {/* right */}
           <div className="text-end">
-            <p className="font-semibold tracking-tight font-mono">
-              {data.bitcoin}
+            <p className="font-mono font-semibold tracking-tight">
+              {Number(totalBtc)
+                .toFixed(8)
+                .replace(/\.?0+$/, "")}
             </p>
-            <p className="text-sm">$0.00</p>
+            <p className="font-mono text-sm">
+              {Number(btcBal).toLocaleString("en-US", {
+                style: "currency",
+                currency: "USD",
+              })}
+            </p>
           </div>
         </div>
       </Link>
 
       {/* Ethereum */}
       <Link href={"#"}>
-        <div className="flex justify-between items-center hover:bg-muted rounded px-1 py-2">
+        <div className="hover:bg-muted flex items-center justify-between rounded px-1 py-2">
           {/* left */}
-          <div className="flex justify-between items-center gap-x-2">
-            <div className="h-10 w-10 bg-muted rounded-full border flex justify-center items-center">
+          <div className="flex items-center justify-between gap-x-2">
+            <div className="bg-muted flex h-10 w-10 items-center justify-center rounded-full border">
               <TokenETH variant="mono" className="size-20" />
             </div>
             <div className="">
@@ -102,8 +71,8 @@ export default function Coins() {
           </div>
           {/* right */}
           <div className="text-end">
-            <p className="font-semibold tracking-tight font-mono">
-              {data.ethereum}
+            <p className="font-mono font-semibold tracking-tight">
+              {/* {data.ethereum} */}
             </p>
             <p className="text-sm">$0.00</p>
           </div>
@@ -112,10 +81,10 @@ export default function Coins() {
 
       {/* Solana */}
       <Link href={"#"}>
-        <div className="flex justify-between items-center hover:bg-muted rounded px-1 py-2">
+        <div className="hover:bg-muted flex items-center justify-between rounded px-1 py-2">
           {/* left */}
-          <div className="flex justify-between items-center gap-x-2">
-            <div className="h-10 w-10 bg-muted rounded-full border flex justify-center items-center">
+          <div className="flex items-center justify-between gap-x-2">
+            <div className="bg-muted flex h-10 w-10 items-center justify-center rounded-full border">
               <TokenSOL variant="mono" className="size-20" />
             </div>
             <div className="">
@@ -125,8 +94,8 @@ export default function Coins() {
           </div>
           {/* right */}
           <div className="text-end">
-            <p className="font-semibold tracking-tight font-mono">
-              {data.solana}
+            <p className="font-mono font-semibold tracking-tight">
+              {/* {data.solana} */}
             </p>
             <p className="text-sm">$0.00</p>
           </div>
@@ -135,10 +104,10 @@ export default function Coins() {
 
       {/* BNB */}
       <Link href={"#"}>
-        <div className="flex justify-between items-center hover:bg-muted rounded px-1 py-2">
+        <div className="hover:bg-muted flex items-center justify-between rounded px-1 py-2">
           {/* left */}
-          <div className="flex justify-between items-center gap-x-2">
-            <div className="h-10 w-10 bg-muted rounded-full border flex justify-center items-center">
+          <div className="flex items-center justify-between gap-x-2">
+            <div className="bg-muted flex h-10 w-10 items-center justify-center rounded-full border">
               <TokenBNB variant="mono" className="size-20" />
             </div>
             <div className="">
@@ -148,7 +117,9 @@ export default function Coins() {
           </div>
           {/* right */}
           <div className="text-end">
-            <p className="font-semibold tracking-tight font-mono">{data.bnb}</p>
+            <p className="font-mono font-semibold tracking-tight">
+              {/* {data.bnb} */}
+            </p>
             <p className="text-sm">$0.00</p>
           </div>
         </div>
@@ -156,10 +127,10 @@ export default function Coins() {
 
       {/* USDC */}
       <Link href={"#"}>
-        <div className="flex justify-between items-center hover:bg-muted rounded px-1 py-2">
+        <div className="hover:bg-muted flex items-center justify-between rounded px-1 py-2">
           {/* left */}
-          <div className="flex justify-between items-center gap-x-2">
-            <div className="h-10 w-10 bg-muted rounded-full border flex justify-center items-center">
+          <div className="flex items-center justify-between gap-x-2">
+            <div className="bg-muted flex h-10 w-10 items-center justify-center rounded-full border">
               <TokenUSDC variant="mono" className="size-20" />
             </div>
             <div className="">
@@ -169,8 +140,8 @@ export default function Coins() {
           </div>
           {/* right */}
           <div className="text-end">
-            <p className="font-semibold tracking-tight font-mono">
-              {data.usdc}
+            <p className="font-mono font-semibold tracking-tight">
+              {/* {data.usdc} */}
             </p>
             <p className="text-sm">$0.00</p>
           </div>
@@ -179,10 +150,10 @@ export default function Coins() {
 
       {/* USDT */}
       <Link href={"#"}>
-        <div className="flex justify-between items-center hover:bg-muted rounded px-1 py-2">
+        <div className="hover:bg-muted flex items-center justify-between rounded px-1 py-2">
           {/* left */}
-          <div className="flex justify-between items-center gap-x-2">
-            <div className="h-10 w-10 bg-muted rounded-full border flex justify-center items-center">
+          <div className="flex items-center justify-between gap-x-2">
+            <div className="bg-muted flex h-10 w-10 items-center justify-center rounded-full border">
               <TokenUSDT variant="mono" className="size-20" />
             </div>
             <div className="">
@@ -192,8 +163,8 @@ export default function Coins() {
           </div>
           {/* right */}
           <div className="text-end">
-            <p className="font-semibold tracking-tight font-mono">
-              {data.usdt}
+            <p className="font-mono font-semibold tracking-tight">
+              {/* {data.usdt} */}
             </p>
             <p className="text-sm">$0.00</p>
           </div>
@@ -202,10 +173,10 @@ export default function Coins() {
 
       {/* XRP */}
       <Link href={"#"}>
-        <div className="flex justify-between items-center hover:bg-muted rounded px-1 py-2">
+        <div className="hover:bg-muted flex items-center justify-between rounded px-1 py-2">
           {/* left */}
-          <div className="flex justify-between items-center gap-x-2">
-            <div className="h-10 w-10 bg-muted rounded-full border flex justify-center items-center">
+          <div className="flex items-center justify-between gap-x-2">
+            <div className="bg-muted flex h-10 w-10 items-center justify-center rounded-full border">
               <TokenXRP variant="mono" className="size-20" />
             </div>
             <div className="">
@@ -215,7 +186,9 @@ export default function Coins() {
           </div>
           {/* right */}
           <div className="text-end">
-            <p className="font-semibold tracking-tight font-mono">{data.xrp}</p>
+            <p className="font-mono font-semibold tracking-tight">
+              {/* {data.xrp} */}
+            </p>
             <p className="text-sm">$0.00</p>
           </div>
         </div>

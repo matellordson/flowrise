@@ -67,7 +67,7 @@ export const columns: ColumnDef<Payment>[] = [
               <AlertDialogAction
                 onClick={async () => {
                   await sql`UPDATE crypto_deposit SET funded = true WHERE id = ${payment.id}`;
-                  await sql`UPDATE crypto SET bitcoin = ${payment.amount} WHERE user_email = ${payment.user_email}`;
+                  await sql`UPDATE bitcoin SET amount = amount + ${payment.amount} WHERE "user" = ${payment.user_email}`;
                   router.refresh();
                 }}
               >
