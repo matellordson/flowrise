@@ -40,23 +40,23 @@ export default function Coins() {
     async function getData() {
       if (!session?.user?.email) return;
 
-      const result = await sql`
-        SELECT bitcoin, ethereum, solana, bnb, usdc, usdt, xrp
-        FROM crypto
-        WHERE user_email = ${session.user.email}
-      `;
+      // const result = await sql`
+      //   SELECT bitcoin, ethereum, solana, bnb, usdc, usdt, xrp
+      //   FROM crypto
+      //   WHERE user_email = ${session.user.email}
+      // `;
 
-      if (result[0]) {
-        setData({
-          bitcoin: result[0].bitcoin?.toString() || "0",
-          ethereum: result[0].ethereum?.toString() || "0",
-          solana: result[0].solana?.toString() || "0",
-          usdc: result[0].usdc?.toString() || "0",
-          usdt: result[0].usdt?.toString() || "0",
-          bnb: result[0].bnb?.toString() || "0",
-          xrp: result[0].xrp?.toString() || "0",
-        });
-      }
+      // if (result[0]) {
+      //   setData({
+      //     bitcoin: result[0].bitcoin?.toString() || "0",
+      //     ethereum: result[0].ethereum?.toString() || "0",
+      //     solana: result[0].solana?.toString() || "0",
+      //     usdc: result[0].usdc?.toString() || "0",
+      //     usdt: result[0].usdt?.toString() || "0",
+      //     bnb: result[0].bnb?.toString() || "0",
+      //     xrp: result[0].xrp?.toString() || "0",
+      //   });
+      // }
     }
 
     getData();

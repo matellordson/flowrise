@@ -28,12 +28,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { TokenBTC } from "@web3icons/react";
 import { sql } from "@/lib/sql";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useSession } from "next-auth/react";
 
 const formSchema = z.object({
-  amount: z.coerce.number().gte(0.0005),
+  amount: z.coerce.number(),
 });
 
 export default function DepositBTC() {
@@ -58,29 +58,31 @@ export default function DepositBTC() {
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      amount: 0.0005,
-    },
+    defaultValues: { amount: 0 },
   });
 
+  const user = session?.user;
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    const userEmail = session?.user?.email;
+    const user = session?.user;
     const amount = values.amount;
     const coin = "bitcoin";
-    await sql`INSERT INTO crypto_deposit (user_email, amount, coin) VALUES (${userEmail}, ${amount}, ${coin})`;
-    await sql`INSERT INTO crypto (user_email) VALUES (${userEmail})`;
+    // await sql`INSERT INTO crypto_deposit (user_email, amount, coin) VALUES (${userEmail}, ${amount}, ${coin})`;
+    // await sql`INSERT INTO crypto (user_email) VALUES (${userEmail})`;
+
+    await sql`UPDATE bitcoin SET amount = amount + ${amount} WHERE "user" = ${user?.id}`;
 
     toast("Kindly proceed to make a deposit");
 
-    router.push("/dashboard/crypto");
+    redirect("/dashboard");
   }
 
-  // if (isDesktop) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="outline">
           <TokenBTC variant="mono" className="size-8" />
+          <p>{user?.id || "null"}</p>
           Bitcoin
         </Button>
       </DialogTrigger>
@@ -111,9 +113,6 @@ export default function DepositBTC() {
                   <FormControl>
                     <Input type="number" {...field} />
                   </FormControl>
-                  <FormDescription>
-                    Minimum amount of Bitcoin is 0.0005.
-                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}

@@ -82,15 +82,17 @@ export function DepositDrawer() {
             Make deposit to fund your investment.
           </DrawerDescription>
         </DrawerHeader>
-        <div className="flex flex-wrap items-center justify-center gap-4 px-2">
-          <DepositBTC />
-          <DepositETH />
-          <DepositSOL />
-          <DepositBNB />
-          <DepositUSDC />
-          <DepositUSDT />
-          <DepositXRP />
-        </div>
+        <DrawerFooter>
+          <div className="flex flex-wrap items-center justify-center gap-4 px-2">
+            <DepositBTC />
+            <DepositETH />
+            <DepositSOL />
+            <DepositBNB />
+            <DepositUSDC />
+            <DepositUSDT />
+            <DepositXRP />
+          </div>
+        </DrawerFooter>
       </DrawerContent>
     </Drawer>
   );
