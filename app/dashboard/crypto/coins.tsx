@@ -10,6 +10,8 @@ import {
 import Link from "next/link";
 import { getBtcBal, getBtcPrice, getBtcTotalBal } from "./coins-bal";
 
+export const revalidate = 0;
+
 export default async function Coins() {
   const btcBal = await getBtcBal();
   const btcPrice = await getBtcPrice();
@@ -17,7 +19,7 @@ export default async function Coins() {
   return (
     <div className="">
       {/* Bitcoin */}
-      <Link href={"#"}>
+      <Link href={"crypto/btc"}>
         <div className="hover:bg-muted flex items-center justify-between rounded px-1 py-2">
           {/* left */}
           <div className="flex items-center justify-between gap-x-2">
