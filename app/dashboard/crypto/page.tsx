@@ -3,8 +3,10 @@ import { DepositDrawer } from "./deposit";
 import { SwapDrawer } from "./swap";
 import { SendDrawer } from "./send";
 import { sql } from "@/lib/sql";
+import { auth } from "@/auth";
 
 export default async function CryptoDashboard() {
+  const session = await auth();
   // const totalBalance = await sql`
   // SELECT
   //   (SELECT COALESCE(SUM(amount), 0) FROM bitcoin) +
@@ -14,7 +16,7 @@ export default async function CryptoDashboard() {
 
   const totalAmount = await sql`
 SELECT 
-  (SELECT COALESCE(SUM(amount), 0) FROM bitcoin) AS total_amount;
+  (SELECT COALESCE(SUM(amount), 0) FROM bitcoin WHERE "user" = ${session?.user?.email}) AS total_amount;
 `;
 
   return (
