@@ -10,7 +10,7 @@ import { SwapDrawer } from "../swap";
 
 export default function BitcoinPage() {
   return (
-    <div className="flex h-screen gap-x-3">
+    <div className="flex h-screen flex-col gap-x-3 gap-y-3 lg:flex-row">
       {/* nav */}
       <div className="bg-card h-full w-full space-y-5 rounded-xl p-3">
         <div className="flex items-center gap-x-2">
