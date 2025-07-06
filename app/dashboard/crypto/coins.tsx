@@ -8,7 +8,14 @@ import {
   TokenXRP,
 } from "@web3icons/react";
 import Link from "next/link";
-import { getBtcBal, getBtcPrice, getBtcTotalBal } from "./coins-bal";
+import {
+  getBtcBal,
+  getBtcPrice,
+  getBtcTotalBal,
+  getEthBal,
+  getEthPrice,
+  getEthTotalBal,
+} from "./coins-bal";
 
 export const revalidate = 0;
 
@@ -16,6 +23,10 @@ export default async function Coins() {
   const btcBal = await getBtcBal();
   const btcPrice = await getBtcPrice();
   const totalBtc = await getBtcTotalBal();
+
+  const ethBal = await getEthBal();
+  const ethPrice = await getEthPrice();
+  const totalEth = await getEthTotalBal();
   return (
     <div className="">
       {/* Bitcoin */}
@@ -59,7 +70,7 @@ export default async function Coins() {
       </Link>
 
       {/* Ethereum */}
-      <Link href={"#"}>
+      <Link href={"crypto/eth"}>
         <div className="hover:bg-muted flex items-center justify-between rounded px-1 py-2">
           {/* left */}
           <div className="flex items-center justify-between gap-x-2">
@@ -67,16 +78,33 @@ export default async function Coins() {
               <TokenETH variant="mono" className="size-20" />
             </div>
             <div className="">
-              <p className="font-semibold tracking-tight">Ethereum</p>
-              <p className="text-sm">$107,198.58</p>
+              <p className="font-mono font-semibold tracking-tight">
+                Ethereum{" "}
+                <span className="bg-muted text-muted-foreground rounded px-2 text-xs tracking-wider">
+                  ETH
+                </span>
+              </p>
+              <p className="font-mono text-sm">
+                {Number(ethPrice).toLocaleString("en-US", {
+                  style: "currency",
+                  currency: "USD",
+                })}
+              </p>
             </div>
           </div>
           {/* right */}
           <div className="text-end">
             <p className="font-mono font-semibold tracking-tight">
-              {/* {data.ethereum} */}
+              {Number(totalEth)
+                .toFixed(8)
+                .replace(/\.?0+$/, "")}
             </p>
-            <p className="text-sm">$0.00</p>
+            <p className="font-mono text-sm">
+              {Number(ethBal).toLocaleString("en-US", {
+                style: "currency",
+                currency: "USD",
+              })}
+            </p>
           </div>
         </div>
       </Link>

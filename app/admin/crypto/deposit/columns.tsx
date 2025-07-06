@@ -67,7 +67,34 @@ export const columns: ColumnDef<Payment>[] = [
               <AlertDialogAction
                 onClick={async () => {
                   await sql`UPDATE crypto_deposit SET funded = true WHERE id = ${payment.id}`;
-                  await sql`UPDATE bitcoin SET amount = amount + ${payment.amount} WHERE "user" = ${payment.user_email}`;
+                  await sql`UPDATE crypto_deposit SET funded = true WHERE id = ${payment.id}`;
+
+                  if (payment.coin === "bitcoin") {
+                    await sql`
+                      UPDATE bitcoin
+                      SET amount = amount + ${payment.amount}
+                      WHERE "user" = ${payment.user_email}
+                      AND EXISTS (
+                        SELECT 1
+                        FROM crypto_deposit
+                        WHERE id = ${payment.id}
+                        AND coin = 'bitcoin'
+                      );
+                    `;
+                  } else if (payment.coin === "ethereum") {
+                    await sql`
+                      UPDATE ethereum
+                      SET amount = amount + ${payment.amount}
+                      WHERE "user" = ${payment.user_email}
+                      AND EXISTS (
+                        SELECT 1
+                        FROM crypto_deposit
+                        WHERE id = ${payment.id}
+                        AND coin = 'ethereum'
+                      );
+                    `;
+                  }
+
                   router.refresh();
                 }}
               >

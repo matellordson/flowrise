@@ -98,10 +98,12 @@ export default function DepositBTC() {
         {/* alert */}
         <Alert
           variant="default"
-          className="border border-[--warning-borde] bg-[var(--warning)] text-[var(--warning-forground)]"
+          className="border border-[--warning-border] bg-[var(--warning)] text-[var(--warning-forground)]"
         >
           <OctagonAlert />
-          <AlertTitle>Deposit Instructions</AlertTitle>
+          <AlertTitle className="font-semibold">
+            Deposit Instructions
+          </AlertTitle>
           <AlertDescription className="text-[var(--warning-forground)">
             Please copy the wallet address and send the coins to it. Once the
             transaction is confirmed on the network, your deposited coins will
