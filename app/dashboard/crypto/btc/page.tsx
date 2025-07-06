@@ -3,11 +3,12 @@ import { ChevronLeft, ExternalLink, Globe, Twitter } from "lucide-react";
 import Link from "next/link";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import BTCBalance from "./balance";
-import BTCChart from "./chart";
+import BTCChart, { BTCChartLight } from "./chart";
 import { DepositDrawer } from "../deposit";
 import { SendDrawer } from "../send";
 import { SwapDrawer } from "../swap";
 import { IconBrandTwitter } from "@tabler/icons-react";
+import BTCChartDark from "./chart";
 
 export default function BitcoinPage() {
   return (
@@ -33,16 +34,21 @@ export default function BitcoinPage() {
           <SendDrawer />
           <SwapDrawer />
         </div>
-        <BTCChart />
+        <div className="dark:hidden">
+          <BTCChartLight />
+        </div>
+        <div className="hidden dark:block">
+          <BTCChartDark />
+        </div>
       </div>
       <div className="bg-card h-full w-full rounded-xl p-3 lg:w-[50%]">
-        <Tabs defaultValue="about" className="w-[400px]">
+        <Tabs defaultValue="about" className="w-fit">
           <TabsList>
             <TabsTrigger value="about">About</TabsTrigger>
             <TabsTrigger value="history">History</TabsTrigger>
           </TabsList>
           <TabsContent value="about" className="">
-            <p className="text-primary/70 relative w-fit leading-7">
+            <p className="text-primary/70 w-fit leading-7">
               Bitcoin (BTC) is the first cryptocurrency built on blockchain
               technology, also known as a decentralized digital currency that is
               based on cryptography. Unlike government-issued or fiat currencies
