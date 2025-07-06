@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/sidebar";
 import { User } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
+import { ModeToggle } from "./toogle-theme";
 
 export function NavUser() {
   const { isMobile } = useSidebar();
@@ -94,8 +95,7 @@ export function NavUser() {
                 Account
               </DropdownMenuItem>
               <DropdownMenuItem>
-                <IconCreditCard />
-                Billing
+                <ModeToggle />
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <IconNotification />

@@ -41,8 +41,8 @@ export default function BitcoinPage() {
             <TabsTrigger value="about">About</TabsTrigger>
             <TabsTrigger value="history">History</TabsTrigger>
           </TabsList>
-          <TabsContent value="about">
-            <p className="text-primary/80 leading-7">
+          <TabsContent value="about" className="">
+            <p className="text-primary/70 relative w-fit leading-7">
               Bitcoin (BTC) is the first cryptocurrency built on blockchain
               technology, also known as a decentralized digital currency that is
               based on cryptography. Unlike government-issued or fiat currencies
