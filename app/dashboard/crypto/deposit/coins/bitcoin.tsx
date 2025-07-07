@@ -34,13 +34,11 @@ import { toast } from "sonner";
 import { useSession } from "next-auth/react";
 
 async function getBtcPrice() {
-  const url =
-    "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd";
-  const response = await fetch(url);
-  const price = await response.json();
-  const data = price?.bitcoin?.usd || "0.00";
+  const res = await fetch("https://api.coinpaprika.com/v1/tickers/btc-bitcoin");
+  const data = await res.json();
+  const price = data?.quotes?.USD?.price || "0.00";
 
-  return data;
+  return price;
 }
 
 const btcPrice = await getBtcPrice();

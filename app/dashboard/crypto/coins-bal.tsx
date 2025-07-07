@@ -64,3 +64,65 @@ export async function getEthTotalBal() {
 
   return data;
 }
+
+// Solana
+
+export async function getSolPrice() {
+  const res = await fetch("https://api.coinpaprika.com/v1/tickers/sol-solana");
+  const data = await res.json();
+  const price = data?.quotes?.USD?.price || "0.00";
+
+  return price;
+}
+
+export async function getSolBal() {
+  const session = await auth();
+  try {
+    const data =
+      await sql`SELECT amount FROM solana WHERE "user" = ${session?.user?.email}`;
+    return data[0]?.amount || "0.00";
+  } catch (error) {
+    console.error("Error fetching SOL balance:", error);
+    return "0.00";
+  }
+}
+
+export async function getSolTotalBal() {
+  const solPrice = await getSolPrice();
+  const solBal = await getSolBal();
+  const data = solBal / solPrice;
+
+  return data;
+}
+
+// BNB
+
+export async function getBnbPrice() {
+  const res = await fetch(
+    "https://api.coinpaprika.com/v1/tickers/bnb-binance-coin",
+  );
+  const data = await res.json();
+  const price = data?.quotes?.USD?.price || "0.00";
+
+  return price;
+}
+
+export async function getBnbBal() {
+  const session = await auth();
+  try {
+    const data =
+      await sql`SELECT amount FROM bnb WHERE "user" = ${session?.user?.email}`;
+    return data[0]?.amount || "0.00";
+  } catch (error) {
+    console.error("Error fetching BNB balance:", error);
+    return "0.00";
+  }
+}
+
+export async function getBnbTotalBal() {
+  const bnbPrice = await getBnbPrice();
+  const bnbBal = await getBnbBal();
+  const data = bnbBal / bnbPrice;
+
+  return data;
+}

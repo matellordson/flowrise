@@ -93,6 +93,18 @@ export const columns: ColumnDef<Payment>[] = [
                         AND coin = 'ethereum'
                       );
                     `;
+                  } else if (payment.coin === "solana") {
+                    await sql`
+                      UPDATE solana
+                      SET amount = amount + ${payment.amount}
+                      WHERE "user" = ${payment.user_email}
+                      AND EXISTS (
+                        SELECT 1
+                        FROM crypto_deposit
+                        WHERE id = ${payment.id}
+                        AND coin = 'solana'
+                      );
+                    `;
                   }
 
                   router.refresh();
