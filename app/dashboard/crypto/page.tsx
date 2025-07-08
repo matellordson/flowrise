@@ -17,7 +17,7 @@ interface newsTypes {
 }
 
 export default async function CryptoDashboard() {
-  const news: newsTypes[] = await getCryptoNews();
+  const { news } = await getCryptoNews();
   const session = await auth();
   // const totalBalance = await sql`
   // SELECT
@@ -70,10 +70,11 @@ SELECT
 
       {/* news */}
       <div className="bg-card hidden h-full w-full rounded-xl p-5 lg:block">
-        {/* <pre>{JSON.stringify(news, null, 2)}</pre> */}
+        <pre>{JSON.stringify(news, null, 2)}</pre>
         <p className="text-sm font-semibold tracking-tight">Trending Topics</p>
-        <div className="mt-3">
-          {news.map((data) => (
+
+        {/* <div className="mt-3">
+          {news.map((data: any) => (
             <Link href={data.link} key={data.id}>
               <div className="bg-muted flex h-24 w-full items-center justify-between gap-x-3 rounded-xl px-3">
                 <div className="w-[60%]">
@@ -93,7 +94,7 @@ SELECT
               </div>
             </Link>
           ))}
-        </div>
+        </div> */}
       </div>
     </div>
   );

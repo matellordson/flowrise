@@ -34,11 +34,12 @@ import { toast } from "sonner";
 import { useSession } from "next-auth/react";
 
 async function getUsdtPrice() {
-  const res = await fetch("https://api.coinpaprika.com/v1/tickers/usdt-tether");
-  const data = await res.json();
-  const price = data?.quotes?.USD?.price || "0.00";
+  const url = "http://localhost:3000/api/usdt";
+  const response = await fetch(url);
+  const price = await response.json();
+  const data = price?.quotes?.USD?.price || "0.00";
 
-  return price;
+  return data;
 }
 
 const usdtPrice = await getUsdtPrice();

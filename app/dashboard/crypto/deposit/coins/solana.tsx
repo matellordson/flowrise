@@ -35,11 +35,12 @@ import { useSession } from "next-auth/react";
 import { getSolPrice } from "../../coins-bal";
 
 async function getBtcPrice() {
-  const res = await fetch("https://api.coinpaprika.com/v1/tickers/sol-solana");
-  const data = await res.json();
-  const price = data?.quotes?.USD?.price || "0.00";
+  const url = "http://localhost:3000/api/sol";
+  const response = await fetch(url);
+  const price = await response.json();
+  const data = price?.quotes?.USD?.price || "0.00";
 
-  return price;
+  return data;
 }
 
 const solPrice = await getSolPrice();

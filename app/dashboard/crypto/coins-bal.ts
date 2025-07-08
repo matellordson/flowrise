@@ -1,16 +1,17 @@
 import { auth } from "@/auth";
 import { sql } from "@/lib/sql";
 
-export const revalidate = 0;
+export const revalidate = 86400;
 
 // Bitcoin
 
 export async function getBtcPrice() {
-  const res = await fetch("https://api.coinpaprika.com/v1/tickers/btc-bitcoin");
-  const data = await res.json();
-  const price = data?.quotes?.USD?.price || "0.00";
+  const url = "http://localhost:3000/api/btc";
+  const response = await fetch(url);
+  const price = await response.json();
+  const data = price?.quotes?.USD?.price || "0.00";
 
-  return price;
+  return data;
 }
 
 export async function getBtcBal() {
@@ -36,13 +37,12 @@ export async function getBtcTotalBal() {
 // Ethereum
 
 export async function getEthPrice() {
-  const res = await fetch(
-    "https://api.coinpaprika.com/v1/tickers/eth-ethereum",
-  );
-  const data = await res.json();
-  const price = data?.quotes?.USD?.price || "0.00";
+  const url = "http://localhost:3000/api/eth";
+  const response = await fetch(url);
+  const price = await response.json();
+  const data = price?.quotes?.USD?.price || "0.00";
 
-  return price;
+  return data;
 }
 
 export async function getEthBal() {
@@ -68,11 +68,12 @@ export async function getEthTotalBal() {
 // Solana
 
 export async function getSolPrice() {
-  const res = await fetch("https://api.coinpaprika.com/v1/tickers/sol-solana");
-  const data = await res.json();
-  const price = data?.quotes?.USD?.price || "0.00";
+  const url = "http://localhost:3000/api/sol";
+  const response = await fetch(url);
+  const price = await response.json();
+  const data = price?.quotes?.USD?.price || "0.00";
 
-  return price;
+  return data;
 }
 
 export async function getSolBal() {
@@ -98,13 +99,12 @@ export async function getSolTotalBal() {
 // BNB
 
 export async function getBnbPrice() {
-  const res = await fetch(
-    "https://api.coinpaprika.com/v1/tickers/bnb-binance-coin",
-  );
-  const data = await res.json();
-  const price = data?.quotes?.USD?.price || "0.00";
+  const url = "http://localhost:3000/api/bnb";
+  const response = await fetch(url);
+  const price = await response.json();
+  const data = price?.quotes?.USD?.price || "0.00";
 
-  return price;
+  return data;
 }
 
 export async function getBnbBal() {
@@ -130,13 +130,12 @@ export async function getBnbTotalBal() {
 // USDC
 
 export async function getUsdcPrice() {
-  const res = await fetch(
-    "https://api.coinpaprika.com/v1/tickers/usdc-usd-coin",
-  );
-  const data = await res.json();
-  const price = data?.quotes?.USD?.price || "0.00";
+  const url = "http://localhost:3000/api/usdc";
+  const response = await fetch(url);
+  const price = await response.json();
+  const data = price?.quotes?.USD?.price || "0.00";
 
-  return price;
+  return data;
 }
 
 export async function getUsdcbBal() {
@@ -162,11 +161,12 @@ export async function getUsdcTotalBal() {
 // USDT
 
 export async function getUsdtPrice() {
-  const res = await fetch("https://api.coinpaprika.com/v1/tickers/usdt-tether");
-  const data = await res.json();
-  const price = data?.quotes?.USD?.price || "0.00";
+  const url = "http://localhost:3000/api/usdt";
+  const response = await fetch(url);
+  const price = await response.json();
+  const data = price?.quotes?.USD?.price || "0.00";
 
-  return price;
+  return data;
 }
 
 export async function getUsdtbBal() {
@@ -192,11 +192,12 @@ export async function getUsdtTotalBal() {
 // XRP
 
 export async function getXrpPrice() {
-  const res = await fetch("https://api.coinpaprika.com/v1/tickers/xrp-xrp");
-  const data = await res.json();
-  const price = data?.quotes?.USD?.price || "0.00";
+  const url = "http://localhost:3000/api/xrp";
+  const response = await fetch(url);
+  const price = await response.json();
+  const data = price?.quotes?.USD?.price || "0.00";
 
-  return price;
+  return data;
 }
 
 export async function getXrpBal() {
