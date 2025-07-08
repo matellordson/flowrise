@@ -126,3 +126,95 @@ export async function getBnbTotalBal() {
 
   return data;
 }
+
+// USDC
+
+export async function getUsdcPrice() {
+  const res = await fetch(
+    "https://api.coinpaprika.com/v1/tickers/usdc-usd-coin",
+  );
+  const data = await res.json();
+  const price = data?.quotes?.USD?.price || "0.00";
+
+  return price;
+}
+
+export async function getUsdcbBal() {
+  const session = await auth();
+  try {
+    const data =
+      await sql`SELECT amount FROM usdc WHERE "user" = ${session?.user?.email}`;
+    return data[0]?.amount || "0.00";
+  } catch (error) {
+    console.error("Error fetching USDC balance:", error);
+    return "0.00";
+  }
+}
+
+export async function getUsdcTotalBal() {
+  const usdcPrice = await getUsdcPrice();
+  const usdcBal = await getUsdcbBal();
+  const data = usdcBal / usdcPrice;
+
+  return data;
+}
+
+// USDT
+
+export async function getUsdtPrice() {
+  const res = await fetch("https://api.coinpaprika.com/v1/tickers/usdt-tether");
+  const data = await res.json();
+  const price = data?.quotes?.USD?.price || "0.00";
+
+  return price;
+}
+
+export async function getUsdtbBal() {
+  const session = await auth();
+  try {
+    const data =
+      await sql`SELECT amount FROM usdt WHERE "user" = ${session?.user?.email}`;
+    return data[0]?.amount || "0.00";
+  } catch (error) {
+    console.error("Error fetching USDT balance:", error);
+    return "0.00";
+  }
+}
+
+export async function getUsdtTotalBal() {
+  const usdtPrice = await getUsdtPrice();
+  const usdtBal = await getUsdtbBal();
+  const data = usdtBal / usdtPrice;
+
+  return data;
+}
+
+// XRP
+
+export async function getXrpPrice() {
+  const res = await fetch("https://api.coinpaprika.com/v1/tickers/xrp-xrp");
+  const data = await res.json();
+  const price = data?.quotes?.USD?.price || "0.00";
+
+  return price;
+}
+
+export async function getXrpBal() {
+  const session = await auth();
+  try {
+    const data =
+      await sql`SELECT amount FROM xrp WHERE "user" = ${session?.user?.email}`;
+    return data[0]?.amount || "0.00";
+  } catch (error) {
+    console.error("Error fetching USDT balance:", error);
+    return "0.00";
+  }
+}
+
+export async function getXrpTotalBal() {
+  const xrpPrice = await getXrpPrice();
+  const xrpBal = await getXrpBal();
+  const data = xrpBal / xrpPrice;
+
+  return data;
+}

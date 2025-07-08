@@ -93,7 +93,7 @@ export default function DepositBNB() {
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Deposit Binance COin</DialogTitle>
+          <DialogTitle>Deposit Binance Coin</DialogTitle>
         </DialogHeader>
         {/* alert */}
         <Alert

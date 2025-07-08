@@ -1,8 +1,8 @@
-import { getBnbBal, getBnbPrice } from "../coins-bal";
+import { getXrpBal, getXrpPrice } from "../coins-bal";
 
 export default async function BTCBalance() {
-  const balance = await getBnbBal();
-  const price = await getBnbPrice();
+  const balance = await getXrpBal();
+  const price = await getXrpPrice();
   const btc = balance / price;
 
   return (
@@ -17,7 +17,7 @@ export default async function BTCBalance() {
         {Number(btc)
           .toFixed(8)
           .replace(/\.?0+$/, "")}{" "}
-        BNB
+        XRP
       </p>
     </div>
   );

@@ -21,6 +21,15 @@ import {
   getSolBal,
   getSolPrice,
   getSolTotalBal,
+  getUsdcbBal,
+  getUsdcPrice,
+  getUsdcTotalBal,
+  getUsdtbBal,
+  getUsdtPrice,
+  getUsdtTotalBal,
+  getXrpBal,
+  getXrpPrice,
+  getXrpTotalBal,
 } from "./coins-bal";
 
 export const revalidate = 0;
@@ -41,6 +50,18 @@ export default async function Coins() {
   const bnbBal = await getBnbBal();
   const bnbPrice = await getBnbPrice();
   const totalBnb = await getBnbTotalBal();
+
+  const usdcBal = await getUsdcbBal();
+  const usdcPrice = await getUsdcPrice();
+  const totalUsdc = await getUsdcTotalBal();
+
+  const usdtBal = await getUsdtbBal();
+  const usdtPrice = await getUsdtPrice();
+  const totalUsdt = await getUsdtTotalBal();
+
+  const xrpBal = await getXrpBal();
+  const xrpPrice = await getXrpPrice();
+  const totalXrp = await getXrpTotalBal();
   return (
     <div className="">
       {/* Bitcoin */}
@@ -204,7 +225,7 @@ export default async function Coins() {
       </Link>
 
       {/* USDC */}
-      <Link href={"#"}>
+      <Link href={"crypto/usdc"}>
         <div className="hover:bg-muted flex items-center justify-between rounded px-1 py-2">
           {/* left */}
           <div className="flex items-center justify-between gap-x-2">
@@ -212,22 +233,39 @@ export default async function Coins() {
               <TokenUSDC variant="mono" className="size-20" />
             </div>
             <div className="">
-              <p className="font-semibold tracking-tight">USDC</p>
-              <p className="text-sm">$107,198.58</p>
+              <p className="font-mono font-semibold tracking-tight">
+                USDC{" "}
+                <span className="bg-muted text-muted-foreground rounded px-2 text-xs tracking-wider">
+                  USDC
+                </span>
+              </p>
+              <p className="font-mono text-sm">
+                {Number(usdcPrice).toLocaleString("en-US", {
+                  style: "currency",
+                  currency: "USD",
+                })}
+              </p>
             </div>
           </div>
           {/* right */}
           <div className="text-end">
             <p className="font-mono font-semibold tracking-tight">
-              {/* {data.usdc} */}
+              {Number(totalUsdc)
+                .toFixed(8)
+                .replace(/\.?0+$/, "")}
             </p>
-            <p className="text-sm">$0.00</p>
+            <p className="font-mono text-sm">
+              {Number(usdcBal).toLocaleString("en-US", {
+                style: "currency",
+                currency: "USD",
+              })}
+            </p>
           </div>
         </div>
       </Link>
 
       {/* USDT */}
-      <Link href={"#"}>
+      <Link href={"crypto/usdt"}>
         <div className="hover:bg-muted flex items-center justify-between rounded px-1 py-2">
           {/* left */}
           <div className="flex items-center justify-between gap-x-2">
@@ -235,22 +273,39 @@ export default async function Coins() {
               <TokenUSDT variant="mono" className="size-20" />
             </div>
             <div className="">
-              <p className="font-semibold tracking-tight">USDT</p>
-              <p className="text-sm">$107,198.58</p>
+              <p className="font-mono font-semibold tracking-tight">
+                Tether{" "}
+                <span className="bg-muted text-muted-foreground rounded px-2 text-xs tracking-wider">
+                  USDT
+                </span>
+              </p>
+              <p className="font-mono text-sm">
+                {Number(usdtPrice).toLocaleString("en-US", {
+                  style: "currency",
+                  currency: "USD",
+                })}
+              </p>
             </div>
           </div>
           {/* right */}
           <div className="text-end">
             <p className="font-mono font-semibold tracking-tight">
-              {/* {data.usdt} */}
+              {Number(totalUsdt)
+                .toFixed(8)
+                .replace(/\.?0+$/, "")}
             </p>
-            <p className="text-sm">$0.00</p>
+            <p className="font-mono text-sm">
+              {Number(usdtBal).toLocaleString("en-US", {
+                style: "currency",
+                currency: "USD",
+              })}
+            </p>
           </div>
         </div>
       </Link>
 
       {/* XRP */}
-      <Link href={"#"}>
+      <Link href={"crypto/xrp"}>
         <div className="hover:bg-muted flex items-center justify-between rounded px-1 py-2">
           {/* left */}
           <div className="flex items-center justify-between gap-x-2">
@@ -258,16 +313,33 @@ export default async function Coins() {
               <TokenXRP variant="mono" className="size-20" />
             </div>
             <div className="">
-              <p className="font-semibold tracking-tight">XRP</p>
-              <p className="text-sm">$107,198.58</p>
+              <p className="font-mono font-semibold tracking-tight">
+                XRP{" "}
+                <span className="bg-muted text-muted-foreground rounded px-2 text-xs tracking-wider">
+                  XRP
+                </span>
+              </p>
+              <p className="font-mono text-sm">
+                {Number(xrpPrice).toLocaleString("en-US", {
+                  style: "currency",
+                  currency: "USD",
+                })}
+              </p>
             </div>
           </div>
           {/* right */}
           <div className="text-end">
             <p className="font-mono font-semibold tracking-tight">
-              {/* {data.xrp} */}
+              {Number(totalXrp)
+                .toFixed(8)
+                .replace(/\.?0+$/, "")}
             </p>
-            <p className="text-sm">$0.00</p>
+            <p className="font-mono text-sm">
+              {Number(xrpBal).toLocaleString("en-US", {
+                style: "currency",
+                currency: "USD",
+              })}
+            </p>
           </div>
         </div>
       </Link>
