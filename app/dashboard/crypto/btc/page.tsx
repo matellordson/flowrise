@@ -42,12 +42,12 @@ export default function BitcoinPage() {
         </div>
       </div>
       <div className="bg-card h-full w-full rounded-xl p-3 lg:w-[50%]">
-        <Tabs defaultValue="about" className="w-fit">
+        <Tabs defaultValue="about" className="h-fit w-fit">
           <TabsList>
             <TabsTrigger value="about">About</TabsTrigger>
             <TabsTrigger value="history">History</TabsTrigger>
           </TabsList>
-          <TabsContent value="about" className="">
+          <TabsContent value="about" className="h-fit">
             <p className="text-primary/70 w-fit leading-7">
               Bitcoin (BTC) is the first cryptocurrency built on blockchain
               technology, also known as a decentralized digital currency that is

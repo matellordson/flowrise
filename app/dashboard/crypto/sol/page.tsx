@@ -42,12 +42,12 @@ export default function BitcoinPage() {
         </div>
       </div>
       <div className="bg-card h-full w-full rounded-xl p-3 lg:w-[50%]">
-        <Tabs defaultValue="about" className="w-fit">
+        <Tabs defaultValue="about" className="h-fit w-fit">
           <TabsList>
             <TabsTrigger value="about">About</TabsTrigger>
             <TabsTrigger value="history">History</TabsTrigger>
           </TabsList>
-          <TabsContent value="about" className="">
+          <TabsContent value="about" className="h-fit">
             <p className="text-primary/70 w-fit leading-7">
               Solana is a Layer 1 blockchain that offers users fast speeds and
               affordable costs. It supports smart contracts and facilitates the

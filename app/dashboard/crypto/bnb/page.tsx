@@ -42,12 +42,12 @@ export default function BNBPage() {
         </div>
       </div>
       <div className="bg-card h-full w-full rounded-xl p-3 lg:w-[50%]">
-        <Tabs defaultValue="about" className="w-fit">
+        <Tabs defaultValue="about" className="h-fit w-fit">
           <TabsList>
             <TabsTrigger value="about">About</TabsTrigger>
             <TabsTrigger value="history">History</TabsTrigger>
           </TabsList>
-          <TabsContent value="about" className="">
+          <TabsContent value="about" className="h-fit">
             <p className="text-primary/70 w-fit leading-7">
               BNB (BNB), previously also known as Binance Coin (BNB), is a
               cryptocurrency coin created and issued by the cryptocurrency
