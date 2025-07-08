@@ -1,6 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  crossOrigin: "anonymous",
+  images: {
+    domains: ["cdn.coindesk.com"],
+  },
   experimental: {
     serverActions: {
       allowedOrigins: [
