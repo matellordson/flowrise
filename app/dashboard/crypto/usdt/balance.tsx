@@ -1,8 +1,13 @@
-import { getBnbBal, getBnbPrice, getUsdtbBal } from "../coins-bal";
+import {
+  getBnbBal,
+  getBnbPrice,
+  getUsdtbBal,
+  getUsdtPrice,
+} from "../coins-bal";
 
 export default async function BTCBalance() {
   const balance = await getUsdtbBal();
-  const price = await getUsdtbBal();
+  const price = await getUsdtPrice();
   const btc = balance / price;
 
   return (

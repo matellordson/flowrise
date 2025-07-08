@@ -16,7 +16,7 @@ export default async function CryptoDashboard() {
 
   const totalAmount = await sql`
 SELECT 
-  (SELECT COALESCE(SUM(amount), 0) FROM bitcoin WHERE "user" = ${session?.user?.email}) + (SELECT COALESCE(SUM(amount), 0) FROM ethereum WHERE "user" = ${session?.user?.email}) + (SELECT COALESCE(SUM(amount), 0) FROM solana WHERE "user" = ${session?.user?.email}) + (SELECT COALESCE(SUM(amount), 0) FROM bnb WHERE "user" = ${session?.user?.email}) AS total_amount;
+  (SELECT COALESCE(SUM(amount), 0) FROM bitcoin WHERE "user" = ${session?.user?.email}) + (SELECT COALESCE(SUM(amount), 0) FROM ethereum WHERE "user" = ${session?.user?.email}) + (SELECT COALESCE(SUM(amount), 0) FROM solana WHERE "user" = ${session?.user?.email}) + (SELECT COALESCE(SUM(amount), 0) FROM bnb WHERE "user" = ${session?.user?.email}) + (SELECT COALESCE(SUM(amount), 0) FROM usdc WHERE "user" = ${session?.user?.email}) + (SELECT COALESCE(SUM(amount), 0) FROM usdt WHERE "user" = ${session?.user?.email}) + (SELECT COALESCE(SUM(amount), 0) FROM xrp WHERE "user" = ${session?.user?.email}) AS total_amount;
 `;
 
   return (
