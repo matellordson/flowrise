@@ -43,7 +43,7 @@ async function getBnbPrice() {
   return price;
 }
 
-const btcPrice = await getBnbPrice();
+const bnbPrice = await getBnbPrice();
 
 const formSchema = z.object({
   amount: z.coerce.number(),
@@ -93,7 +93,7 @@ export default function DepositBNB() {
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Deposit Bitcoin</DialogTitle>
+          <DialogTitle>Deposit Binance COin</DialogTitle>
         </DialogHeader>
         {/* alert */}
         <Alert
@@ -128,7 +128,7 @@ export default function DepositBNB() {
                     </span>{" "}
                     ≈{" "}
                     <span className="text-primary font-semibold">
-                      {Number(amount / btcPrice)
+                      {Number(amount / bnbPrice)
                         .toFixed(8)
                         .replace(/\.?0+$/, "")}{" "}
                       BNB

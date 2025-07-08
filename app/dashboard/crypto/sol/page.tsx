@@ -41,7 +41,7 @@ export default function BitcoinPage() {
           <BTCChartDark />
         </div>
       </div>
-      <div className="bg-card h-full w-fit rounded-xl p-3 lg:w-[50%]">
+      <div className="lg:bg-card h-full w-fit rounded-xl p-3 lg:w-[50%]">
         <Tabs defaultValue="about" className="h-fit w-fit">
           <TabsList>
             <TabsTrigger value="about">About</TabsTrigger>

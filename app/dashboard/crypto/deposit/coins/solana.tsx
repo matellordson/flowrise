@@ -32,6 +32,7 @@ import { sql } from "@/lib/sql";
 import { redirect, useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useSession } from "next-auth/react";
+import { getSolPrice } from "../../coins-bal";
 
 async function getBtcPrice() {
   const res = await fetch("https://api.coinpaprika.com/v1/tickers/sol-solana");
@@ -41,7 +42,7 @@ async function getBtcPrice() {
   return price;
 }
 
-const btcPrice = await getBtcPrice();
+const solPrice = await getSolPrice();
 
 const formSchema = z.object({
   amount: z.coerce.number(),
@@ -126,7 +127,7 @@ export default function DepositBTC() {
                     </span>{" "}
                     ≈{" "}
                     <span className="text-primary font-semibold">
-                      {Number(amount / btcPrice)
+                      {Number(amount / solPrice)
                         .toFixed(8)
                         .replace(/\.?0+$/, "")}{" "}
                       SOL
