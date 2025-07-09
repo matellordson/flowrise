@@ -14,7 +14,7 @@ export default async function getCryptoNews() {
   const res = await fetch("https://openapiv1.coinstats.app/news", options);
   try {
     const data = await res.json();
-    return data;
+    return data.result;
   } catch (error) {
     if (!res.ok) {
       console.log();

@@ -17,7 +17,7 @@ interface newsTypes {
 }
 
 export default async function CryptoDashboard() {
-  const { news } = await getCryptoNews();
+  const news = await getCryptoNews();
   const session = await auth();
   // const totalBalance = await sql`
   // SELECT
@@ -69,32 +69,29 @@ SELECT
       </>
 
       {/* news */}
-      <div className="bg-card hidden h-full w-full rounded-xl p-5 lg:block">
-        <pre>{JSON.stringify(news, null, 2)}</pre>
-        <p className="text-sm font-semibold tracking-tight">Trending Topics</p>
-
-        {/* <div className="mt-3">
+      <div className="bg-card hidden h-[36rem] w-full overflow-y-scroll rounded-xl p-5 lg:block">
+        <p className="font-semibold tracking-tight">Trending Topics</p>
+        <div className="mt-3">
           {news.map((data: any) => (
-            <Link href={data.link} key={data.id}>
-              <div className="bg-muted flex h-24 w-full items-center justify-between gap-x-3 rounded-xl px-3">
-                <div className="w-[60%]">
-                  <p className="line-clamp-4 leading-6 font-semibold">
+            <Link href={data.link} key={data.id} className="">
+              <div className="bg-muted mb-3 flex h-32 w-full items-center justify-between gap-x-3 rounded-xl p-3">
+                <div className="w-[60%] space-y-4">
+                  <p className="line-clamp-3 leading-6 font-semibold">
                     {data.title}
                   </p>
                   <p className="text-muted-foreground text-sm">{data.source}</p>
                 </div>
-                <div className="h-20 w-[40%] rounded-xl bg-red-500">
-                  <Image
+                <div className="bg-muted-foreground h-24 w-[40%] rounded-xl">
+                  <img
                     src={data.imgUrl}
-                    alt={data.title}
-                    height={200}
-                    width={400}
+                    alt="image"
+                    className="h-full w-full rounded-xl object-cover object-center"
                   />
                 </div>
               </div>
             </Link>
           ))}
-        </div> */}
+        </div>
       </div>
     </div>
   );
