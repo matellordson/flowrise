@@ -60,7 +60,29 @@ SELECT
             <p className="text-xs font-semibold tracking-tight">
               Trending Topics
             </p>
-            <div className="bg-muted h-20 w-full rounded-xl"></div>
+            <div className="flex h-fit w-[20rem] items-center overflow-x-scroll">
+              {news.map((data: any) => (
+                <a href={data.link} key={data.id} target="_blank">
+                  <div className="bg-muted mr-1 flex h-20 w-[18rem] items-center justify-between gap-x-3 rounded-xl p-2">
+                    <div className="w-[60%] space-y-2">
+                      <p className="line-clamp-2 text-sm leading-4 font-semibold opacity-90">
+                        {data.title}
+                      </p>
+                      <p className="text-muted-foreground text-xs">
+                        {data.source}
+                      </p>
+                    </div>
+                    <div className="bg-muted-foreground h-[4.5rem] w-[40%] rounded-xl">
+                      <img
+                        src={data.imgUrl}
+                        alt="image"
+                        className="h-full w-full rounded-xl object-cover object-center"
+                      />
+                    </div>
+                  </div>
+                </a>
+              ))}
+            </div>
           </div>
 
           {/* crypto */}
@@ -73,7 +95,7 @@ SELECT
         <p className="font-semibold tracking-tight">Trending Topics</p>
         <div className="mt-3">
           {news.map((data: any) => (
-            <Link href={data.link} key={data.id} className="">
+            <a href={data.link} key={data.id} target="_blank">
               <div className="bg-muted mb-3 flex h-32 w-full items-center justify-between gap-x-3 rounded-xl p-3">
                 <div className="w-[60%] space-y-4">
                   <p className="line-clamp-3 leading-6 font-semibold">
@@ -89,7 +111,7 @@ SELECT
                   />
                 </div>
               </div>
-            </Link>
+            </a>
           ))}
         </div>
       </div>
