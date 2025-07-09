@@ -34,8 +34,7 @@ import { toast } from "sonner";
 import { useSession } from "next-auth/react";
 
 async function getUsdcPrice() {
-  const domain = process.env.DOMAIN as string;
-  const url = `${domain}/api/usdc`;
+  const url = "https://api.coinpaprika.com/v1/tickers/usdc-usdc";
   const response = await fetch(url);
   const price = await response.json();
   const data = price?.quotes?.USD?.price || "0.00";

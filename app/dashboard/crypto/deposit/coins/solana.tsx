@@ -32,11 +32,9 @@ import { sql } from "@/lib/sql";
 import { redirect, useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useSession } from "next-auth/react";
-import { getSolPrice } from "../../coins-bal";
 
-async function getBtcPrice() {
-  const domain = process.env.DOMAIN as string;
-  const url = `${domain}/api/sol`;
+async function getSolPrice() {
+  const url = "https://api.coinpaprika.com/v1/tickers/sol-solana";
   const response = await fetch(url);
   const price = await response.json();
   const data = price?.quotes?.USD?.price || "0.00";

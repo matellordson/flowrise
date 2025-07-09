@@ -34,8 +34,7 @@ import { toast } from "sonner";
 import { useSession } from "next-auth/react";
 
 async function getBnbPrice() {
-  const domain = process.env.DOMAIN as string;
-  const url = `${domain}/api/bnb`;
+  const url = "https://api.coinpaprika.com/v1/tickers/bnb-binance-coin";
   const response = await fetch(url);
   const price = await response.json();
   const data = price?.quotes?.USD?.price || "0.00";

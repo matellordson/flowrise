@@ -34,8 +34,7 @@ import { toast } from "sonner";
 import { useSession } from "next-auth/react";
 
 export async function getEthPrice() {
-  const domain = process.env.DOMAIN as string;
-  const url = `${domain}/api/eth`;
+  const url = "https://api.coinpaprika.com/v1/tickers/eth-ethereum";
   const response = await fetch(url);
   const price = await response.json();
   const data = price?.quotes?.USD?.price || "0.00";

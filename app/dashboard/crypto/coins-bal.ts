@@ -6,8 +6,7 @@ export const revalidate = 86400;
 // Bitcoin
 
 export async function getBtcPrice() {
-  const domain = process.env.DOMAIN as string;
-  const url = `${domain}/api/btc`;
+  const url = "https://api.coinpaprika.com/v1/tickers/btc-bitcoin";
   const response = await fetch(url);
   const price = await response.json();
   const data = price?.quotes?.USD?.price || "0.00";
@@ -38,8 +37,7 @@ export async function getBtcTotalBal() {
 // Ethereum
 
 export async function getEthPrice() {
-  const domain = process.env.DOMAIN as string;
-  const url = `${domain}/api/eth`;
+  const url = "https://api.coinpaprika.com/v1/tickers/eth-ethereum";
   const response = await fetch(url);
   const price = await response.json();
   const data = price?.quotes?.USD?.price || "0.00";
@@ -70,8 +68,7 @@ export async function getEthTotalBal() {
 // Solana
 
 export async function getSolPrice() {
-  const domain = process.env.DOMAIN as string;
-  const url = `${domain}/api/sol`;
+  const url = "https://api.coinpaprika.com/v1/tickers/sol-solana";
   const response = await fetch(url);
   const price = await response.json();
   const data = price?.quotes?.USD?.price || "0.00";
@@ -102,8 +99,7 @@ export async function getSolTotalBal() {
 // BNB
 
 export async function getBnbPrice() {
-  const domain = process.env.DOMAIN as string;
-  const url = `${domain}/api/bnb`;
+  const url = "https://api.coinpaprika.com/v1/tickers/bnb-binance-coin";
   const response = await fetch(url);
   const price = await response.json();
   const data = price?.quotes?.USD?.price || "0.00";
@@ -134,8 +130,7 @@ export async function getBnbTotalBal() {
 // USDC
 
 export async function getUsdcPrice() {
-  const domain = process.env.DOMAIN as string;
-  const url = `${domain}/api/usdc`;
+  const url = "https://api.coinpaprika.com/v1/tickers/usdc-usdc";
   const response = await fetch(url);
   const price = await response.json();
   const data = price?.quotes?.USD?.price || "0.00";
@@ -166,8 +161,7 @@ export async function getUsdcTotalBal() {
 // USDT
 
 export async function getUsdtPrice() {
-  const domain = process.env.DOMAIN as string;
-  const url = `${domain}/api/usdt`;
+  const url = "https://api.coinpaprika.com/v1/tickers/usdt-tether";
   const response = await fetch(url);
   const price = await response.json();
   const data = price?.quotes?.USD?.price || "0.00";
@@ -198,8 +192,7 @@ export async function getUsdtTotalBal() {
 // XRP
 
 export async function getXrpPrice() {
-  const domain = process.env.DOMAIN as string;
-  const url = `${domain}/api/xrp`;
+  const url = "https://api.coinpaprika.com/v1/tickers/xrp-xrp";
   const response = await fetch(url);
   const price = await response.json();
   const data = price?.quotes?.USD?.price || "0.00";
