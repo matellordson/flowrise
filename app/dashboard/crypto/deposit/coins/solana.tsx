@@ -35,7 +35,8 @@ import { useSession } from "next-auth/react";
 import { getSolPrice } from "../../coins-bal";
 
 async function getBtcPrice() {
-  const url = "http://localhost:3000/api/sol";
+  const domain = process.env.DOMAIN as string;
+  const url = `${domain}/api/sol`;
   const response = await fetch(url);
   const price = await response.json();
   const data = price?.quotes?.USD?.price || "0.00";

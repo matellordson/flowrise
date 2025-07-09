@@ -6,7 +6,8 @@ export const revalidate = 86400;
 // Bitcoin
 
 export async function getBtcPrice() {
-  const url = "http://localhost:3000/api/btc";
+  const domain = process.env.DOMAIN as string;
+  const url = `${domain}/api/btc`;
   const response = await fetch(url);
   const price = await response.json();
   const data = price?.quotes?.USD?.price || "0.00";
@@ -37,7 +38,8 @@ export async function getBtcTotalBal() {
 // Ethereum
 
 export async function getEthPrice() {
-  const url = "http://localhost:3000/api/eth";
+  const domain = process.env.DOMAIN as string;
+  const url = `${domain}/api/eth`;
   const response = await fetch(url);
   const price = await response.json();
   const data = price?.quotes?.USD?.price || "0.00";
@@ -68,7 +70,8 @@ export async function getEthTotalBal() {
 // Solana
 
 export async function getSolPrice() {
-  const url = "http://localhost:3000/api/sol";
+  const domain = process.env.DOMAIN as string;
+  const url = `${domain}/api/sol`;
   const response = await fetch(url);
   const price = await response.json();
   const data = price?.quotes?.USD?.price || "0.00";
@@ -99,7 +102,8 @@ export async function getSolTotalBal() {
 // BNB
 
 export async function getBnbPrice() {
-  const url = "http://localhost:3000/api/bnb";
+  const domain = process.env.DOMAIN as string;
+  const url = `${domain}/api/bnb`;
   const response = await fetch(url);
   const price = await response.json();
   const data = price?.quotes?.USD?.price || "0.00";
@@ -130,7 +134,8 @@ export async function getBnbTotalBal() {
 // USDC
 
 export async function getUsdcPrice() {
-  const url = "http://localhost:3000/api/usdc";
+  const domain = process.env.DOMAIN as string;
+  const url = `${domain}/api/usdc`;
   const response = await fetch(url);
   const price = await response.json();
   const data = price?.quotes?.USD?.price || "0.00";
@@ -161,7 +166,8 @@ export async function getUsdcTotalBal() {
 // USDT
 
 export async function getUsdtPrice() {
-  const url = "http://localhost:3000/api/usdt";
+  const domain = process.env.DOMAIN as string;
+  const url = `${domain}/api/usdt`;
   const response = await fetch(url);
   const price = await response.json();
   const data = price?.quotes?.USD?.price || "0.00";
@@ -192,7 +198,8 @@ export async function getUsdtTotalBal() {
 // XRP
 
 export async function getXrpPrice() {
-  const url = "http://localhost:3000/api/xrp";
+  const domain = process.env.DOMAIN as string;
+  const url = `${domain}/api/xrp`;
   const response = await fetch(url);
   const price = await response.json();
   const data = price?.quotes?.USD?.price || "0.00";

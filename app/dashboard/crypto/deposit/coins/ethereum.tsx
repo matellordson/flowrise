@@ -34,7 +34,8 @@ import { toast } from "sonner";
 import { useSession } from "next-auth/react";
 
 export async function getEthPrice() {
-  const url = "http://localhost:3000/api/eth";
+  const domain = process.env.DOMAIN as string;
+  const url = `${domain}/api/eth`;
   const response = await fetch(url);
   const price = await response.json();
   const data = price?.quotes?.USD?.price || "0.00";

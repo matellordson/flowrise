@@ -72,7 +72,7 @@ SELECT
                         {data.source}
                       </p>
                     </div>
-                    <div className="bg-muted-foreground h-[4.5rem] w-[40%] rounded-xl">
+                    <div className="bg-muted-foreground h-[4.4rem] w-[40%] rounded-xl">
                       <img
                         src={data.imgUrl}
                         alt="image"
