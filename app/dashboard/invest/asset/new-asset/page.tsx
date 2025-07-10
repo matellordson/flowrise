@@ -88,11 +88,37 @@ const formSchema = z.object({
         message: "Only JPEG, PNG, and WebP images are allowed.",
       },
     ),
+  documents: z
+    .array(z.instanceof(File))
+    .min(1, {
+      message: "Please upload at least one document.",
+    })
+    .max(10, {
+      message: "You can upload a maximum of 10 documents.",
+    })
+    .refine(
+      (files) => {
+        return files.every((file) => file.size <= MAX_FILE_SIZE);
+      },
+      {
+        message: "Each document must be less than 5MB.",
+      },
+    )
+    .refine(
+      (files) => {
+        return files.every((file) => ACCEPTED_IMAGE_TYPES.includes(file.type));
+      },
+      {
+        message: "Only JPEG, PNG, and WebP images are allowed.",
+      },
+    ),
 });
 
 export default function InvestmentForm() {
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
+  const [selectedDocuments, setSelectedDocuments] = useState<File[]>([]);
+  const [documentPreviews, setDocumentPreviews] = useState<string[]>([]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -101,6 +127,7 @@ export default function InvestmentForm() {
       type: "",
       investmentAmount: "",
       images: [],
+      documents: [],
     },
   });
 
@@ -143,6 +170,45 @@ export default function InvestmentForm() {
     form.setValue("images", newImages);
   };
 
+  const handleDocumentChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files || []);
+
+    if (files.length === 0) return;
+
+    // Combine with existing documents, but limit to 10 total
+    const newDocuments = [...selectedDocuments, ...files].slice(0, 10);
+    setSelectedDocuments(newDocuments);
+    form.setValue("documents", newDocuments);
+
+    // Create previews for new documents
+    const newPreviews = [...documentPreviews];
+    files.forEach((file, index) => {
+      if (newPreviews.length < 10) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const result = e.target?.result as string;
+          setDocumentPreviews((prev) => [
+            ...prev.slice(0, selectedDocuments.length + index),
+            result,
+            ...prev.slice(selectedDocuments.length + index + 1),
+          ]);
+        };
+        reader.readAsDataURL(file);
+        newPreviews.push(""); // Placeholder
+      }
+    });
+    setDocumentPreviews(newPreviews.slice(0, 10));
+  };
+
+  const removeDocument = (index: number) => {
+    const newDocuments = selectedDocuments.filter((_, i) => i !== index);
+    const newPreviews = documentPreviews.filter((_, i) => i !== index);
+
+    setSelectedDocuments(newDocuments);
+    setDocumentPreviews(newPreviews);
+    form.setValue("documents", newDocuments);
+  };
+
   const formatCurrency = (value: string) => {
     const number = value.replace(/\D/g, "");
     return number.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -157,9 +223,9 @@ export default function InvestmentForm() {
   return (
     <div className="bg-background min-h-screen">
       <div className="container mx-auto px-4 py-8">
-        <div className="mx-auto grid min-h-[calc(100vh-4rem)] max-w-7xl gap-0 lg:grid-cols-2">
+        <div className="mx-auto grid h-screen max-w-7xl gap-0 lg:grid-cols-2">
           {/* Left side - Hero Section */}
-          <div className="bg-muted/30 hidden flex-col items-center justify-center p-12 lg:flex">
+          <div className="bg-muted/30 hidden h-full flex-col items-center justify-center p-12 lg:flex">
             <div className="max-w-md space-y-6 text-center">
               <img
                 src="/placeholder.svg?height=400&width=400"
@@ -197,7 +263,7 @@ export default function InvestmentForm() {
           </div>
 
           {/* Right side - Form Section */}
-          <div className="flex flex-col justify-center p-6 lg:p-12">
+          <div className="flex h-full flex-col justify-start overflow-y-auto px-6 lg:px-12">
             <div className="mx-auto w-full max-w-md lg:max-w-none">
               <Card>
                 <CardHeader>
@@ -375,6 +441,86 @@ export default function InvestmentForm() {
 
                                 <p className="text-muted-foreground text-sm">
                                   {selectedImages.length}/10 images selected
+                                </p>
+                              </div>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="documents"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Property Documents</FormLabel>
+                            <FormControl>
+                              <div className="space-y-4">
+                                <div className="flex w-full items-center justify-center">
+                                  <label
+                                    htmlFor="document-upload"
+                                    className="border-border bg-muted/50 hover:bg-muted flex h-32 w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed transition-colors"
+                                  >
+                                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                                      <Upload className="text-muted-foreground mb-4 h-8 w-8" />
+                                      <p className="text-muted-foreground mb-2 text-sm">
+                                        <span className="font-semibold">
+                                          Click to upload documents
+                                        </span>{" "}
+                                        or drag and drop
+                                      </p>
+                                      <p className="text-muted-foreground text-xs">
+                                        PNG, JPG, JPEG or WebP (MAX. 5MB each)
+                                      </p>
+                                    </div>
+                                    <input
+                                      id="document-upload"
+                                      type="file"
+                                      className="hidden"
+                                      multiple
+                                      accept="image/*"
+                                      onChange={handleDocumentChange}
+                                    />
+                                  </label>
+                                </div>
+
+                                {selectedDocuments.length > 0 && (
+                                  <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
+                                    {documentPreviews.map((preview, index) => (
+                                      <div
+                                        key={index}
+                                        className="group relative"
+                                      >
+                                        <div className="bg-muted aspect-square overflow-hidden rounded-lg">
+                                          {preview && (
+                                            <img
+                                              src={
+                                                preview || "/placeholder.svg"
+                                              }
+                                              alt={`Document ${index + 1}`}
+                                              className="h-full w-full object-cover"
+                                            />
+                                          )}
+                                        </div>
+                                        <button
+                                          type="button"
+                                          onClick={() => removeDocument(index)}
+                                          className="bg-destructive text-destructive-foreground absolute -top-2 -right-2 rounded-full p-1 opacity-0 transition-opacity group-hover:opacity-100"
+                                        >
+                                          <X className="h-4 w-4" />
+                                        </button>
+                                        <div className="bg-background/80 text-foreground absolute bottom-2 left-2 rounded px-2 py-1 text-xs backdrop-blur-sm">
+                                          {selectedDocuments[index]?.name}
+                                        </div>
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
+
+                                <p className="text-muted-foreground text-sm">
+                                  {selectedDocuments.length}/10 documents
+                                  selected
                                 </p>
                               </div>
                             </FormControl>
