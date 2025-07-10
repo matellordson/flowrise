@@ -222,7 +222,7 @@ export default function InvestmentForm() {
 
   return (
     <div className="bg-background min-h-screen">
-      <div className="container mx-auto px-4 py-8">
+      <div className="mx-auto px-1 py-6">
         <div className="mx-auto grid h-screen max-w-7xl gap-0 lg:grid-cols-2">
           {/* Left side - Hero Section */}
           <div className="bg-muted/30 hidden h-full flex-col items-center justify-center p-12 lg:flex">
@@ -263,7 +263,7 @@ export default function InvestmentForm() {
           </div>
 
           {/* Right side - Form Section */}
-          <div className="flex h-full flex-col justify-start overflow-y-auto px-6 lg:px-12">
+          <div className="flex h-full w-full flex-col justify-start overflow-y-auto lg:px-12">
             <div className="mx-auto w-full max-w-md lg:max-w-none">
               <Card>
                 <CardHeader>
