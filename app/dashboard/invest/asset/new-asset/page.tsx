@@ -221,9 +221,9 @@ export default function InvestmentForm() {
   };
 
   return (
-    <div className="bg-background min-h-screen">
+    <div className="bg-background">
       <div className="mx-auto px-1 py-6">
-        <div className="mx-auto grid h-screen max-w-7xl gap-0 lg:grid-cols-2">
+        <div className="mx-auto grid max-w-7xl gap-0 lg:grid-cols-2">
           {/* Left side - Hero Section */}
           <div className="bg-muted/30 hidden h-full flex-col items-center justify-center p-12 lg:flex">
             <div className="max-w-md space-y-6 text-center">
@@ -263,7 +263,7 @@ export default function InvestmentForm() {
           </div>
 
           {/* Right side - Form Section */}
-          <div className="flex h-full w-full flex-col justify-start overflow-y-auto lg:px-12">
+          <div className="flex w-full flex-col justify-start overflow-y-auto lg:px-12">
             <div className="mx-auto w-full max-w-md lg:max-w-none">
               <Card>
                 <CardHeader>
@@ -466,7 +466,7 @@ export default function InvestmentForm() {
                                       <Upload className="text-muted-foreground mb-4 h-8 w-8" />
                                       <p className="text-muted-foreground mb-2 text-sm">
                                         <span className="font-semibold">
-                                          Click to upload documents
+                                          Click to upload
                                         </span>{" "}
                                         or drag and drop
                                       </p>
