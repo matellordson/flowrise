@@ -1,4 +1,13 @@
-import { DollarSign, PieChart, Plus, TrendingUp } from "lucide-react";
+import {
+  Clock,
+  Clock2,
+  Clock3,
+  Clock4,
+  DollarSign,
+  PieChart,
+  Plus,
+  TrendingUp,
+} from "lucide-react";
 import {
   Card,
   CardContent,
@@ -63,7 +72,7 @@ export default async function Dashboard() {
               <TrendingUp className="text-muted-foreground h-4 w-4" />
             </CardHeader>
             <CardContent>
-              <div className="font-mono text-2xl font-bold text-[var(--brand)]">
+              <div className="font-mono text-2xl font-bold">
                 ${totalCurrentValue.toLocaleString()}
               </div>
             </CardContent>
@@ -89,14 +98,16 @@ export default async function Dashboard() {
               <TrendingUp className="text-muted-foreground h-4 w-4" />
             </CardHeader>
             <CardContent>
-              <div className="font-mono text-2xl font-bold">{overallROI}%</div>
+              <div className="font-mono text-2xl font-bold text-[var(--brand)]">
+                {overallROI}%
+              </div>
             </CardContent>
           </Card>
         </div>
 
         {/* Investment Properties */}
         <div>
-          <div className="flex w-full items-center justify-between">
+          <div className="mb-3 flex w-full items-center justify-between">
             <h2 className="mb-4 text-xl font-semibold">Your Assets</h2>
             <Button variant="outline" size="sm" asChild>
               <Link href={"/dashboard/invest/asset/new-asset"}>
@@ -106,7 +117,7 @@ export default async function Dashboard() {
           </div>
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
             {investments.map((investment) => (
-              <Card key={investment.id} className="overflow-hidden">
+              <Card key={investment.id} className="overflow-hidden py-0 pb-4">
                 <div className="relative aspect-video">
                   <img
                     src={investment.image_url || "/placeholder.svg"}
@@ -135,15 +146,23 @@ export default async function Dashboard() {
                       Invested
                     </span>
                     <span className="font-mono font-semibold">
-                      ${investment.investment_amount.toLocaleString()}
+                      {investment.status ? (
+                        <>${investment.investment_amount.toLocaleString()}</>
+                      ) : (
+                        <Clock size={16} />
+                      )}
                     </span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground tracking-wide">
                       Current Value
                     </span>
-                    <span className="font-mono font-semibold text-[var(--brand)]">
-                      ${investment.current_value.toLocaleString()}
+                    <span className="font-mono font-semibold">
+                      {investment.status ? (
+                        <>${investment.current_value.toLocaleString()}</>
+                      ) : (
+                        <Clock2 size={16} />
+                      )}
                     </span>
                   </div>
                   <div className="flex justify-between text-sm">
@@ -151,15 +170,23 @@ export default async function Dashboard() {
                       Monthly Return
                     </span>
                     <span className="font-mono font-semibold">
-                      ${investment.monthly_return}
+                      {investment.status ? (
+                        <>${investment.monthly_return.toLocaleString()}</>
+                      ) : (
+                        <Clock3 size={16} />
+                      )}
                     </span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground tracking-wide">
                       ROI
                     </span>
-                    <span className="font-mono font-semibold">
-                      {investment.roi}%
+                    <span className="font-mono font-semibold text-[var(--brand)]">
+                      {investment.status ? (
+                        <>{investment.roi.toLocaleString()}%</>
+                      ) : (
+                        <Clock4 size={16} />
+                      )}
                     </span>
                   </div>
                   <Button
