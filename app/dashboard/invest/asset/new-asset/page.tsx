@@ -1,8 +1,8 @@
+// src/components/InvestmentForm.tsx
 "use client";
 
 import type React from "react";
-
-import { useState } from "react";
+import { useState, useEffect } from "react"; // Import useEffect
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -32,7 +32,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { X, Upload } from "lucide-react";
+import { toast } from "sonner";
+import { redirect } from "next/navigation";
 
+// --- Constants ---
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ACCEPTED_IMAGE_TYPES = [
   "image/jpeg",
@@ -40,7 +43,21 @@ const ACCEPTED_IMAGE_TYPES = [
   "image/png",
   "image/webp",
 ];
+const ACCEPTED_DOCUMENT_TYPES = [
+  "image/jpeg", // Allow images as documents too
+  "image/jpg",
+  "image/png",
+  "image/webp",
+  "application/pdf", // PDF documents
+  // Add more document types here if needed, e.g.:
+  // "application/msword", // .doc
+  // "application/vnd.openxmlformats-officedocument.wordprocessingml.document", // .docx
+  // "application/vnd.ms-excel", // .xls
+  // "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", // .xlsx
+  // "text/plain", // .txt
+];
 
+// --- Zod Schema ---
 const formSchema = z.object({
   property: z
     .string()
@@ -72,20 +89,14 @@ const formSchema = z.object({
     .max(10, {
       message: "You can upload a maximum of 10 images.",
     })
+    .refine((files) => files.every((file) => file.size <= MAX_FILE_SIZE), {
+      message: "Each image must be less than 5MB.",
+    })
     .refine(
-      (files) => {
-        return files.every((file) => file.size <= MAX_FILE_SIZE);
-      },
+      (files) =>
+        files.every((file) => ACCEPTED_IMAGE_TYPES.includes(file.type)),
       {
-        message: "Each image must be less than 5MB.",
-      },
-    )
-    .refine(
-      (files) => {
-        return files.every((file) => ACCEPTED_IMAGE_TYPES.includes(file.type));
-      },
-      {
-        message: "Only JPEG, PNG, and WebP images are allowed.",
+        message: "Only JPEG, PNG, and WebP images are allowed for images.",
       },
     ),
   documents: z
@@ -96,20 +107,18 @@ const formSchema = z.object({
     .max(10, {
       message: "You can upload a maximum of 10 documents.",
     })
+    .refine((files) => files.every((file) => file.size <= MAX_FILE_SIZE), {
+      message: "Each document must be less than 5MB.",
+    })
     .refine(
-      (files) => {
-        return files.every((file) => file.size <= MAX_FILE_SIZE);
-      },
+      (files) =>
+        files.every((file) => ACCEPTED_DOCUMENT_TYPES.includes(file.type)),
       {
-        message: "Each document must be less than 5MB.",
-      },
-    )
-    .refine(
-      (files) => {
-        return files.every((file) => ACCEPTED_IMAGE_TYPES.includes(file.type));
-      },
-      {
-        message: "Only JPEG, PNG, and WebP images are allowed.",
+        message: `Only ${ACCEPTED_DOCUMENT_TYPES.map(
+          (t) => t.split("/")[1] || t.split("/")[0].toUpperCase(),
+        )
+          .join(", ")
+          .replace(/, ([^,]*)$/, " or $1")} types are allowed for documents.`,
       },
     ),
 });
@@ -119,6 +128,8 @@ export default function InvestmentForm() {
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [selectedDocuments, setSelectedDocuments] = useState<File[]>([]);
   const [documentPreviews, setDocumentPreviews] = useState<string[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -131,82 +142,83 @@ export default function InvestmentForm() {
     },
   });
 
-  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(event.target.files || []);
+  // Effect to update image previews whenever selectedImages changes
+  useEffect(() => {
+    const newImagePreviews: string[] = [];
+    selectedImages.forEach((file) => {
+      newImagePreviews.push(URL.createObjectURL(file));
+    });
+    setImagePreviews(newImagePreviews);
 
-    if (files.length === 0) return;
+    // Clean up URLs when component unmounts or images change
+    return () => {
+      newImagePreviews.forEach((url) => URL.revokeObjectURL(url));
+    };
+  }, [selectedImages]);
 
-    // Combine with existing images, but limit to 10 total
-    const newImages = [...selectedImages, ...files].slice(0, 10);
-    setSelectedImages(newImages);
-    form.setValue("images", newImages);
-
-    // Create previews for new images
-    const newPreviews = [...imagePreviews];
-    files.forEach((file, index) => {
-      if (newPreviews.length < 10) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          const result = e.target?.result as string;
-          setImagePreviews((prev) => [
-            ...prev.slice(0, selectedImages.length + index),
-            result,
-            ...prev.slice(selectedImages.length + index + 1),
-          ]);
-        };
-        reader.readAsDataURL(file);
-        newPreviews.push(""); // Placeholder
+  // Effect to update document previews whenever selectedDocuments changes
+  useEffect(() => {
+    const newDocumentPreviews: string[] = [];
+    selectedDocuments.forEach((file) => {
+      // For documents, show actual image preview if it's an image type, otherwise a generic file icon
+      if (file.type.startsWith("image/")) {
+        newDocumentPreviews.push(URL.createObjectURL(file));
+      } else {
+        newDocumentPreviews.push("/file-icon.svg"); // You should create this generic file icon in public/
       }
     });
-    setImagePreviews(newPreviews.slice(0, 10));
+    setDocumentPreviews(newDocumentPreviews);
+
+    return () => {
+      newDocumentPreviews.forEach((url) => {
+        if (url.startsWith("blob:")) {
+          // Only revoke object URLs created by createObjectURL
+          URL.revokeObjectURL(url);
+        }
+      });
+    };
+  }, [selectedDocuments]);
+
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files || []);
+    if (files.length === 0) return;
+
+    // Filter out files that exceed max size or invalid type for immediate client-side feedback
+    const validFiles = files.filter(
+      (file) =>
+        file.size <= MAX_FILE_SIZE && ACCEPTED_IMAGE_TYPES.includes(file.type),
+    );
+
+    const newImages = [...selectedImages, ...validFiles].slice(0, 10);
+    setSelectedImages(newImages);
+    form.setValue("images", newImages, { shouldValidate: true });
   };
 
   const removeImage = (index: number) => {
     const newImages = selectedImages.filter((_, i) => i !== index);
-    const newPreviews = imagePreviews.filter((_, i) => i !== index);
-
     setSelectedImages(newImages);
-    setImagePreviews(newPreviews);
-    form.setValue("images", newImages);
+    form.setValue("images", newImages, { shouldValidate: true });
   };
 
   const handleDocumentChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);
-
     if (files.length === 0) return;
 
-    // Combine with existing documents, but limit to 10 total
-    const newDocuments = [...selectedDocuments, ...files].slice(0, 10);
-    setSelectedDocuments(newDocuments);
-    form.setValue("documents", newDocuments);
+    const validFiles = files.filter(
+      (file) =>
+        file.size <= MAX_FILE_SIZE &&
+        ACCEPTED_DOCUMENT_TYPES.includes(file.type),
+    );
 
-    // Create previews for new documents
-    const newPreviews = [...documentPreviews];
-    files.forEach((file, index) => {
-      if (newPreviews.length < 10) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          const result = e.target?.result as string;
-          setDocumentPreviews((prev) => [
-            ...prev.slice(0, selectedDocuments.length + index),
-            result,
-            ...prev.slice(selectedDocuments.length + index + 1),
-          ]);
-        };
-        reader.readAsDataURL(file);
-        newPreviews.push(""); // Placeholder
-      }
-    });
-    setDocumentPreviews(newPreviews.slice(0, 10));
+    const newDocuments = [...selectedDocuments, ...validFiles].slice(0, 10);
+    setSelectedDocuments(newDocuments);
+    form.setValue("documents", newDocuments, { shouldValidate: true });
   };
 
   const removeDocument = (index: number) => {
     const newDocuments = selectedDocuments.filter((_, i) => i !== index);
-    const newPreviews = documentPreviews.filter((_, i) => i !== index);
-
     setSelectedDocuments(newDocuments);
-    setDocumentPreviews(newPreviews);
-    form.setValue("documents", newDocuments);
+    form.setValue("documents", newDocuments, { shouldValidate: true });
   };
 
   const formatCurrency = (value: string) => {
@@ -214,10 +226,59 @@ export default function InvestmentForm() {
     return number.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   };
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    console.log("Form submitted:", values);
-    // Handle form submission here
-    alert("Form submitted successfully! Check console for details.");
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    setIsSubmitting(true);
+    setSubmitError(null);
+
+    const formData = new FormData();
+    formData.append("property", values.property);
+    formData.append("type", values.type);
+    formData.append(
+      "investmentAmount",
+      values.investmentAmount.replace(/,/g, ""),
+    ); // Send clean number
+
+    // Append images
+    values.images.forEach((file) => {
+      formData.append("images", file);
+    });
+    // Append documents
+    values.documents.forEach((file) => {
+      formData.append("documents", file);
+    });
+
+    try {
+      const response = await fetch("/api/asset", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(
+          errorData.details || errorData.error || "Failed to submit form.",
+        );
+      }
+
+      const result = await response.json();
+      console.log("Form submitted successfully:", result);
+      toast("You will recieve an email about your investment");
+
+      // Reset form fields and local state
+      form.reset();
+      setSelectedImages([]);
+      setImagePreviews([]);
+      setSelectedDocuments([]);
+      setDocumentPreviews([]);
+    } catch (error: any) {
+      console.error("Submission error:", error);
+      setSubmitError(
+        error.message || "An unexpected error occurred during submission.",
+      );
+    } finally {
+      setIsSubmitting(false);
+      redirect("/dashboard/invest/asset");
+    }
   };
 
   return (
@@ -370,6 +431,7 @@ export default function InvestmentForm() {
                         )}
                       />
 
+                      {/* Property Images Upload */}
                       <FormField
                         control={form.control}
                         name="images"
@@ -400,7 +462,7 @@ export default function InvestmentForm() {
                                       type="file"
                                       className="hidden"
                                       multiple
-                                      accept="image/*"
+                                      accept={ACCEPTED_IMAGE_TYPES.join(",")}
                                       onChange={handleImageChange}
                                     />
                                   </label>
@@ -414,12 +476,13 @@ export default function InvestmentForm() {
                                         className="group relative"
                                       >
                                         <div className="bg-muted aspect-square overflow-hidden rounded-lg">
+                                          {/* Use local object URL for preview */}
                                           {preview && (
                                             <img
                                               src={
-                                                preview || "/placeholder.svg"
+                                                preview // Use the generated object URL
                                               }
-                                              alt={`Preview ${index + 1}`}
+                                              alt={`Image preview ${index + 1}`}
                                               className="h-full w-full object-cover"
                                             />
                                           )}
@@ -449,6 +512,7 @@ export default function InvestmentForm() {
                         )}
                       />
 
+                      {/* Property Documents Upload */}
                       <FormField
                         control={form.control}
                         name="documents"
@@ -471,7 +535,8 @@ export default function InvestmentForm() {
                                         or drag and drop
                                       </p>
                                       <p className="text-muted-foreground text-xs">
-                                        PNG, JPG, JPEG or WebP (MAX. 5MB each)
+                                        PNG, JPG, JPEG, WebP or PDF (MAX. 5MB
+                                        each)
                                       </p>
                                     </div>
                                     <input
@@ -479,7 +544,7 @@ export default function InvestmentForm() {
                                       type="file"
                                       className="hidden"
                                       multiple
-                                      accept="image/*"
+                                      accept={ACCEPTED_DOCUMENT_TYPES.join(",")}
                                       onChange={handleDocumentChange}
                                     />
                                   </label>
@@ -492,13 +557,14 @@ export default function InvestmentForm() {
                                         key={index}
                                         className="group relative"
                                       >
-                                        <div className="bg-muted aspect-square overflow-hidden rounded-lg">
+                                        <div className="bg-muted flex aspect-square items-center justify-center overflow-hidden rounded-lg">
+                                          {/* For documents, show generic icon or image preview */}
                                           {preview && (
                                             <img
                                               src={
-                                                preview || "/placeholder.svg"
+                                                preview // Use the generated object URL or generic icon
                                               }
-                                              alt={`Document ${index + 1}`}
+                                              alt={`Document preview ${index + 1}`}
                                               className="h-full w-full object-cover"
                                             />
                                           )}
@@ -529,8 +595,18 @@ export default function InvestmentForm() {
                         )}
                       />
 
-                      <Button type="submit" className="w-full">
-                        Submit Investment Form
+                      {submitError && (
+                        <p className="text-sm text-red-500">{submitError}</p>
+                      )}
+
+                      <Button
+                        type="submit"
+                        className="w-full"
+                        disabled={isSubmitting}
+                      >
+                        {isSubmitting
+                          ? "Submitting..."
+                          : "Submit Investment Form"}
                       </Button>
                     </form>
                   </Form>
