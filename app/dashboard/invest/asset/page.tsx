@@ -324,8 +324,8 @@ const ActionsCell = ({
                 <span
                   className={
                     Number(viewingInvestment?.monthly_return) >= 0
-                      ? "text-green-500"
-                      : "text-red-300"
+                      ? "text-red-400 dark:text-red-300"
+                      : "text-green-500 dark:text-green-300"
                   }
                 >
                   {Number(viewingInvestment?.monthly_return).toLocaleString(
@@ -342,8 +342,8 @@ const ActionsCell = ({
                 <span
                   className={
                     Number(viewingInvestment?.overall_roi) >= 0
-                      ? "text-green-500"
-                      : "text-red-300"
+                      ? "text-red-400 dark:text-red-300"
+                      : "text-green-500 dark:text-green-300"
                   }
                 >
                   {Number(viewingInvestment?.overall_roi).toFixed(2)}%
@@ -457,7 +457,7 @@ const UserDashboard = () => {
   return (
     <div className="container mx-auto py-10">
       <div className="mb-8 flex items-center justify-between">
-        <h1 className="text-3xl font-bold">Assets</h1>``
+        <h1 className="text-3xl font-bold">Assets</h1>
       </div>
 
       {/* Search */}
@@ -469,9 +469,9 @@ const UserDashboard = () => {
           className="max-w-sm"
         />
 
-        <Button asChild>
+        <Button size={"sm"} asChild>
           <Link href={"/dashboard/invest/asset/new-asset"}>
-            <Plus />
+            <Plus className="text-[var(--brand-forground)]" />
             New
           </Link>
         </Button>

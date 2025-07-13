@@ -81,7 +81,8 @@
   --warning: oklch(95.4% 0.038 75.164);
   --warning-forground: oklch(70.5% 0.213 47.604);
   --warning-border: oklch(55.3% 0.195 38.402);
-  --brand: oklch(72.3% 0.219 149.579);
+  --brand: oklch(60.9% 0.126 221.723);
+  --brand-forground: oklch(98.4% 0.019 200.873);
 }
 
 .dark {
