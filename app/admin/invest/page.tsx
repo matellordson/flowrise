@@ -248,7 +248,7 @@ const ActionsCell = ({ request }: { request: dataType }) => {
                         href={url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-blue-500 hover:underline"
+                        className="text-[var(--brand-forground)] hover:underline"
                       >
                         Document {index + 1}
                       </a>
