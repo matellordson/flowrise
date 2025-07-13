@@ -78,7 +78,8 @@ export async function POST(req: Request) {
         document_urls,
         created_at,
         updated_at,
-        "user"
+        "user",
+        current_value
       ) VALUES (
         ${propertyName},
         ${propertyType},
@@ -87,8 +88,9 @@ export async function POST(req: Request) {
         ${documentUrls},
         NOW(),
         NOW(),
-        ${session?.user?.email}
-      ) RETURNING id, property_name, property_type, investment_amount, image_urls, document_urls;
+        ${session?.user?.email},
+        ${investmentAmount}
+      ) 
     `;
 
     // Assuming the first row is the inserted one, and we want to return it

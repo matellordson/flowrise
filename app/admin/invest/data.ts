@@ -10,6 +10,8 @@ interface dataType {
   created_at?: string;
   updated_at?: string;
   user: string;
+  current_value: number;
+  status: boolean;
 }
 
 export default async function getInvestmentData() {

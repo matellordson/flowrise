@@ -56,6 +56,7 @@ interface dataType {
   updated_at?: string;
   user: string;
   status: boolean;
+  current_value: number;
 }
 
 // Mock data for demonstration
@@ -85,6 +86,15 @@ const columns: ColumnDef<dataType>[] = [
     header: "Investment Amount",
     cell: ({ row }) =>
       Number(row.getValue("investment_amount")).toLocaleString("en-US", {
+        style: "currency",
+        currency: "USD",
+      }),
+  },
+  {
+    accessorKey: "current_value",
+    header: "Current Value",
+    cell: ({ row }) =>
+      Number(row.getValue("current_value")).toLocaleString("en-US", {
         style: "currency",
         currency: "USD",
       }),
@@ -153,7 +163,7 @@ const ActionsCell = ({ request }: { request: dataType }) => {
           <DropdownMenuItem
             onClick={() => {
               setEditingRequest(request);
-              setInvestmentAmount(request.investment_amount.toString());
+              setInvestmentAmount(request.current_value.toString());
             }}
           >
             <Edit className="mr-2 h-4 w-4" />
@@ -290,7 +300,9 @@ const ActionsCell = ({ request }: { request: dataType }) => {
                 onClick={async () => {
                   setIsLoading(true); // Set loading to true when starting update
                   try {
-                    await sql`UPDATE asset_request SET investment_amount = ${investmentAmount} WHERE id = ${editingRequest?.id}`;
+                    await sql`UPDATE asset_request SET current_value = ${investmentAmount} WHERE id = ${editingRequest?.id}`;
+                    // await sql`UPDATE asset_request SET investment_amount = ${investmentAmount} WHERE id = ${editingRequest?.id}`;
+
                     // Assuming you also want to set status to true on update amount
                     await sql`UPDATE asset_request SET status = true WHERE id = ${editingRequest?.id}`;
                     console.log("Investment amount and status updated!");
@@ -336,7 +348,7 @@ const AdminPage = () => {
   return (
     <div className="container mx-auto py-10">
       <div className="mb-8 flex items-center justify-between">
-        <h1 className="text-3xl font-bold">Investment Dashboard</h1>
+        <h1 className="text-3xl font-bold">Investment </h1>
       </div>
 
       {/* Search */}
