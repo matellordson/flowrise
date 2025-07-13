@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import {
+  IconBuildingEstate,
   IconCamera,
   IconChartBar,
   IconCoinBitcoin,
@@ -17,6 +18,7 @@ import {
   IconSearch,
   IconSettings,
   IconUsers,
+  IconWallet,
 } from "@tabler/icons-react";
 
 import { NavDocuments } from "@/components/nav-documents";
@@ -46,14 +48,14 @@ const data = {
       icon: IconDashboard,
     },
     {
-      title: "Crypto",
+      title: "Crypto Wallet",
       url: "/dashboard/crypto",
-      icon: IconCoinBitcoin,
+      icon: IconWallet,
     },
     {
-      title: "Analytics",
-      url: "#",
-      icon: IconChartBar,
+      title: "Assets",
+      url: "/dashboard/invest/asset",
+      icon: IconBuildingEstate,
     },
     {
       title: "Projects",

@@ -376,21 +376,49 @@ export default function InvestmentForm() {
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent>
-                                <SelectItem value="residential">
-                                  Residential
+                                <SelectItem value="residential-property">
+                                  Residential Property
                                 </SelectItem>
-                                <SelectItem value="commercial">
-                                  Commercial
-                                </SelectItem>
-                                <SelectItem value="industrial">
-                                  Industrial
-                                </SelectItem>
-                                <SelectItem value="retail">Retail</SelectItem>
-                                <SelectItem value="office">Office</SelectItem>
-                                <SelectItem value="mixed-use">
-                                  Mixed Use
+                                <SelectItem value="commercial-property">
+                                  Commercial Property
                                 </SelectItem>
                                 <SelectItem value="land">Land</SelectItem>
+                                <SelectItem value="gold">Gold</SelectItem>
+                                <SelectItem value="silver">Silver</SelectItem>
+                                <SelectItem value="other-precious-metals">
+                                  Other Precious Metals (e.g., Platinum,
+                                  Palladium)
+                                </SelectItem>
+                                <SelectItem value="fine-art">
+                                  Fine Art
+                                </SelectItem>
+                                <SelectItem value="classic-luxury-vehicles">
+                                  Classic & Luxury Vehicles
+                                </SelectItem>
+                                <SelectItem value="rare-collectibles">
+                                  Rare Collectibles (e.g., coins, stamps,
+                                  antiques)
+                                </SelectItem>
+                                <SelectItem value="high-value-jewelry-watches">
+                                  High-Value Jewelry & Watches
+                                </SelectItem>
+                                <SelectItem value="vintage-wine-spirits">
+                                  Vintage Wine & Spirits
+                                </SelectItem>
+                                <SelectItem value="heavy-equipment-machinery">
+                                  Heavy Equipment & Machinery
+                                </SelectItem>
+                                <SelectItem value="commercial-vehicles">
+                                  Commercial Vehicles (e.g., trucks, planes,
+                                  boats)
+                                </SelectItem>
+                                <SelectItem value="farm-forest-assets">
+                                  Farm & Forest Assets (e.g., Farmland, Timber,
+                                  Livestock)
+                                </SelectItem>
+                                <SelectItem value="other-tangible-assets">
+                                  Other Tangible Assets
+                                </SelectItem>
                               </SelectContent>
                             </Select>
                             <FormMessage />
