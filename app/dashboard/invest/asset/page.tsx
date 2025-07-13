@@ -274,10 +274,7 @@ const ActionsCell = ({
             <Eye className="mr-2 h-4 w-4" />
             View Details
           </DropdownMenuItem>
-          <DropdownMenuItem
-            onClick={() => setDeletingInvestment(investment)}
-            className="text-red-600"
-          >
+          <DropdownMenuItem onClick={() => setDeletingInvestment(investment)}>
             <Trash2 className="mr-2 h-4 w-4" />
             Delete Asset
           </DropdownMenuItem>
@@ -289,7 +286,7 @@ const ActionsCell = ({
         open={!!viewingInvestment}
         onOpenChange={() => setViewingInvestment(null)}
       >
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="h-[32rem] max-w-2xl overflow-y-scroll">
           <DialogHeader>
             <DialogTitle>{viewingInvestment?.property_name}</DialogTitle>
             <DialogDescription>
@@ -327,8 +324,8 @@ const ActionsCell = ({
                 <span
                   className={
                     Number(viewingInvestment?.monthly_return) >= 0
-                      ? "text-green-600"
-                      : "text-red-600"
+                      ? "text-green-500"
+                      : "text-red-300"
                   }
                 >
                   {Number(viewingInvestment?.monthly_return).toLocaleString(
@@ -345,8 +342,8 @@ const ActionsCell = ({
                 <span
                   className={
                     Number(viewingInvestment?.overall_roi) >= 0
-                      ? "text-green-600"
-                      : "text-red-600"
+                      ? "text-green-500"
+                      : "text-red-300"
                   }
                 >
                   {Number(viewingInvestment?.overall_roi).toFixed(2)}%
@@ -423,11 +420,7 @@ const ActionsCell = ({
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel disabled={isLoading}>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDelete}
-              disabled={isLoading}
-              className="bg-red-600 hover:bg-red-700"
-            >
+            <AlertDialogAction onClick={handleDelete} disabled={isLoading}>
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
