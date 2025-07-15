@@ -324,8 +324,8 @@ const ActionsCell = ({
                 <span
                   className={
                     Number(viewingInvestment?.monthly_return) >= 0
-                      ? "text-red-400 dark:text-red-300"
-                      : "text-green-500 dark:text-green-300"
+                      ? "text-green-500 dark:text-green-300"
+                      : "text-red-400 dark:text-red-300"
                   }
                 >
                   {Number(viewingInvestment?.monthly_return).toLocaleString(
@@ -342,8 +342,8 @@ const ActionsCell = ({
                 <span
                   className={
                     Number(viewingInvestment?.overall_roi) >= 0
-                      ? "text-red-400 dark:text-red-300"
-                      : "text-green-500 dark:text-green-300"
+                      ? "text-green-500 dark:text-green-300"
+                      : "text-red-400 dark:text-red-300"
                   }
                 >
                   {Number(viewingInvestment?.overall_roi).toFixed(2)}%

@@ -1,12 +1,12 @@
 import Coins from "./coins";
 import { DepositDrawer } from "./deposit";
 import { SwapDrawer } from "./swap";
-import { SendDrawer } from "./send";
 import { sql } from "@/lib/sql";
 import { auth } from "@/auth";
 import getCryptoNews from "./(news)/api";
 import Link from "next/link";
 import Image from "next/image";
+import SendDrawer from "./send";
 
 interface newsTypes {
   id: string;
