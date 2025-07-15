@@ -5,7 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ETHBalance from "./balance";
 import { ETHChartLight, ETHChartDark } from "./chart";
 import { DepositDrawer } from "../deposit";
-import { SendDrawer } from "../send";
+import SendDrawer from "../send";
 import { SwapDrawer } from "../swap";
 
 export default function BitcoinPage() {

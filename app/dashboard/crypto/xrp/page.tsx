@@ -5,7 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import BTCBalance from "./balance";
 import BTCChart, { BTCChartLight } from "./chart";
 import { DepositDrawer } from "../deposit";
-import { SendDrawer } from "../send";
+import SendDrawer from "../send";
 import { SwapDrawer } from "../swap";
 import { IconBrandTwitter } from "@tabler/icons-react";
 import BTCChartDark from "./chart";
