@@ -281,9 +281,8 @@ export default function SendDrawer() {
               <FormControl>
                 <Input
                   {...field}
-                  type="number"
                   min="100"
-                  step="0.01"
+                  step="1"
                   placeholder="Enter amount in USD"
                   onChange={(e) => {
                     const value =
