@@ -35,63 +35,31 @@ export function DepositDrawer() {
   const [open, setOpen] = React.useState(false);
   const isDesktop = useMediaQuery("(min-width: 768px)");
 
-  if (isDesktop) {
-    return (
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogTrigger asChild>
-          <Button variant="outline">
-            <QrCode />
-            Deposit
-          </Button>
-        </DialogTrigger>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Deposit</DialogTitle>
-            <DialogDescription>
-              Make deposit to fund your investment.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="flex flex-wrap items-center justify-center gap-4">
-            <DepositBTC />
-            <DepositETH />
-            <DepositSOL />
-            <DepositBNB />
-            <DepositUSDC />
-            <DepositUSDT />
-            <DepositXRP />
-          </div>
-        </DialogContent>
-      </Dialog>
-    );
-  }
-
   return (
-    <Drawer open={open} onOpenChange={setOpen}>
-      <DrawerTrigger asChild>
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
         <Button variant="outline">
           <QrCode />
           Deposit
         </Button>
-      </DrawerTrigger>
-      <DrawerContent>
-        <DrawerHeader className="text-left">
-          <DrawerTitle>Deposit</DrawerTitle>
-          <DrawerDescription>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Deposit</DialogTitle>
+          <DialogDescription>
             Make deposit to fund your investment.
-          </DrawerDescription>
-        </DrawerHeader>
-        <DrawerFooter>
-          <div className="flex flex-wrap items-center justify-center gap-4 px-2">
-            <DepositBTC />
-            <DepositETH />
-            <DepositSOL />
-            <DepositBNB />
-            <DepositUSDC />
-            <DepositUSDT />
-            <DepositXRP />
-          </div>
-        </DrawerFooter>
-      </DrawerContent>
-    </Drawer>
+          </DialogDescription>
+        </DialogHeader>
+        <div className="flex flex-wrap items-center justify-center gap-4">
+          <DepositBTC />
+          <DepositETH />
+          <DepositSOL />
+          <DepositBNB />
+          <DepositUSDC />
+          <DepositUSDT />
+          <DepositXRP />
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }
