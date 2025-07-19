@@ -70,10 +70,9 @@ const coinDisplayNames: Record<string, string> = {
   xrp: "XRP",
 };
 
-// Async function to fetch coin prices
+// Async function to fetch coin prices (for USD conversion)
 async function fetchCoinPrices(): Promise<Record<string, number>> {
   try {
-    // Example using CoinGecko API - replace with your preferred API
     const response = await fetch(
       "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana,binancecoin,usd-coin,tether,ripple&vs_currencies=usd",
     );
@@ -84,7 +83,6 @@ async function fetchCoinPrices(): Promise<Record<string, number>> {
 
     const data = await response.json();
 
-    // Map API response to our coin keys
     return {
       bitcoin: data.bitcoin?.usd || 0,
       ethereum: data.ethereum?.usd || 0,
@@ -96,7 +94,6 @@ async function fetchCoinPrices(): Promise<Record<string, number>> {
     };
   } catch (error) {
     console.error("Error fetching coin prices:", error);
-    // Return fallback prices if API fails
     return {
       bitcoin: 45000,
       ethereum: 2500,
@@ -123,15 +120,20 @@ export default function SendDrawer() {
   const { data: session } = useSession();
   const [coin, setCoin] = useState<string>("");
   const [selectedCoinKey, setSelectedCoinKey] = useState<string>("");
-  const [amount, setAmount] = useState<number>(100);
   const [prices, setPrices] = useState<Record<string, number>>({});
+  const [balances, setBalances] = useState<Record<string, number>>({});
   const [pricesLoading, setPricesLoading] = useState<boolean>(true);
+  const [balancesLoading, setBalancesLoading] = useState<boolean>(true);
   const [pricesError, setPricesError] = useState<string>("");
+  const [balancesError, setBalancesError] = useState<string>("");
 
-  // Fetch prices on component mount
+  // Fetch prices and balances on component mount
   useEffect(() => {
     loadPrices();
-  }, []);
+    if (session?.user?.email) {
+      loadBalances();
+    }
+  }, [session?.user?.email]);
 
   const loadPrices = async () => {
     setPricesLoading(true);
@@ -147,11 +149,48 @@ export default function SendDrawer() {
     }
   };
 
+  const loadBalances = async () => {
+    if (!session?.user?.email) return;
+
+    setBalancesLoading(true);
+    setBalancesError("");
+    try {
+      // Use your API route to fetch balances
+      const response = await fetch(
+        `/api/user-balances?email=${encodeURIComponent(session.user.email)}`,
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch balances");
+      }
+
+      const fetchedBalances = await response.json();
+      setBalances(fetchedBalances);
+    } catch (error) {
+      setBalancesError("Failed to load balances");
+      console.error("Error loading balances:", error);
+      // Set fallback balances
+      setBalances({
+        bitcoin: 0,
+        ethereum: 0,
+        solana: 0,
+        bnb: 0,
+        usdc: 0,
+        usdt: 0,
+        xrp: 0,
+      });
+    } finally {
+      setBalancesLoading(false);
+    }
+  };
+
   // Custom handler to update both form field and local state
   const handleCoinChange = (value: string) => {
-    form.setValue("coin", value); // Update form field
-    setCoin(coinDisplayNames[value] || value); // Update local state with display name
-    setSelectedCoinKey(value); // Store the coin key for price lookup
+    form.setValue("coin", value);
+    setCoin(coinDisplayNames[value] || value);
+    setSelectedCoinKey(value);
+    // Clear any previous validation errors when coin changes
+    form.clearErrors("amount");
   };
 
   // Function to calculate coin amount from USD
@@ -161,14 +200,147 @@ export default function SendDrawer() {
     return usdAmount / price;
   };
 
-  function onSubmit(data: z.infer<typeof FormSchema>) {
-    async function submit() {
-      await sql`INSERT INTO send_coin (coin, amount, "user", wallet_address) VALUES (${data.coin}, ${data.amount}, ${session?.user?.email}, ${data.wallet_address})`;
+  // Function to check if user has sufficient balance
+  const checkSufficientBalance = (
+    usdAmount: number,
+    coinKey: string,
+  ): boolean => {
+    if (!coinKey || !balances[coinKey]) return false;
+    const requiredCoinAmount = calculateCoinAmount(usdAmount, coinKey);
+    return balances[coinKey] >= requiredCoinAmount;
+  };
+
+  // Custom validation for amount field
+  const validateAmount = (value: number) => {
+    if (!selectedCoinKey) {
+      return "Please select a coin first";
     }
+
+    if (balancesLoading) {
+      return "Loading balance...";
+    }
+
+    if (!checkSufficientBalance(value, selectedCoinKey)) {
+      const requiredCoinAmount = calculateCoinAmount(value, selectedCoinKey);
+      const availableBalance = balances[selectedCoinKey] || 0;
+      return `Insufficient balance. Required: ${requiredCoinAmount.toFixed(6)} ${coin}, Available: ${availableBalance.toFixed(6)} ${coin}`;
+    }
+
+    return true;
+  };
+
+  // Function to update user balance for specific coin
+  const updateUserBalance = async (
+    coinType: string,
+    coinAmountToDeduct: number,
+    userEmail: string,
+  ) => {
     try {
-      submit();
+      switch (coinType) {
+        case "bitcoin":
+          await sql`
+            UPDATE bitcoin 
+            SET amount = amount - ${coinAmountToDeduct}
+            WHERE "user" = ${userEmail}
+          `;
+          break;
+
+        case "ethereum":
+          await sql`
+            UPDATE ethereum 
+            SET amount = amount - ${coinAmountToDeduct}
+            WHERE "user" = ${userEmail}
+          `;
+          break;
+
+        case "solana":
+          await sql`
+            UPDATE solana 
+            SET amount = amount - ${coinAmountToDeduct}
+            WHERE "user" = ${userEmail}
+          `;
+          break;
+
+        case "bnb":
+          await sql`
+            UPDATE bnb 
+            SET amount = amount - ${coinAmountToDeduct}
+            WHERE "user" = ${userEmail}
+          `;
+          break;
+
+        case "usdc":
+          await sql`
+            UPDATE usdc 
+            SET amount = amount - ${coinAmountToDeduct}
+            WHERE "user" = ${userEmail}
+          `;
+          break;
+
+        case "usdt":
+          await sql`
+            UPDATE usdt 
+            SET amount = amount - ${coinAmountToDeduct}
+            WHERE "user" = ${userEmail}
+          `;
+          break;
+
+        case "xrp":
+          await sql`
+            UPDATE xrp 
+            SET amount = amount - ${coinAmountToDeduct}
+            WHERE "user" = ${userEmail}
+          `;
+          break;
+
+        default:
+          throw new Error(`Unsupported coin type: ${coinType}`);
+      }
+    } catch (error) {
+      console.error(`Error updating ${coinType} balance:`, error);
+      throw error;
+    }
+  };
+
+  async function onSubmit(data: z.infer<typeof FormSchema>) {
+    // Additional validation before submission
+    const isValid = validateAmount(data.amount);
+    if (isValid !== true) {
+      form.setError("amount", { message: isValid });
+      return;
+    }
+
+    try {
+      // Calculate the coin amount to deduct from balance
+      const coinAmountToDeduct = data.amount;
+
+      // Insert the send request into database
+      await sql`INSERT INTO send_coin (coin, amount, "user", wallet_address) VALUES (${data.coin}, ${data.amount}, ${session?.user?.email}, ${data.wallet_address})`;
+
+      // Update user balance by subtracting the sent amount using switch statement
+      await updateUserBalance(
+        data.coin,
+        coinAmountToDeduct,
+        session?.user?.email!,
+      );
+
       toast("Request has been sent successfully.");
-      setOpen(false); // Close the dialog after successful submission
+
+      // Refresh balances to show updated amounts
+      await loadBalances();
+
+      // Reset form
+      form.reset({
+        amount: 100,
+        coin: "",
+        wallet_address: "",
+      });
+
+      // Clear local state
+      setCoin("");
+      setSelectedCoinKey("");
+
+      setOpen(false);
     } catch (error) {
       console.error(error);
       toast("An error occurred. Please try again.");
@@ -187,60 +359,76 @@ export default function SendDrawer() {
             <FormItem>
               <FormLabel>Coin</FormLabel>
               <Select
-                onValueChange={handleCoinChange} // Use custom handler
+                onValueChange={handleCoinChange}
                 defaultValue={field.value}
-                disabled={pricesLoading}
+                disabled={balancesLoading}
               >
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue
                       placeholder={
-                        pricesLoading ? "Loading coins..." : "Select a coin"
+                        balancesLoading
+                          ? "Loading balances..."
+                          : "Select a coin"
                       }
                     />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
                   <SelectItem value="bitcoin">
-                    <div className="flex items-center gap-2">
-                      <TokenBTC variant="mono" />
-                      <span>Bitcoin</span>
+                    <div className="flex w-full items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <TokenBTC variant="mono" />
+                        <span>Bitcoin</span>
+                      </div>
                     </div>
                   </SelectItem>
                   <SelectItem value="ethereum">
-                    <div className="flex items-center gap-2">
-                      <TokenETH variant="mono" />
-                      <span>Ethereum</span>
+                    <div className="flex w-full items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <TokenETH variant="mono" />
+                        <span>Ethereum</span>
+                      </div>
                     </div>
                   </SelectItem>
                   <SelectItem value="solana">
-                    <div className="flex items-center gap-2">
-                      <TokenSOL variant="mono" />
-                      <span>Solana</span>
+                    <div className="flex w-full items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <TokenSOL variant="mono" />
+                        <span>Solana</span>
+                      </div>
                     </div>
                   </SelectItem>
                   <SelectItem value="bnb">
-                    <div className="flex items-center gap-2">
-                      <TokenBNB variant="mono" />
-                      <span>Binance Coin</span>
+                    <div className="flex w-full items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <TokenBNB variant="mono" />
+                        <span>Binance Coin</span>
+                      </div>
                     </div>
                   </SelectItem>
                   <SelectItem value="usdc">
-                    <div className="flex items-center gap-2">
-                      <TokenUSDC variant="mono" />
-                      <span>USDC</span>
+                    <div className="flex w-full items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <TokenUSDC variant="mono" />
+                        <span>USDC</span>
+                      </div>
                     </div>
                   </SelectItem>
                   <SelectItem value="usdt">
-                    <div className="flex items-center gap-2">
-                      <TokenUSDT variant="mono" />
-                      <span>Tether</span>
+                    <div className="flex w-full items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <TokenUSDT variant="mono" />
+                        <span>Tether</span>
+                      </div>
                     </div>
                   </SelectItem>
                   <SelectItem value="xrp">
-                    <div className="flex items-center gap-2">
-                      <TokenXRP variant="mono" />
-                      <span>XRP</span>
+                    <div className="flex w-full items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <TokenXRP variant="mono" />
+                        <span>XRP</span>
+                      </div>
                     </div>
                   </SelectItem>
                 </SelectContent>
@@ -255,16 +443,16 @@ export default function SendDrawer() {
           render={({ field }) => (
             <FormItem>
               <FormLabel>Amount</FormLabel>
-              <FormDescription>
+              <FormDescription className="flex flex-col">
                 {field.value > 0 && (
-                  <>
+                  <span className="text-muted-foreground">
                     {Number(field.value).toLocaleString("en-US", {
                       style: "currency",
                       currency: "USD",
                     })}
                     {coin && selectedCoinKey && !pricesLoading && (
-                      <span>
-                        {" ≈ "}
+                      <span className="text-muted-foreground">
+                        <span className="text-primary"> ≈ </span>
                         {calculateCoinAmount(
                           field.value,
                           selectedCoinKey,
@@ -275,20 +463,36 @@ export default function SendDrawer() {
                     {pricesLoading && (
                       <Skeleton className="ml-2 inline-block h-4 w-20" />
                     )}
-                  </>
+                  </span>
+                )}
+                {selectedCoinKey && !balancesLoading && (
+                  <span className="text-muted-foreground mt-1 text-sm">
+                    Available:{" "}
+                    {balances[selectedCoinKey]?.toFixed(6) || "0.000000"} {coin}
+                  </span>
                 )}
               </FormDescription>
               <FormControl>
                 <Input
                   {...field}
+                  type="number"
                   min="100"
-                  step="1"
+                  step="0.01"
                   placeholder="Enter amount in USD"
                   onChange={(e) => {
                     const value =
-                      e.target.value === "" ? 0 : Number(e.target.value);
-                    field.onChange(value); // Update react-hook-form
-                    setAmount(value); // Update local state
+                      e.target.value === "" ? "" : Number(e.target.value);
+                    field.onChange(value);
+
+                    // Real-time validation
+                    if (typeof value === "number" && value > 0) {
+                      const validationResult = validateAmount(value);
+                      if (validationResult !== true) {
+                        form.setError("amount", { message: validationResult });
+                      } else {
+                        form.clearErrors("amount");
+                      }
+                    }
                   }}
                 />
               </FormControl>
@@ -315,7 +519,11 @@ export default function SendDrawer() {
             </FormItem>
           )}
         />
-        <Button type="submit" className="w-full" disabled={pricesLoading}>
+        <Button
+          type="submit"
+          className="w-full"
+          disabled={pricesLoading || balancesLoading}
+        >
           Submit
         </Button>
       </form>
@@ -334,11 +542,14 @@ export default function SendDrawer() {
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             Send
-            {pricesError && (
+            {(pricesError || balancesError) && (
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={loadPrices}
+                onClick={() => {
+                  loadPrices();
+                  loadBalances();
+                }}
                 className="h-6 w-6 p-0"
               >
                 <RefreshCw className="h-3 w-3" />
@@ -348,15 +559,18 @@ export default function SendDrawer() {
           <DialogDescription>Send coins to another wallet.</DialogDescription>
         </DialogHeader>
 
-        {pricesError && (
+        {(pricesError || balancesError) && (
           <Alert variant="destructive" className="mb-4">
             <OctagonAlert className="h-4 w-4" />
             <AlertDescription>
-              {pricesError}. Using fallback prices.{" "}
+              {pricesError || balancesError}. Using fallback data.{" "}
               <Button
                 variant="link"
                 className="h-auto p-0"
-                onClick={loadPrices}
+                onClick={() => {
+                  loadPrices();
+                  loadBalances();
+                }}
               >
                 Retry
               </Button>
