@@ -6,7 +6,7 @@ import BTCBalance from "./balance";
 import BTCChart, { BTCChartLight } from "./chart";
 import { DepositDrawer } from "../deposit";
 import SendDrawer from "../send";
-import { SwapDrawer } from "../swap";
+import { SwapDrawer } from "../swap/ui";
 import { IconBrandTwitter } from "@tabler/icons-react";
 import BTCChartDark from "./chart";
 

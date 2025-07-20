@@ -1,6 +1,6 @@
 import Coins from "./coins";
 import { DepositDrawer } from "./deposit";
-import { SwapDrawer } from "./swap";
+import { SwapDrawer } from "./swap/ui";
 import { sql } from "@/lib/sql";
 import { auth } from "@/auth";
 import getCryptoNews from "./(news)/api";

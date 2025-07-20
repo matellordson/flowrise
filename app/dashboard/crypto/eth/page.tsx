@@ -6,7 +6,7 @@ import ETHBalance from "./balance";
 import { ETHChartLight, ETHChartDark } from "./chart";
 import { DepositDrawer } from "../deposit";
 import SendDrawer from "../send";
-import { SwapDrawer } from "../swap";
+import { SwapDrawer } from "../swap/ui";
 
 export default function BitcoinPage() {
   return (
