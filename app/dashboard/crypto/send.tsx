@@ -223,7 +223,7 @@ export default function SendDrawer() {
     if (!checkSufficientBalance(value, selectedCoinKey)) {
       const requiredCoinAmount = calculateCoinAmount(value, selectedCoinKey);
       const availableBalance = balances[selectedCoinKey] || 0;
-      return `Insufficient balance. Required: ${requiredCoinAmount.toFixed(6)} ${coin}, Available: ${availableBalance.toFixed(6)} ${coin}`;
+      return `Insufficient balance.`;
     }
 
     return true;
@@ -468,7 +468,10 @@ export default function SendDrawer() {
                 {selectedCoinKey && !balancesLoading && (
                   <span className="text-muted-foreground mt-1 text-sm">
                     Available:{" "}
-                    {balances[selectedCoinKey]?.toFixed(6) || "0.000000"} {coin}
+                    {balances[selectedCoinKey]?.toLocaleString("en-US", {
+                      currency: "USD",
+                      style: "currency",
+                    }) || "0.00"}
                   </span>
                 )}
               </FormDescription>
