@@ -1,8 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server";
-
-// ============================================================================
-// SWAP QUOTE CALCULATION - Customize based on your exchange logic
-// ============================================================================
+import { AVAILABLE_TOKENS } from "@/lib/tokens";
 
 export async function POST(request: NextRequest) {
   try {
@@ -27,28 +24,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // ============================================================================
-    // STEP 1: FETCH COIN DATA FROM DATABASE
-    // Replace with your actual database queries
-    // ============================================================================
-
-    // Example database queries:
-    // const fromCoin = await db.query(`SELECT * FROM coins WHERE id = $1`, [from_coin_id])
-    // const toCoin = await db.query(`SELECT * FROM coins WHERE id = $1`, [to_coin_id])
-
-    // Mock coin data - REPLACE WITH DATABASE QUERIES
-    const mockCoins = [
-      { id: 1, symbol: "BTC", price: 43250.0, balance: 0.05 },
-      { id: 2, symbol: "ETH", price: 2340.5, balance: 1.2345 },
-      { id: 3, symbol: "SOL", price: 98.75, balance: 5.0 },
-      { id: 4, symbol: "BNB", price: 315.2, balance: 2.5 },
-      { id: 5, symbol: "USDC", price: 1.0, balance: 1000.0 },
-      { id: 6, symbol: "USDT", price: 0.999, balance: 500.0 },
-      { id: 7, symbol: "XRP", price: 0.52, balance: 1000.0 },
-    ];
-
-    const fromCoin = mockCoins.find((c) => c.id === from_coin_id);
-    const toCoin = mockCoins.find((c) => c.id === to_coin_id);
+    // Get coins by ID (convert ID to array index)
+    const fromCoin = AVAILABLE_TOKENS[from_coin_id - 1];
+    const toCoin = AVAILABLE_TOKENS[to_coin_id - 1];
 
     if (!fromCoin || !toCoin) {
       return NextResponse.json({ error: "Invalid coin ID" }, { status: 400 });
@@ -63,29 +41,19 @@ export async function POST(request: NextRequest) {
     }
 
     // ============================================================================
-    // STEP 2: CALCULATE EXCHANGE RATE AND FEES
-    // Customize this logic based on your exchange mechanism
+    // CALCULATE EXCHANGE RATE AND FEES
     // ============================================================================
-
-    // Base exchange rate from prices
     const baseRate = toCoin.price / fromCoin.price;
-
-    // Apply spread/fees (customize as needed)
     const spreadPercentage = 0.3; // 0.3% spread
     const exchangeRate = baseRate * (1 - spreadPercentage / 100);
-
-    // Calculate output amount
     const toAmount = fromAmount * exchangeRate;
 
     // ============================================================================
-    // STEP 3: CALCULATE PRICE IMPACT
-    // Customize based on your liquidity model
+    // CALCULATE PRICE IMPACT
     // ============================================================================
-
     const tradeValue = fromAmount * fromCoin.price;
     let priceImpact = 0;
 
-    // Simple price impact model (customize as needed)
     if (tradeValue > 50000) {
       priceImpact = 2.0 + Math.random() * 1.5; // 2-3.5% for large trades
     } else if (tradeValue > 10000) {
@@ -94,17 +62,6 @@ export async function POST(request: NextRequest) {
       priceImpact = Math.random() * 0.5; // 0-0.5% for small trades
     }
 
-    // ============================================================================
-    // STEP 4: ESTIMATE GAS/FEES
-    // Customize based on your fee structure
-    // ============================================================================
-
-    const estimatedGas = "0.003"; // ETH equivalent gas fee
-
-    // ============================================================================
-    // STEP 5: RETURN QUOTE
-    // ============================================================================
-
     return NextResponse.json({
       from_coin: fromCoin.symbol,
       to_coin: toCoin.symbol,
@@ -112,9 +69,9 @@ export async function POST(request: NextRequest) {
       to_amount: toAmount.toFixed(6),
       exchange_rate: exchangeRate,
       price_impact: priceImpact,
-      estimated_gas: estimatedGas,
+      estimated_gas: "0.003",
       spread_percentage: spreadPercentage,
-      quote_expires_at: new Date(Date.now() + 30000).toISOString(), // 30 seconds
+      quote_expires_at: new Date(Date.now() + 30000).toISOString(),
     });
   } catch (error) {
     console.error("Quote error:", error);
