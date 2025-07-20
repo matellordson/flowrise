@@ -107,6 +107,9 @@ const IconComponents = {
 // ============================================================================
 
 function formatNumber(num: number, decimals = 4): string {
+  if (typeof num !== "number" || isNaN(num)) {
+    return "0.00"; // Return a default string for invalid numbers
+  }
   if (num === 0) return "0";
   if (num < 0.0001) return num.toExponential(2);
   if (num < 1) return num.toFixed(decimals);
@@ -351,7 +354,7 @@ function SwapSettings({
 // ============================================================================
 // MAIN SWAP COMPONENT - Customize UI layout and behavior
 // ============================================================================
-export default function SwapUI() {
+export default function SwapPage() {
   // State management
   const [coins, setCoins] = useState<Coin[]>([]);
   const [fromCoin, setFromCoin] = useState<Coin | null>(null);
@@ -364,6 +367,7 @@ export default function SwapUI() {
   const [isSwapping, setIsSwapping] = useState(false);
   const [slippage, setSlippage] = useState(0.5);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+  const [balanceError, setBalanceError] = useState<string | null>(null);
 
   // ============================================================================
   // FETCH COINS FROM DATABASE - Customize this endpoint
@@ -405,7 +409,22 @@ export default function SwapUI() {
       setToAmount("");
       setExchangeRate(null);
       setPriceImpact(0);
+      setBalanceError(null); // Clear any previous balance errors
       return;
+    }
+
+    // Check for insufficient balance in real-time
+    const fromAmountNum = Number.parseFloat(fromAmount);
+    if (fromAmountNum > fromCoin.balance) {
+      setBalanceError(
+        `Insufficient ${fromCoin.symbol} balance. You have ${formatNumber(fromCoin.balance)} ${fromCoin.symbol} but trying to swap ${formatNumber(fromAmountNum)} ${fromCoin.symbol}`,
+      );
+      setToAmount("");
+      setExchangeRate(null);
+      setPriceImpact(0);
+      return;
+    } else {
+      setBalanceError(null); // Clear error if balance is sufficient
     }
 
     setIsLoading(true);
@@ -520,10 +539,10 @@ export default function SwapUI() {
   // ============================================================================
   return (
     <main className="">
-      <div className="">
+      <div className="container mx-auto max-w-md">
         {/* Swap Card */}
-        <div className="border-0 p-0">
-          <div className="space-y-0 pb-4">
+        <Card className="border-border/50 bg-background/95 max-h-[36rem] shadow-xl backdrop-blur-sm">
+          <CardHeader className="space-y-0 pb-4">
             <div className="flex items-center justify-between">
               <CardTitle className="flex items-center gap-2 text-xl font-bold">
                 Swap Coins
@@ -551,9 +570,9 @@ export default function SwapUI() {
                 Updated {lastUpdated.toLocaleTimeString()}
               </p>
             )}
-          </div>
+          </CardHeader>
 
-          <CardContent className="space-y-1 px-0">
+          <CardContent className="h-[28rem] space-y-1 overflow-y-auto px-4 py-4">
             {/* From Coin Input */}
             <div className="space-y-3">
               <Label className="text-muted-foreground text-sm font-medium">
@@ -565,9 +584,9 @@ export default function SwapUI() {
                   placeholder="0.0"
                   value={fromAmount}
                   onChange={(e) => setFromAmount(e.target.value)}
-                  className="h-[3rem] flex-1 border-0 bg-transparent px-4 text-xl font-semibold focus-visible:ring-0 focus-visible:ring-offset-0"
+                  className="h-16 flex-1 border-0 bg-transparent px-4 text-xl font-semibold focus-visible:ring-0 focus-visible:ring-offset-0"
                 />
-                <div className="">
+                <div className="pr-3">
                   <CoinSelector
                     selectedCoin={fromCoin}
                     onCoinSelect={setFromCoin}
@@ -579,7 +598,8 @@ export default function SwapUI() {
               {fromCoin && (
                 <div className="flex justify-between px-1 text-sm">
                   <span className="text-muted-foreground">
-                    Balance: {formatNumber(fromCoin.balance)} {fromCoin.symbol}
+                    Balance: {formatNumber(fromCoin.balance / fromCoin.price)}{" "}
+                    {fromCoin.symbol}
                   </span>
                   <span className="font-medium">
                     {formatPrice(
@@ -589,6 +609,23 @@ export default function SwapUI() {
                 </div>
               )}
             </div>
+
+            {/* Balance Error Alert */}
+            {balanceError && (
+              <div className="border-destructive/20 bg-destructive/10 mx-1 mb-2 flex items-start gap-3 rounded-lg border p-3">
+                <div className="bg-destructive/20 mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full">
+                  <span className="text-destructive text-xs font-bold">!</span>
+                </div>
+                <div className="flex-1">
+                  <p className="text-destructive text-sm font-medium">
+                    Insufficient Balance
+                  </p>
+                  <p className="text-destructive/80 mt-1 text-xs">
+                    {balanceError}
+                  </p>
+                </div>
+              </div>
+            )}
 
             {/* Swap Button */}
             <div className="flex justify-center py-2">
@@ -613,9 +650,9 @@ export default function SwapUI() {
                   placeholder="0.0"
                   value={toAmount}
                   readOnly
-                  className="text-muted-foreground h-[3rem] flex-1 border-0 bg-transparent px-4 text-xl font-semibold focus-visible:ring-0 focus-visible:ring-offset-0"
+                  className="text-muted-foreground h-16 flex-1 border-0 bg-transparent px-4 text-xl font-semibold focus-visible:ring-0 focus-visible:ring-offset-0"
                 />
-                <div className="">
+                <div className="pr-3">
                   <CoinSelector
                     selectedCoin={toCoin}
                     onCoinSelect={setToCoin}
@@ -705,7 +742,8 @@ export default function SwapUI() {
                   !fromCoin ||
                   !toCoin ||
                   isSwapping ||
-                  Number.parseFloat(fromAmount) <= 0
+                  Number.parseFloat(fromAmount) <= 0 ||
+                  !!balanceError // Disable if there's a balance error
                 }
                 className="w-full"
                 size="lg"
@@ -715,13 +753,15 @@ export default function SwapUI() {
                     <Loader2 className="mr-2 h-5 w-5 animate-spin" />
                     Processing Swap...
                   </>
+                ) : balanceError ? (
+                  <>Insufficient Balance</>
                 ) : (
                   <>Swap Coins</>
                 )}
               </Button>
             </div>
           </CardContent>
-        </div>
+        </Card>
       </div>
     </main>
   );
