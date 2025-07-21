@@ -60,7 +60,7 @@ SELECT
             <p className="text-xs font-semibold tracking-tight">
               Trending Topics
             </p>
-            <div className="flex h-fit w-[20rem] items-center overflow-x-scroll">
+            <div className="flex h-fit w-full items-center overflow-x-scroll">
               {news.map((data: any) => (
                 <a href={data.link} key={data.id} target="_blank">
                   <div className="bg-muted mr-1 flex h-20 w-[18rem] items-center justify-between gap-x-3 rounded-xl p-2">

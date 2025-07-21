@@ -1,5 +1,4 @@
 "use client";
-
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -76,13 +75,10 @@ async function fetchCoinPrices(): Promise<Record<string, number>> {
     const response = await fetch(
       "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana,binancecoin,usd-coin,tether,ripple&vs_currencies=usd",
     );
-
     if (!response.ok) {
       throw new Error("Failed to fetch prices");
     }
-
     const data = await response.json();
-
     return {
       bitcoin: data.bitcoin?.usd || 0,
       ethereum: data.ethereum?.usd || 0,
@@ -151,7 +147,6 @@ export default function SendDrawer() {
 
   const loadBalances = async () => {
     if (!session?.user?.email) return;
-
     setBalancesLoading(true);
     setBalancesError("");
     try {
@@ -159,11 +154,9 @@ export default function SendDrawer() {
       const response = await fetch(
         `/api/user-balances?email=${encodeURIComponent(session.user.email)}`,
       );
-
       if (!response.ok) {
         throw new Error("Failed to fetch balances");
       }
-
       const fetchedBalances = await response.json();
       setBalances(fetchedBalances);
     } catch (error) {
@@ -200,14 +193,14 @@ export default function SendDrawer() {
     return usdAmount / price;
   };
 
-  // Function to check if user has sufficient balance
+  // Fixed function to check if user has sufficient balance
   const checkSufficientBalance = (
     usdAmount: number,
     coinKey: string,
   ): boolean => {
-    if (!coinKey || !balances[coinKey]) return false;
-    const requiredCoinAmount = calculateCoinAmount(usdAmount, coinKey);
-    return balances[coinKey] >= requiredCoinAmount;
+    if (!coinKey || balances[coinKey] === undefined) return false;
+    // Compare USD amounts directly since balances appear to be in USD
+    return balances[coinKey] >= usdAmount;
   };
 
   // Custom validation for amount field
@@ -215,17 +208,13 @@ export default function SendDrawer() {
     if (!selectedCoinKey) {
       return "Please select a coin first";
     }
-
     if (balancesLoading) {
       return "Loading balance...";
     }
-
     if (!checkSufficientBalance(value, selectedCoinKey)) {
-      const requiredCoinAmount = calculateCoinAmount(value, selectedCoinKey);
       const availableBalance = balances[selectedCoinKey] || 0;
-      return `Insufficient balance.`;
+      return `Insufficient balance. Available: $${availableBalance.toFixed(2)}, Required: $${value.toFixed(2)}`;
     }
-
     return true;
   };
 
@@ -244,7 +233,6 @@ export default function SendDrawer() {
             WHERE "user" = ${userEmail}
           `;
           break;
-
         case "ethereum":
           await sql`
             UPDATE ethereum 
@@ -252,7 +240,6 @@ export default function SendDrawer() {
             WHERE "user" = ${userEmail}
           `;
           break;
-
         case "solana":
           await sql`
             UPDATE solana 
@@ -260,7 +247,6 @@ export default function SendDrawer() {
             WHERE "user" = ${userEmail}
           `;
           break;
-
         case "bnb":
           await sql`
             UPDATE bnb 
@@ -268,7 +254,6 @@ export default function SendDrawer() {
             WHERE "user" = ${userEmail}
           `;
           break;
-
         case "usdc":
           await sql`
             UPDATE usdc 
@@ -276,7 +261,6 @@ export default function SendDrawer() {
             WHERE "user" = ${userEmail}
           `;
           break;
-
         case "usdt":
           await sql`
             UPDATE usdt 
@@ -284,7 +268,6 @@ export default function SendDrawer() {
             WHERE "user" = ${userEmail}
           `;
           break;
-
         case "xrp":
           await sql`
             UPDATE xrp 
@@ -292,7 +275,6 @@ export default function SendDrawer() {
             WHERE "user" = ${userEmail}
           `;
           break;
-
         default:
           throw new Error(`Unsupported coin type: ${coinType}`);
       }
@@ -339,7 +321,6 @@ export default function SendDrawer() {
       // Clear local state
       setCoin("");
       setSelectedCoinKey("");
-
       setOpen(false);
     } catch (error) {
       console.error(error);
@@ -437,6 +418,7 @@ export default function SendDrawer() {
             </FormItem>
           )}
         />
+
         <FormField
           control={form.control}
           name="amount"
@@ -471,7 +453,7 @@ export default function SendDrawer() {
                     {balances[selectedCoinKey]?.toLocaleString("en-US", {
                       currency: "USD",
                       style: "currency",
-                    }) || "0.00"}
+                    }) || "$0.00"}
                   </span>
                 )}
               </FormDescription>
@@ -486,7 +468,6 @@ export default function SendDrawer() {
                     const value =
                       e.target.value === "" ? "" : Number(e.target.value);
                     field.onChange(value);
-
                     // Real-time validation
                     if (typeof value === "number" && value > 0) {
                       const validationResult = validateAmount(value);
@@ -503,6 +484,7 @@ export default function SendDrawer() {
             </FormItem>
           )}
         />
+
         <FormField
           control={form.control}
           name="wallet_address"
@@ -522,6 +504,7 @@ export default function SendDrawer() {
             </FormItem>
           )}
         />
+
         <Button
           type="submit"
           className="w-full"
@@ -591,6 +574,7 @@ export default function SendDrawer() {
             will be successfully transferred within 24 hours.
           </AlertDescription>
         </Alert>
+
         <FormContent />
       </DialogContent>
     </Dialog>
