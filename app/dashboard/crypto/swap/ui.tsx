@@ -539,10 +539,10 @@ export default function SwapPage() {
   // ============================================================================
   return (
     <main className="">
-      <div className="container mx-auto max-w-md">
+      <div className="">
         {/* Swap Card */}
-        <Card className="border-border/50 bg-background/95 max-h-[36rem] shadow-xl backdrop-blur-sm">
-          <CardHeader className="space-y-0 pb-4">
+        <div className="border-border/50 bg-background/95 max-h-[36rem] shadow-xl backdrop-blur-sm">
+          <div className="space-y-0 pb-4">
             <div className="flex items-center justify-between">
               <CardTitle className="flex items-center gap-2 text-xl font-bold">
                 Swap Coins
@@ -570,9 +570,9 @@ export default function SwapPage() {
                 Updated {lastUpdated.toLocaleTimeString()}
               </p>
             )}
-          </CardHeader>
+          </div>
 
-          <CardContent className="h-[28rem] space-y-1 overflow-y-auto px-4 py-4">
+          <div className="h-[28rem] w-full space-y-1 overflow-y-auto py-4">
             {/* From Coin Input */}
             <div className="space-y-3">
               <Label className="text-muted-foreground text-sm font-medium">
@@ -760,8 +760,8 @@ export default function SwapPage() {
                 )}
               </Button>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
     </main>
   );

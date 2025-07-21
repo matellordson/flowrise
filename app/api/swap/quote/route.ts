@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
     // ============================================================================
     // CALCULATE EXCHANGE RATE AND FEES
     // ============================================================================
-    const baseRate = toCoin.price / fromCoin.price;
+    const baseRate = fromCoin.price / toCoin.price;
     const spreadPercentage = 0.3; // 0.3% spread
     const exchangeRate = baseRate * (1 - spreadPercentage / 100);
     const toAmount = fromAmount * exchangeRate;
