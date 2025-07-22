@@ -391,7 +391,7 @@ const ActionsCell = ({
                         href={url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-[var(--brand-forground)] hover:underline"
+                        className="hover:underline"
                       >
                         Document {index + 1}
                       </a>
@@ -471,7 +471,7 @@ const UserDashboard = () => {
 
         <Button size={"sm"} asChild>
           <Link href={"/dashboard/invest/asset/new-asset"}>
-            <Plus className="text-[var(--brand-forground)]" />
+            <Plus className="" />
             New
           </Link>
         </Button>
