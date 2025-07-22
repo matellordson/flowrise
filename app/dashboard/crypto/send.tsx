@@ -524,7 +524,7 @@ export default function SendDrawer() {
           Send
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="h-[30rem] overflow-scroll sm:max-w-[425px] lg:h-[34rem]">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             Send
