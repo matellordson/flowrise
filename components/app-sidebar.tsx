@@ -60,7 +60,7 @@ const data = {
     },
     {
       title: "Banking",
-      url: "/banking",
+      url: "/dashboard/banking",
       icon: IconBuildingBank,
     },
     {
