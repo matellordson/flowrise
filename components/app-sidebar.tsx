@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import {
+  IconBuildingBank,
   IconBuildingEstate,
   IconCamera,
   IconChartBar,
@@ -58,9 +59,9 @@ const data = {
       icon: IconBuildingEstate,
     },
     {
-      title: "Projects",
-      url: "#",
-      icon: IconFolder,
+      title: "Banking",
+      url: "/banking",
+      icon: IconBuildingBank,
     },
     {
       title: "Team",
