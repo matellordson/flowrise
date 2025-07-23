@@ -39,7 +39,9 @@ export default function Banking() {
             </div>
 
             <div className="">
-              <p className="text-right font-mono">-$1,000</p>
+              <p className="text-right font-mono font-semibold text-red-500 dark:text-red-300">
+                -$1,000
+              </p>
               <Badge variant={"default"}>Successful</Badge>
             </div>
           </div>
@@ -61,7 +63,7 @@ export default function Banking() {
             </div>
 
             <div className="">
-              <p className="text-right font-mono text-green-500 dark:text-green-300">
+              <p className="text-right font-mono font-semibold text-green-500 dark:text-green-300">
                 +$1,000
               </p>
               <Badge variant={"default"}>Successful</Badge>
@@ -85,7 +87,7 @@ export default function Banking() {
             </div>
 
             <div className="">
-              <p className="text-right font-mono">+$1,000</p>
+              <p className="text-right font-mono font-semibold">+$1,000</p>
               <Badge variant={"default"}>Successful</Badge>
             </div>
           </div>
