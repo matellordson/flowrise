@@ -69,7 +69,7 @@ const formSchema = z.object({
     }),
   type: z
     .string({
-      required_error: "Please select a property type.",
+      error: "Please select a property type.",
     })
     .min(1, "Please select a property type."),
   investmentAmount: z.string().refine(
