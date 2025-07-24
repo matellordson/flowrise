@@ -27,7 +27,6 @@ import { z } from "zod";
 import { sql } from "@/lib/sql";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
-import { redirect } from "next/navigation";
 import { useState, useEffect } from "react";
 
 const formSchema = z.object({
@@ -60,7 +59,7 @@ export default function SendMoney() {
       bankName: "",
       accountNumber: "",
       routingNumber: "",
-      amount: 100,
+      amount: 1,
     },
   });
 
@@ -69,20 +68,36 @@ export default function SendMoney() {
   // Fetch user balance
   useEffect(() => {
     async function fetchBalance() {
-      if (!session?.user?.email) return;
+      if (!session?.user?.email) {
+        setIsLoading(false);
+        return;
+      }
 
       try {
         const result = await sql`
           SELECT balance FROM bank
           WHERE "user" = ${session.user.email}
+          LIMIT 1
         `;
 
-        if (result.length > 0) {
-          setUserBalance(result[0].balance || 0);
+        console.log("Balance query result:", result); // Debug log
+
+        if (result && result.length > 0 && result[0]) {
+          const balance = Number(result[0].balance) || 0;
+          setUserBalance(balance);
+        } else {
+          // If no record exists, create one with 0 balance
+          await sql`
+            INSERT INTO bank ("user", email, balance) 
+            VALUES (${session.user.name}, ${session.user.email}, 0)
+            ON CONFLICT ("user") DO NOTHING
+          `;
+          setUserBalance(0);
         }
       } catch (error) {
         console.error("Error fetching balance:", error);
         toast.error("Failed to fetch account balance");
+        setUserBalance(0); // Set to 0 on error
       } finally {
         setIsLoading(false);
       }
@@ -106,6 +121,21 @@ export default function SendMoney() {
     }
 
     try {
+      // Check balance again before processing
+      const balanceCheck = await sql`
+        SELECT balance FROM bank
+        WHERE "user" = ${session?.user?.email}
+        LIMIT 1
+      `;
+
+      const currentBalance = balanceCheck[0]?.balance || 0;
+
+      if (values.amount > currentBalance) {
+        toast.error("Insufficient funds - balance may have changed");
+        setUserBalance(currentBalance);
+        return;
+      }
+
       // Insert the send transaction
       await sql`
         INSERT INTO bank_transfer (
@@ -130,15 +160,28 @@ export default function SendMoney() {
       `;
 
       // Update user balance
-      await sql`
+      const updateResult = await sql`
         UPDATE bank 
         SET balance = balance - ${values.amount}
         WHERE "user" = ${session?.user?.email}
+        RETURNING balance
       `;
 
+      // Update local balance state
+      if (updateResult[0]?.balance !== undefined) {
+        setUserBalance(Number(updateResult[0].balance));
+      }
+
       toast.success("Transfer initiated successfully");
-      form.reset();
-      redirect("/dashboard/banking");
+      form.reset({
+        bankName: "",
+        accountNumber: "",
+        routingNumber: "",
+        amount: 100,
+      });
+
+      // Use window.location instead of redirect for client component
+      window.location.href = "/dashboard/banking";
     } catch (error) {
       console.error("Transfer error:", error);
       toast.error("Failed to process transfer");
@@ -151,7 +194,7 @@ export default function SendMoney() {
         <DialogTrigger asChild>
           <Button variant="outline" disabled>
             <ArrowUp className="h-4 w-4" />
-            Send
+            Send Money
           </Button>
         </DialogTrigger>
       </Dialog>
@@ -163,10 +206,10 @@ export default function SendMoney() {
       <DialogTrigger asChild>
         <Button variant="outline">
           <ArrowUp className="h-4 w-4" />
-          Send
+          Send Money
         </Button>
       </DialogTrigger>
-      <DialogContent className="h-[34rem] max-w-md overflow-hidden overflow-y-scroll">
+      <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle>Send Money</DialogTitle>
           <DialogDescription>
@@ -258,7 +301,7 @@ export default function SendMoney() {
                       {...field}
                       type="number"
                       placeholder="Enter amount"
-                      min="100"
+                      min="1"
                       max={userBalance}
                       step="0.01"
                       onChange={(e) => {
