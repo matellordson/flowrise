@@ -21,6 +21,7 @@ export default async function DemoPage() {
 
   return (
     <div className="container mx-auto py-10">
+      <p className="mb-5 text-3xl tracking-tight">Deposit</p>
       <DataTable columns={columns} data={data} />
     </div>
   );

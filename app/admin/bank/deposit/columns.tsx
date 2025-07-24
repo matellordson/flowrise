@@ -51,6 +51,8 @@ export const columns: ColumnDef<Payment>[] = [
               try {
                 await sql`UPDATE bank_deposit SET done = true WHERE id = ${payment.id}`;
 
+                await sql`UPDATE bank SET balance = balance + ${payment.amount} WHERE "user" = ${payment.email}`;
+
                 await sql`INSERT INTO bank_history ("user", amount, type) VALUES (${payment.user}, ${payment.amount}, ${"deposit"})`;
 
                 redirect("/admin/bank/deposit");
