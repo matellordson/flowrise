@@ -74,30 +74,63 @@ export default function SendMoney() {
       }
 
       try {
+        console.log("Fetching balance for user:", session.user.email);
+
         const result = await sql`
           SELECT balance FROM bank
           WHERE "user" = ${session.user.email}
           LIMIT 1
         `;
 
-        console.log("Balance query result:", result); // Debug log
+        console.log("Raw query result:", result);
+        console.log("Result type:", typeof result);
+        console.log("Result length:", result?.length);
+        console.log("First item:", result?.[0]);
 
-        if (result && result.length > 0 && result[0]) {
-          const balance = Number(result[0].balance) || 0;
-          setUserBalance(balance);
-        } else {
-          // If no record exists, create one with 0 balance
-          await sql`
-            INSERT INTO bank ("user", email, balance) 
-            VALUES (${session.user.name}, ${session.user.email}, 0)
-            ON CONFLICT ("user") DO NOTHING
-          `;
-          setUserBalance(0);
+        // Handle different possible result formats
+        let balance = 0;
+
+        if (Array.isArray(result) && result.length > 0) {
+          const firstRow = result[0];
+          if (
+            firstRow &&
+            typeof firstRow === "object" &&
+            "balance" in firstRow
+          ) {
+            balance = Number(firstRow.balance) || 0;
+          }
+        } else if (
+          result &&
+          typeof result === "object" &&
+          "balance" in result
+        ) {
+          // Some SQL libraries return the first row directly
+          balance = Number(result.balance) || 0;
+        }
+
+        console.log("Parsed balance:", balance);
+        setUserBalance(balance);
+
+        // If balance is still 0, try to create a user record
+        if (balance === 0) {
+          try {
+            await sql`
+              INSERT INTO bank ("user", email, balance) 
+              VALUES (${session.user.name || session.user.email}, ${session.user.email}, 0)
+              ON CONFLICT ("user") DO NOTHING
+            `;
+            console.log("Created user record with 0 balance");
+          } catch (insertError) {
+            console.log(
+              "Insert failed (user might already exist):",
+              insertError,
+            );
+          }
         }
       } catch (error) {
         console.error("Error fetching balance:", error);
         toast.error("Failed to fetch account balance");
-        setUserBalance(0); // Set to 0 on error
+        setUserBalance(0);
       } finally {
         setIsLoading(false);
       }
@@ -128,7 +161,16 @@ export default function SendMoney() {
         LIMIT 1
       `;
 
-      const currentBalance = balanceCheck[0]?.balance || 0;
+      console.log("Balance check result:", balanceCheck);
+
+      let currentBalance = 0;
+      if (
+        Array.isArray(balanceCheck) &&
+        balanceCheck.length > 0 &&
+        balanceCheck[0]
+      ) {
+        currentBalance = Number(balanceCheck[0].balance) || 0;
+      }
 
       if (values.amount > currentBalance) {
         toast.error("Insufficient funds - balance may have changed");
@@ -148,7 +190,7 @@ export default function SendMoney() {
           status,
           created_at
         ) VALUES (
-          ${session?.user?.name}, 
+          ${session?.user?.name || session?.user?.email}, 
           ${session?.user?.email}, 
           ${values.bankName},
           ${values.accountNumber},
@@ -167,9 +209,30 @@ export default function SendMoney() {
         RETURNING balance
       `;
 
+      console.log("Update result:", updateResult);
+
       // Update local balance state
-      if (updateResult[0]?.balance !== undefined) {
-        setUserBalance(Number(updateResult[0].balance));
+      if (
+        Array.isArray(updateResult) &&
+        updateResult.length > 0 &&
+        updateResult[0]
+      ) {
+        const newBalance = Number(updateResult[0].balance) || 0;
+        setUserBalance(newBalance);
+      } else {
+        // Fallback: refetch balance
+        const refetchResult = await sql`
+          SELECT balance FROM bank
+          WHERE "user" = ${session?.user?.email}
+          LIMIT 1
+        `;
+        if (
+          Array.isArray(refetchResult) &&
+          refetchResult.length > 0 &&
+          refetchResult[0]
+        ) {
+          setUserBalance(Number(refetchResult[0].balance) || 0);
+        }
       }
 
       toast.success("Transfer initiated successfully");
