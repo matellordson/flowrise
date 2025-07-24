@@ -12,6 +12,9 @@ export default function BankAdmin() {
           <li>
             <Link href={"/admin/bank/deposit"}>Deposit</Link>
           </li>
+          <li>
+            <Link href={"/admin/bank/send"}>Send</Link>
+          </li>
         </ul>
       </div>
     </div>

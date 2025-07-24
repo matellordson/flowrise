@@ -8,7 +8,7 @@ interface dataType {
   user: string;
   amount: string;
   type: string;
-  // created_at: string;
+  created_at: string;
 }
 
 export default async function BankHistory() {
@@ -17,8 +17,11 @@ export default async function BankHistory() {
     (await sql`SELECT * FROM bank_history WHERE "user" = ${session?.user?.name} ORDER BY created_at DESC`) as dataType[];
   return (
     <div className="bg-card text-card-foreground h-[18rem] w-full rounded-xl p-3 lg:h-screen">
-      <p className="flex items-center gap-x-1 pb-2 text-sm font-semibold tracking-wide">
+      <p className="flex items-center gap-x-1 text-sm font-semibold tracking-wide">
         Transactions
+      </p>
+      <p className="text-muted-foreground pb-2 text-xs font-normal">
+        Showing successfull complete transaction
       </p>
       <div className="space-y-2">
         {data.map((data) => (
@@ -34,14 +37,18 @@ export default async function BankHistory() {
                       Recieved from {data.user}
                     </p>
                     <p className="text-muted-foreground text-xs">
-                      {/* {data.created_at} */}
+                      {new Date(data.created_at).toLocaleDateString()}
                     </p>
                   </div>
                 </div>
 
                 <div className="">
                   <p className="text-right font-mono font-semibold text-green-500 dark:text-green-300">
-                    +{data.amount}
+                    +
+                    {Number(data.amount).toLocaleString("en-US", {
+                      currency: "USD",
+                      style: "currency",
+                    })}
                   </p>
                   <Badge variant={"default"}>Successful</Badge>
                 </div>
@@ -54,17 +61,21 @@ export default async function BankHistory() {
                   </div>
                   <div className="text-sm">
                     <p className="text-card-foreground w-[12rem] truncate lg:w-[20rem]">
-                      Transfer to Matel Lordson Eddi
+                      Transfer to {data.user}
                     </p>
                     <p className="text-muted-foreground text-xs">
-                      Jul 21st, 17:55:42
+                      {new Date(data.created_at).toLocaleDateString()}
                     </p>
                   </div>
                 </div>
 
                 <div className="">
                   <p className="text-right font-mono font-semibold text-red-500 dark:text-red-300">
-                    -$1,000
+                    -
+                    {Number(data.amount).toLocaleString("en-US", {
+                      currency: "USD",
+                      style: "currency",
+                    })}
                   </p>
                   <Badge variant={"default"}>Successful</Badge>
                 </div>
