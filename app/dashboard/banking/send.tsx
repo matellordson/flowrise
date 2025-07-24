@@ -7,14 +7,14 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { BanknoteArrowUp } from "lucide-react";
+import { ArrowUp } from "lucide-react";
 
 export default function SendMoney() {
   return (
     <Dialog>
       <DialogTrigger asChild>
         <Button variant="outline">
-          <BanknoteArrowUp className="h-4 w-4" />
+          <ArrowUp className="h-4 w-4" />
           Send
         </Button>
       </DialogTrigger>

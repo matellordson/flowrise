@@ -47,11 +47,11 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const FormSchema = z.object({
-  amount: z.coerce.number().min(100, {
+  amount: z.number().min(100, {
     message: "Coin value should be atleast $100",
   }),
   coin: z.string({
-    required_error: "Please select coin",
+    error: "Please select coin",
   }),
   wallet_address: z.string().min(1, {
     message: "Please provide a wallet address",
