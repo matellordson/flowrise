@@ -2,7 +2,6 @@ import DepositMoney from "./deposit";
 import ExchangeMoney from "./exchange";
 import SendMoney from "./send";
 import { sql } from "@/lib/sql";
-import { useSession } from "next-auth/react";
 import { auth } from "@/auth";
 import BankHistory from "./history";
 
@@ -14,17 +13,45 @@ export default async function Banking() {
   const session = await auth();
 
   async function getBalance() {
-    const data =
-      (await sql`SELECT balance FROM bank WHERE "user" = ${session?.user?.email} LIMIT 1`) as dataType[];
-    return data;
+    try {
+      if (!session?.user?.email) {
+        return [{ balance: 0 }];
+      }
+
+      const data = (await sql`
+        SELECT balance FROM bank 
+        WHERE "user" = ${session.user.email} 
+        LIMIT 1
+      `) as dataType[];
+
+      // If no record exists, create one with 0 balance
+      if (!data || data.length === 0) {
+        await sql`
+          INSERT INTO bank ("user", email, balance) 
+          VALUES (${session.user.name || session.user.email}, ${session.user.email}, 0)
+          ON CONFLICT ("user") DO NOTHING
+        `;
+        return [{ balance: 0 }];
+      }
+
+      return data;
+    } catch (error) {
+      console.error("Error fetching balance:", error);
+      // Return default balance on error
+      return [{ balance: 0 }];
+    }
   }
 
   const balance = await getBalance();
+
+  // Additional safety check
+  const currentBalance = balance?.[0]?.balance ?? 0;
+
   return (
     <div className="flex w-full flex-col items-center justify-center gap-3 lg:flex-row">
       <div className="bg-card text-card-forground w-full rounded-xl p-5 lg:h-screen">
         <p className="pb-4 text-center font-mono text-3xl font-semibold lg:text-4xl">
-          {Number(balance[0].balance | 0).toLocaleString("en-US", {
+          {Number(currentBalance).toLocaleString("en-US", {
             style: "currency",
             currency: "USD",
           })}
