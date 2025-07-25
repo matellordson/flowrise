@@ -27,6 +27,7 @@ import { z } from "zod";
 import { sql } from "@/lib/sql";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
+import { redirect } from "next/navigation";
 import { useState, useEffect } from "react";
 
 const formSchema = z.object({
@@ -68,69 +69,20 @@ export default function SendMoney() {
   // Fetch user balance
   useEffect(() => {
     async function fetchBalance() {
-      if (!session?.user?.email) {
-        setIsLoading(false);
-        return;
-      }
+      if (!session?.user?.email) return;
 
       try {
-        console.log("Fetching balance for user:", session.user.email);
-
-        const result = await sql`
+        const result = (await sql`
           SELECT balance FROM bank
           WHERE "user" = ${session.user.email}
-          LIMIT 1
-        `;
+        `) as { balance: number }[];
 
-        console.log("Raw query result:", result);
-        console.log("Result type:", typeof result);
-        console.log("Result length:", result?.length);
-        console.log("First item:", result?.[0]);
-
-        // Handle different possible result formats
-        let balance = 0;
-
-        if (Array.isArray(result) && result.length > 0) {
-          const firstRow = result[0];
-          if (
-            firstRow &&
-            typeof firstRow === "object" &&
-            "balance" in firstRow
-          ) {
-            balance = Number(firstRow.balance) || 0;
-          }
-        } else if (
-          result &&
-          typeof result === "object" &&
-          "balance" in result
-        ) {
-          // Some SQL libraries return the first row directly
-          balance = Number(result.balance) || 0;
-        }
-
-        console.log("Parsed balance:", balance);
-        setUserBalance(balance);
-
-        // If balance is still 0, try to create a user record
-        if (balance === 0) {
-          try {
-            await sql`
-              INSERT INTO bank ("user", email, balance) 
-              VALUES (${session.user.name || session.user.email}, ${session.user.email}, 0)
-              ON CONFLICT ("user") DO NOTHING
-            `;
-            console.log("Created user record with 0 balance");
-          } catch (insertError) {
-            console.log(
-              "Insert failed (user might already exist):",
-              insertError,
-            );
-          }
+        if (result.length > 0) {
+          setUserBalance(result[0].balance || 0);
         }
       } catch (error) {
         console.error("Error fetching balance:", error);
         toast.error("Failed to fetch account balance");
-        setUserBalance(0);
       } finally {
         setIsLoading(false);
       }
@@ -154,30 +106,6 @@ export default function SendMoney() {
     }
 
     try {
-      // Check balance again before processing
-      const balanceCheck = await sql`
-        SELECT balance FROM bank
-        WHERE "user" = ${session?.user?.email}
-        LIMIT 1
-      `;
-
-      console.log("Balance check result:", balanceCheck);
-
-      let currentBalance = 0;
-      if (
-        Array.isArray(balanceCheck) &&
-        balanceCheck.length > 0 &&
-        balanceCheck[0]
-      ) {
-        currentBalance = Number(balanceCheck[0].balance) || 0;
-      }
-
-      if (values.amount > currentBalance) {
-        toast.error("Insufficient funds - balance may have changed");
-        setUserBalance(currentBalance);
-        return;
-      }
-
       // Insert the send transaction
       await sql`
         INSERT INTO bank_transfer (
@@ -190,7 +118,7 @@ export default function SendMoney() {
           status,
           created_at
         ) VALUES (
-          ${session?.user?.name || session?.user?.email}, 
+          ${session?.user?.name}, 
           ${session?.user?.email}, 
           ${values.bankName},
           ${values.accountNumber},
@@ -202,49 +130,15 @@ export default function SendMoney() {
       `;
 
       // Update user balance
-      const updateResult = await sql`
+      await sql`
         UPDATE bank 
         SET balance = balance - ${values.amount}
         WHERE "user" = ${session?.user?.email}
-        RETURNING balance
       `;
 
-      console.log("Update result:", updateResult);
-
-      // Update local balance state
-      if (
-        Array.isArray(updateResult) &&
-        updateResult.length > 0 &&
-        updateResult[0]
-      ) {
-        const newBalance = Number(updateResult[0].balance) || 0;
-        setUserBalance(newBalance);
-      } else {
-        // Fallback: refetch balance
-        const refetchResult = await sql`
-          SELECT balance FROM bank
-          WHERE "user" = ${session?.user?.email}
-          LIMIT 1
-        `;
-        if (
-          Array.isArray(refetchResult) &&
-          refetchResult.length > 0 &&
-          refetchResult[0]
-        ) {
-          setUserBalance(Number(refetchResult[0].balance) || 0);
-        }
-      }
-
       toast.success("Transfer initiated successfully");
-      form.reset({
-        bankName: "",
-        accountNumber: "",
-        routingNumber: "",
-        amount: 100,
-      });
-
-      // Use window.location instead of redirect for client component
-      window.location.href = "/dashboard/banking";
+      form.reset();
+      redirect("/dashboard/banking");
     } catch (error) {
       console.error("Transfer error:", error);
       toast.error("Failed to process transfer");
@@ -257,7 +151,7 @@ export default function SendMoney() {
         <DialogTrigger asChild>
           <Button variant="outline" disabled>
             <ArrowUp className="h-4 w-4" />
-            Send Money
+            Send
           </Button>
         </DialogTrigger>
       </Dialog>
@@ -269,10 +163,10 @@ export default function SendMoney() {
       <DialogTrigger asChild>
         <Button variant="outline">
           <ArrowUp className="h-4 w-4" />
-          Send Money
+          Send
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-md">
+      <DialogContent className="h-[34rem] max-w-md overflow-hidden overflow-y-scroll">
         <DialogHeader>
           <DialogTitle>Send Money</DialogTitle>
           <DialogDescription>
