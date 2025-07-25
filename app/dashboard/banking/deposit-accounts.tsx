@@ -14,7 +14,7 @@ import {
 export default function BankDepositAccounts() {
   return (
     <div className="">
-      <div className="flex items-center justify-between px-5">
+      <div className="flex items-center justify-between lg:px-10">
         <Button size={"lg"} variant={"outline"}>
           <IconBrandPaypal />
           <a href="https://paypal.me/yourbusinessname" target="_blank">

@@ -83,8 +83,9 @@ export default function DepositMoney() {
             Deposit Instructions
           </AlertTitle>
           <AlertDescription>
-            Please select any of the provided deposit accounts. Your banking
-            account will be funded within 24 hours of payment confirmation.
+            Please select any of the provided deposit accounts and pay then come
+            back to fill the amount form. Your banking account will be funded
+            within 24 hours of payment confirmation.
           </AlertDescription>
         </Alert>
 
@@ -112,7 +113,7 @@ export default function DepositMoney() {
                     />
                   </FormControl>
                   <FormDescription>
-                    Enter the amount you want to deposit.
+                    Enter the amount you have deposited.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
