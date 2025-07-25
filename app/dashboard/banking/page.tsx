@@ -24,16 +24,6 @@ export default async function Banking() {
         LIMIT 1
       `) as dataType[];
 
-      // If no record exists, create one with 0 balance
-      if (!data || data.length === 0) {
-        await sql`
-          INSERT INTO bank ("user", email, balance) 
-          VALUES (${session.user.name || session.user.email}, ${session.user.email}, 0)
-          ON CONFLICT ("user") DO NOTHING
-        `;
-        return [{ balance: 0 }];
-      }
-
       return data;
     } catch (error) {
       console.error("Error fetching balance:", error);
