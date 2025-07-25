@@ -17,6 +17,9 @@ export default function AdminPage() {
           <li>
             <Link href={"/admin/bank"}>Banking</Link>
           </li>
+          <li>
+            <Link href={"/admin/trading"}>Trading</Link>
+          </li>
         </ul>
       </div>
     </div>

@@ -6,6 +6,7 @@ import {
   IconBuildingEstate,
   IconCamera,
   IconChartBar,
+  IconChartLine,
   IconCoinBitcoin,
   IconDashboard,
   IconDatabase,
@@ -64,9 +65,9 @@ const data = {
       icon: IconBuildingBank,
     },
     {
-      title: "Team",
-      url: "#",
-      icon: IconUsers,
+      title: "Trading",
+      url: "/dashboard/trading",
+      icon: IconChartLine,
     },
   ],
   navClouds: [
