@@ -9,10 +9,10 @@ export default function TradingAdmin() {
           <li>
             <Link href={"/admin/trading/accounts"}>All trading accounts</Link>
           </li>
-          {/* <li>
-            <Link href={"/admin/trading/deposit"}>Deposit</Link>
-          </li>
           <li>
+            <Link href={"/admin/trading/deposit"}>New account deposit</Link>
+          </li>
+          {/* <li>
             <Link href={"/admin/trading/send"}>Send</Link>
           </li> */}
         </ul>
