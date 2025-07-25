@@ -182,7 +182,7 @@ export default function SendMoney() {
           </AlertTitle>
           <AlertDescription>
             Please double-check all account details before submitting. Transfers
-            are typically processed within 1-3 business days.
+            are typically processed within 24hrs.
           </AlertDescription>
         </Alert>
 

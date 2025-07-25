@@ -55,6 +55,7 @@ export default function DepositMoney() {
     try {
       await sql`INSERT INTO bank_deposit ("user" ,email, amount) VALUES (${session?.user?.name}, ${session?.user?.email}, ${values.amount})`;
       toast("Please proceed to making deposit");
+      form.reset();
       redirect("/dashboard/banking");
     } catch (error) {
       console.log(error);
@@ -120,7 +121,7 @@ export default function DepositMoney() {
               )}
             />
             <Button type="submit" className="w-full">
-              Deposit Funds
+              Sent
             </Button>
           </form>
         </Form>

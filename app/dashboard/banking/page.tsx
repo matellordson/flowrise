@@ -39,8 +39,8 @@ export default async function Banking() {
 
   return (
     <div className="flex w-full flex-col items-center justify-center gap-3 lg:flex-row">
-      <div className="bg-card text-card-forground w-full rounded-xl p-5 lg:h-screen">
-        <p className="pb-4 text-center font-mono text-3xl font-semibold lg:text-4xl">
+      <div className="bg-card text-card-forground w-full rounded-xl lg:h-screen lg:px-5">
+        <p className="py-5 text-center font-mono text-3xl font-semibold lg:text-4xl">
           {Number(currentBalance).toLocaleString("en-US", {
             style: "currency",
             currency: "USD",
@@ -50,6 +50,18 @@ export default async function Banking() {
           <SendMoney />
           <DepositMoney />
           <ExchangeMoney />
+        </div>
+
+        <div className="m-10 mx-auto mt-10 h-[15rem] w-full rounded-xl border">
+          <div className="h-[60%] w-full"></div>
+          <div className="h-[40%] w-full rounded-b-xl border border-t p-2">
+            <p className="text-sm lg:text-base">Lorem, ipsum dolor.</p>
+            <p className="text-muted-foreground text-xs leading-5 lg:text-sm lg:leading-6">
+              Lorem ipsum dolor sit amet consectetur adipisicing elit.
+              Accusantium ea suscipit magni beatae tempora alias fugit facilis
+              ratione hic quibusdam!
+            </p>
+          </div>
         </div>
       </div>
       <BankHistory />

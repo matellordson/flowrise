@@ -46,7 +46,7 @@ export default async function History() {
   const session = await auth();
 
   return (
-    <div className="bg-card text-card-foreground h-[18rem] w-full rounded-xl p-3 lg:h-screen">
+    <div className="bg-card text-card-foreground h-[21rem] w-full overflow-hidden overflow-y-scroll rounded-xl p-3 lg:h-screen">
       <p className="flex items-center gap-x-1 text-sm font-semibold tracking-wide">
         Transactions
       </p>
@@ -120,13 +120,17 @@ export default async function History() {
                         Exchange from crypto
                       </p>
                       <p className="text-muted-foreground text-xs">
-                        Jul 21st, 17:55:42
+                        {new Date(data.created_at).toLocaleDateString()}
                       </p>
                     </div>
                   </div>
                   <div className="">
-                    <p className="text-right font-mono font-semibold">
-                      +$1,000
+                    <p className="text-right font-mono font-semibold text-green-500 dark:text-green-300">
+                      +
+                      {Number(data.amount).toLocaleString("en-US", {
+                        currency: "USD",
+                        style: "currency",
+                      })}
                     </p>
                     <Badge variant={"default"}>Successful</Badge>
                   </div>
