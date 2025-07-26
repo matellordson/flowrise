@@ -1,7 +1,9 @@
 import Image from "next/image";
 
 const fetchBitcoinPrice = async () => {
-  const response = await fetch("localhost:3000/api/pairs/btc-usd");
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/pairs/btc-usd`,
+  );
   const { data } = await response.json();
   if (!response.ok) {
     console.log(response.status);
@@ -10,7 +12,9 @@ const fetchBitcoinPrice = async () => {
 };
 
 const fetchEthereumPrice = async () => {
-  const response = await fetch("localhost:3000/api/pairs/eth-usd");
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/pairs/eth-usd`,
+  );
   const { data } = await response.json();
   if (!response.ok) {
     console.log(response.status);
@@ -19,7 +23,8 @@ const fetchEthereumPrice = async () => {
 };
 
 const fetchUSDTPrice = async () => {
-  const response = await fetch("localhost:3000/api/pairs/usdt-usd");
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/pairs/usdt-usd`)
   const { data } = await response.json();
   if (!response.ok) {
     console.log(response.status);
