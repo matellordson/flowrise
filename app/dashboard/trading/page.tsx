@@ -53,7 +53,7 @@ export default async function Trading() {
                 <div className="h-3 w-3 animate-pulse rounded-full border-2 border-green-500 bg-green-300"></div>
               </Badge>
 
-              <Pairs />
+              <Pairs accountID={data[0].id} />
             </div>
           </div>
           <div className="bg-card h-screen w-full rounded-xl p-4 lg:w-[50%]">

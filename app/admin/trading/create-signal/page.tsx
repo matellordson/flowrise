@@ -48,6 +48,7 @@ const tradingPairs = [
   { value: "BTC/USD", label: "BTC/USD" },
   { value: "ETH/USD", label: "ETH/USD" },
   { value: "USDT/USD", label: "USDT/USD" },
+  { value: "XRP/USD", label: "XRP/USD" },
 ];
 
 export default function TradingForm() {
