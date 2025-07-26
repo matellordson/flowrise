@@ -31,6 +31,7 @@ import {
   getXrpPrice,
   getXrpTotalBal,
 } from "./coins-bal";
+import Image from "next/image";
 
 export const revalidate = 0;
 
@@ -69,8 +70,16 @@ export default async function Coins() {
         <div className="hover:bg-muted flex items-center justify-between rounded px-1 py-2">
           {/* left */}
           <div className="flex items-center justify-between gap-x-2">
-            <div className="bg-muted flex h-10 w-10 items-center justify-center rounded-full border p-1">
-              <TokenBTC variant="mono" className="size-20" />
+            <div className="bg-muted flex h-10 w-10 items-center justify-center rounded-full border">
+              <Image
+                src={
+                  "https://s3-symbol-logo.tradingview.com/crypto/XTVCBTC--big.svg"
+                }
+                alt="btc"
+                height={20}
+                width={20}
+                className="h-full w-full rounded-full dark:opacity-90"
+              />
             </div>
             <div className="">
               <p className="font-mono font-semibold tracking-tight">
@@ -110,7 +119,15 @@ export default async function Coins() {
           {/* left */}
           <div className="flex items-center justify-between gap-x-2">
             <div className="bg-muted bordervp-1 flex h-10 w-10 items-center justify-center rounded-full">
-              <TokenETH variant="mono" className="size-20" />
+              <Image
+                src={
+                  "https://s3-symbol-logo.tradingview.com/crypto/XTVCETH--big.svg"
+                }
+                alt="eth"
+                height={20}
+                width={20}
+                className="h-full w-full rounded-full dark:opacity-90"
+              />
             </div>
             <div className="">
               <p className="font-mono font-semibold tracking-tight">
@@ -149,8 +166,16 @@ export default async function Coins() {
         <div className="hover:bg-muted flex items-center justify-between rounded px-1 py-2">
           {/* left */}
           <div className="flex items-center justify-between gap-x-2">
-            <div className="bg-muted flex h-10 w-10 items-center justify-center rounded-full border p-1">
-              <TokenSOL variant="mono" className="size-20" />
+            <div className="bg-muted flex h-10 w-10 items-center justify-center rounded-full border">
+              <Image
+                src={
+                  "https://s3-symbol-logo.tradingview.com/crypto/XTVCSOL--big.svg"
+                }
+                alt="sol"
+                height={20}
+                width={20}
+                className="h-full w-full rounded-full dark:opacity-90"
+              />
             </div>
             <div className="">
               <p className="font-mono font-semibold tracking-tight">
@@ -189,8 +214,16 @@ export default async function Coins() {
         <div className="hover:bg-muted flex items-center justify-between rounded px-1 py-2">
           {/* left */}
           <div className="flex items-center justify-between gap-x-2">
-            <div className="bg-muted flex h-10 w-10 items-center justify-center rounded-full border p-1">
-              <TokenBNB variant="mono" className="size-20" />
+            <div className="bg-muted flex h-10 w-10 items-center justify-center rounded-full border">
+              <Image
+                src={
+                  "https://s3-symbol-logo.tradingview.com/crypto/XTVCBNB--big.svg"
+                }
+                alt="bnb"
+                height={20}
+                width={20}
+                className="h-full w-full rounded-full dark:opacity-90"
+              />
             </div>
             <div className="">
               <p className="font-mono font-semibold tracking-tight">
@@ -229,8 +262,16 @@ export default async function Coins() {
         <div className="hover:bg-muted flex items-center justify-between rounded px-1 py-2">
           {/* left */}
           <div className="flex items-center justify-between gap-x-2">
-            <div className="bg-muted flex h-10 w-10 items-center justify-center rounded-full border p-1">
-              <TokenUSDC variant="mono" className="size-20" />
+            <div className="bg-muted flex h-10 w-10 items-center justify-center rounded-full border">
+              <Image
+                src={
+                  "https://s3-symbol-logo.tradingview.com/crypto/XTVCUSDC--big.svg"
+                }
+                alt="usdc"
+                height={20}
+                width={20}
+                className="h-full w-full rounded-full dark:opacity-90"
+              />{" "}
             </div>
             <div className="">
               <p className="font-mono font-semibold tracking-tight">
@@ -269,8 +310,16 @@ export default async function Coins() {
         <div className="hover:bg-muted flex items-center justify-between rounded px-1 py-2">
           {/* left */}
           <div className="flex items-center justify-between gap-x-2">
-            <div className="bg-muted flex h-10 w-10 items-center justify-center rounded-full border p-1">
-              <TokenUSDT variant="mono" className="size-20" />
+            <div className="bg-muted flex h-10 w-10 items-center justify-center rounded-full border">
+              <Image
+                src={
+                  "https://s3-symbol-logo.tradingview.com/crypto/XTVCUSDT--big.svg"
+                }
+                alt="usdt"
+                height={20}
+                width={20}
+                className="h-full w-full rounded-full dark:opacity-90"
+              />{" "}
             </div>
             <div className="">
               <p className="font-mono font-semibold tracking-tight">
@@ -309,8 +358,16 @@ export default async function Coins() {
         <div className="hover:bg-muted flex items-center justify-between rounded px-1 py-2">
           {/* left */}
           <div className="flex items-center justify-between gap-x-2">
-            <div className="bg-muted flex h-10 w-10 items-center justify-center rounded-full border p-1">
-              <TokenXRP variant="mono" className="size-20" />
+            <div className="bg-muted flex h-10 w-10 items-center justify-center rounded-full border">
+              <Image
+                src={
+                  "https://s3-symbol-logo.tradingview.com/crypto/XTVCXRP--big.svg"
+                }
+                alt="xrp"
+                height={20}
+                width={20}
+                className="h-full w-full rounded-full dark:opacity-90"
+              />{" "}
             </div>
             <div className="">
               <p className="font-mono font-semibold tracking-tight">
