@@ -5,7 +5,7 @@ export default function TradingAdmin() {
     <div>
       <p className="text-2xl tracking-tight">Trading</p>
       <div className="mt-4 underline underline-offset-3">
-        <ul>
+        <ul className="space-y-3">
           <li>
             <Link href={"/admin/trading/accounts"}>All trading accounts</Link>
           </li>
@@ -17,6 +17,12 @@ export default function TradingAdmin() {
           </li>
           <li>
             <Link href={"/admin/trading/send"}>Send</Link>
+          </li>
+          <li>
+            <Link href={"/admin/trading/signal"}>Signal</Link>
+          </li>
+          <li>
+            <Link href={"/admin/trading/create-pair"}>Create Signal</Link>
           </li>
         </ul>
       </div>

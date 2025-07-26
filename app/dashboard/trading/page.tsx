@@ -56,7 +56,11 @@ export default async function Trading() {
               <Pairs />
             </div>
           </div>
-          <div className="bg-card h-screen w-full rounded-xl lg:w-[50%]"></div>
+          <div className="bg-card h-screen w-full rounded-xl p-4 lg:w-[50%]">
+            <p className="text-sm font-semibold tracking-tight">
+              Active Positions
+            </p>
+          </div>
         </div>
       )}
     </div>
