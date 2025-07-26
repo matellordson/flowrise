@@ -3,6 +3,10 @@ import TradingPlans from "./plans";
 import { auth } from "@/auth";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import SendTrade from "./send";
+import DepositTrade from "./deposit";
+import { Badge } from "@/components/ui/badge";
+import { Bot } from "lucide-react";
 
 export default async function Trading() {
   const session = await auth();
@@ -27,7 +31,30 @@ export default async function Trading() {
           </div>
         </div>
       ) : (
-        <p>you have plan </p>
+        <div className="flex flex-col gap-y-2 lg:flex-row lg:gap-x-2">
+          <div className="bg-muted h-screen w-full rounded-xl lg:w-[50%]">
+            <div className="mt-5 flex flex-col items-center justify-center space-y-2">
+              <Badge className="capitalize">{data[0].plan} plan</Badge>
+              <p className="py-2 font-mono text-3xl font-semibold lg:text-4xl">
+                {Number(data[0].balance).toLocaleString("en-US", {
+                  style: "currency",
+                  currency: "USD",
+                })}
+              </p>
+            </div>
+            <div className="mx-auto flex w-fit items-center justify-between gap-x-2">
+              <SendTrade />
+              <DepositTrade />
+            </div>
+            <div className="mt-10 px-3">
+              <Badge variant={"outline"} className="">
+                <Bot /> Bot trading
+                <div className="h-3 w-3 animate-pulse rounded-full border-2 border-green-500 bg-green-300"></div>
+              </Badge>
+            </div>
+          </div>
+          <div className="bg-muted h-screen w-full rounded-xl lg:w-[50%]"></div>
+        </div>
       )}
     </div>
   );

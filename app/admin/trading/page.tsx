@@ -12,9 +12,12 @@ export default function TradingAdmin() {
           <li>
             <Link href={"/admin/trading/deposit"}>New account deposit</Link>
           </li>
-          {/* <li>
+          <li>
+            <Link href={"/admin/trading/deposit2"}>Deposit</Link>
+          </li>
+          <li>
             <Link href={"/admin/trading/send"}>Send</Link>
-          </li> */}
+          </li>
         </ul>
       </div>
     </div>

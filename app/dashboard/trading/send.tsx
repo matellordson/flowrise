@@ -50,7 +50,7 @@ const formSchema = z.object({
     .max(500000, "Amount cannot exceed $500,000"),
 });
 
-export default function SendMoney() {
+export default function SendTrade() {
   const [userBalance, setUserBalance] = useState<number>(0);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -73,7 +73,7 @@ export default function SendMoney() {
 
       try {
         const result = (await sql`
-          SELECT balance FROM bank
+          SELECT balance FROM trading_accounts
           WHERE "user" = ${session.user.email}
         `) as { balance: number }[];
 
@@ -108,41 +108,41 @@ export default function SendMoney() {
     try {
       // Insert the send transaction
       await sql`
-        INSERT INTO bank_transfer (
-          "user", 
+        INSERT INTO trading_send (
           email, 
           bank_name, 
           account_number, 
           routing_number, 
           amount, 
           status,
-          created_at
+          created_at,
+          "user"
         ) VALUES (
-          ${session?.user?.name}, 
           ${session?.user?.email}, 
           ${values.bankName},
           ${values.accountNumber},
           ${values.routingNumber},
           ${values.amount},
           false,
-          NOW()
+          NOW(),
+          ${session?.user?.name}
         )
       `;
 
       // Update user balance
       await sql`
-        UPDATE bank 
+        UPDATE trading_accounts 
         SET balance = balance - ${values.amount}
         WHERE "user" = ${session?.user?.email}
       `;
 
       toast.success("Transfer initiated successfully");
       form.reset();
-      redirect("/dashboard/banking");
+      redirect("/dashboard/trading");
     } catch (error) {
       console.error("Transfer error:", error);
       form.reset();
-      redirect("/dashboard/banking");
+      redirect("/dashboard/trading");
     }
   }
 
