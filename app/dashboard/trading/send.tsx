@@ -259,7 +259,7 @@ export default function SendTrade() {
                       {...field}
                       type="number"
                       placeholder="Enter amount"
-                      min="1"
+                      min="10000"
                       max={userBalance}
                       step="0.01"
                       onChange={(e) => {

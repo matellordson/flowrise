@@ -92,13 +92,13 @@ export default async function Pairs({ accountID }: { accountID: string }) {
       </div>
       {getSignal.length < 1 ? (
         <div className="">
-          <div className="flex h-[13rem] flex-col items-center justify-center">
+          <div className="flex h-[15rem] flex-col items-center justify-center">
             <X size={25} />
             <p>No open orders</p>
           </div>
         </div>
       ) : (
-        <div className="space-y-2">
+        <div className="space-y-2 overflow-scroll">
           {getSignal.map((data) => (
             <div key={data.id}>
               {data.pair == "BTC/USD" ? (

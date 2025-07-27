@@ -99,7 +99,7 @@ export default async function ActivePositions({
           </div>
         </div>
       ) : (
-        <div className="space-y-2">
+        <div className="space-y-2 overflow-scroll">
           {getSignal.map((data) => (
             <div key={data.id}>
               {data.pair == "BTC/USD" ? (

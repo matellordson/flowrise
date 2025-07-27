@@ -33,8 +33,8 @@ export default async function Trading() {
           </div>
         </div>
       ) : (
-        <div className="flex flex-col gap-y-2 lg:flex-row lg:gap-x-2">
-          <div className="h-[30rem] w-full overflow-scroll rounded-xl lg:h-screen lg:w-[50%]">
+        <div className="flex h-screen flex-col gap-y-2 lg:flex-row lg:gap-x-2">
+          <div className="bg-card h-[30rem] w-full rounded-xl lg:h-screen lg:w-[50%]">
             <div className="mt-5 flex flex-col items-center justify-center space-y-2">
               <Badge className="capitalize">{data[0].plan} plan</Badge>
               <p className="py-2 font-mono text-3xl font-semibold lg:text-4xl">
@@ -48,7 +48,7 @@ export default async function Trading() {
               <SendTrade />
               <DepositTrade />
             </div>
-            <div className="mt-10 space-y-3 px-3">
+            <div className="mt-10 h-[25rem] space-y-3 px-3">
               <Badge variant={"outline"} className="">
                 <Bot /> Bot trading
                 <div className="h-3 w-3 animate-pulse rounded-full border-2 border-green-500 bg-green-300"></div>
