@@ -21,16 +21,45 @@ export type Payment = {
   id: string;
   amount: number;
   pair: string;
+  created_at: string;
 };
 
 export const columns: ColumnDef<Payment>[] = [
   {
-    accessorKey: "amount",
-    header: "Amount",
-  },
-  {
     accessorKey: "pair",
     header: "Pair",
+  },
+  {
+    accessorKey: "amount",
+    header: () => <div className="text-right">Amount</div>,
+    cell: ({ row }) => {
+      const amount = parseFloat(row.getValue("amount"));
+      const formatted = new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
+      }).format(amount);
+
+      return <div className="text-right font-medium">{formatted}</div>;
+    },
+  },
+  {
+    accessorKey: "created_at",
+    header: () => <div className="text-right">Created</div>,
+    cell: ({ row }) => {
+      const dateValue = row.getValue("created_at");
+      const date = new Date(dateValue as string); // Cast to string if it might be a Date object
+      const formattedDate = new Intl.DateTimeFormat("en-US", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false, // Use 24-hour format
+      }).format(date);
+
+      return <div className="text-right font-medium">{formattedDate}</div>;
+    },
   },
   {
     id: "actions",
@@ -38,15 +67,15 @@ export const columns: ColumnDef<Payment>[] = [
       const payment = row.original;
 
       return (
-        <form action="">
+        <form action="" className="float-right">
           <Button
             size={"sm"}
             variant={"outline"}
             formAction={async () => {
               try {
-                await sql`UPDATE trading_send SET status = true WHERE id = ${payment.id}`;
+                await sql`UPDATE signal SET open = false WHERE id = ${payment.id}`;
 
-                // await sql`INSERT INTO bank_history ("user", amount, type) VALUES (${payment.user}, ${payment.amount}, ${"send"})`;
+                await sql`DELETE FROM signal WHERE id = ${payment.id}`;
 
                 redirect("/admin/bank/deposit");
               } catch (error) {
@@ -54,7 +83,7 @@ export const columns: ColumnDef<Payment>[] = [
               }
             }}
           >
-            Done
+            Close signal
           </Button>
         </form>
       );

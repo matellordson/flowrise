@@ -60,7 +60,11 @@ const fetchXRPPrice = async () => {
   return data;
 };
 
-export default async function Pairs({ accountID }: { accountID: string }) {
+export default async function ActivePositions({
+  accountID,
+}: {
+  accountID: string;
+}) {
   const bitcoinPrice = await fetchBitcoinPrice();
   const ethereumPrice = await fetchEthereumPrice();
   const usdtPrice = await fetchUSDTPrice();
@@ -74,17 +78,14 @@ export default async function Pairs({ accountID }: { accountID: string }) {
     amount: number;
   }
 
-  const getSignal = (await sql`SELECT id, pair, amount, created_at, users
-  FROM signal 
-  WHERE open = true 
-  AND (users IS NULL OR NOT (users @> ARRAY[${session?.user?.email}]))
-  ORDER BY created_at DESC;`) as dataType[];
+  const getSignal =
+    (await sql`SELECT id, pair, amount FROM signal WHERE open = true AND ${session?.user?.email} = ANY(users) ORDER BY created_at DESC;`) as dataType[];
 
   return (
     <div className="">
       <div className="mb-3 flex w-full items-center justify-between">
         <p className="text-sm font-semibold tracking-tight">
-          Open orders{" "}
+          Active Positions{" "}
           <Badge variant={"outline"} className="ml-1 font-semibold">
             {getSignal.length}
           </Badge>
@@ -94,7 +95,7 @@ export default async function Pairs({ accountID }: { accountID: string }) {
         <div className="">
           <div className="flex h-[13rem] flex-col items-center justify-center">
             <X size={25} />
-            <p>No open orders</p>
+            <p>No active positions</p>
           </div>
         </div>
       ) : (

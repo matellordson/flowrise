@@ -22,7 +22,7 @@ export default function TradingAdmin() {
             <Link href={"/admin/trading/signal"}>Signal</Link>
           </li>
           <li>
-            <Link href={"/admin/trading/create-pair"}>Create Signal</Link>
+            <Link href={"/admin/trading/create-signal"}>Create Signal</Link>
           </li>
         </ul>
       </div>
