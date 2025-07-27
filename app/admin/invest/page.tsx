@@ -363,13 +363,13 @@ const AdminPage = () => {
 
       {/* Stats Cards */}
       <div className="mb-8 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <div className="bg-card rounded-lg border p-4">
+        <div className="bg-card rounded-lg p-4">
           <h2 className="mb-2 text-lg font-semibold">Total Requests</h2>
           <div className="font-mono text-2xl font-bold">
             {assetRequests.length}
           </div>
         </div>
-        <div className="bg-card rounded-lg border p-4">
+        <div className="bg-card rounded-lg p-4">
           <h2 className="mb-2 text-lg font-semibold">Total Investment</h2>
           <div className="font-mono text-2xl font-bold">
             {totalInvestment.toLocaleString("en-US", {
@@ -378,7 +378,7 @@ const AdminPage = () => {
             })}
           </div>
         </div>
-        <div className="bg-card rounded-lg border p-4">
+        <div className="bg-card rounded-lg p-4">
           <h2 className="mb-2 text-lg font-semibold">Average Investment</h2>
           <div className="font-mono text-2xl font-bold">
             {averageInvestment.toLocaleString("en-US", {
@@ -387,7 +387,7 @@ const AdminPage = () => {
             })}
           </div>
         </div>
-        <div className="bg-card rounded-lg border p-4">
+        <div className="bg-card rounded-lg p-4">
           <h2 className="mb-2 text-lg font-semibold">Property Types</h2>
           <div className="text-2xl font-bold">
             {assetRequests.length > 0

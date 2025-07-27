@@ -51,13 +51,13 @@ export default async function Trading() {
             <div className="mt-10 h-[25rem] space-y-3 px-3">
               <Badge variant={"outline"} className="">
                 <Bot /> Bot trading
-                <div className="h-3 w-3 animate-pulse rounded-full border-2 border-green-500 bg-green-300"></div>
+                <div className="h-3 w-3 animate-pulse rounded-full bg-green-300"></div>
               </Badge>
 
               <Pairs accountID={data[0].id} />
             </div>
           </div>
-          <div className="bg-card h-[25rem] w-full overflow-scroll rounded-xl p-4 lg:h-screen lg:w-[50%]">
+          <div className="bg-card h-[30rem] w-full overflow-scroll rounded-xl p-4 lg:h-screen lg:w-[50%]">
             <ActivePositions accountID={data[0].id} />
           </div>
         </div>
