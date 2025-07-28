@@ -15,6 +15,7 @@ import { sql } from "@/lib/sql";
 import Image from "next/image";
 import { auth } from "@/auth";
 import { X } from "lucide-react";
+import { TokenBTC, TokenETH, TokenUSDT, TokenXRP } from "@web3icons/react";
 
 const fetchBitcoinPrice = async () => {
   const response = await fetch(
@@ -108,15 +109,7 @@ export default async function Pairs({ accountID }: { accountID: string }) {
                       {/* Left */}
                       <div className="flex items-center justify-start gap-x-2">
                         <div className="bg-muted flex h-10 w-10 items-center justify-center rounded-full">
-                          <Image
-                            src={
-                              "https://s3-symbol-logo.tradingview.com/crypto/XTVCBTC--big.svg"
-                            }
-                            alt="btc/usd"
-                            height={20}
-                            width={20}
-                            className="h-full w-full rounded-full dark:opacity-90"
-                          />
+                          <TokenBTC variant="mono" size={32} />
                         </div>
                         <div className="">
                           <p className="text-tight font-semibold">BTC/USD</p>
@@ -173,15 +166,7 @@ export default async function Pairs({ accountID }: { accountID: string }) {
                       {/* Left */}
                       <div className="flex items-center justify-start gap-x-2">
                         <div className="bg-muted flex h-10 w-10 items-center justify-center rounded-full">
-                          <Image
-                            src={
-                              "https://s3-symbol-logo.tradingview.com/crypto/XTVCETH--big.svg"
-                            }
-                            alt="btc/usd"
-                            height={20}
-                            width={20}
-                            className="h-full w-full rounded-full dark:opacity-90"
-                          />
+                          <TokenETH variant="mono" size={32} />
                         </div>
                         <div className="">
                           <p className="text-tight font-semibold">ETH/USD</p>
@@ -238,15 +223,7 @@ export default async function Pairs({ accountID }: { accountID: string }) {
                       {/* Left */}
                       <div className="flex items-center justify-start gap-x-2">
                         <div className="bg-muted flex h-10 w-10 items-center justify-center rounded-full">
-                          <Image
-                            src={
-                              "https://s3-symbol-logo.tradingview.com/crypto/XTVCUSDT--big.svg"
-                            }
-                            alt="btc/usd"
-                            height={20}
-                            width={20}
-                            className="h-full w-full rounded-full dark:opacity-90"
-                          />
+                          <TokenUSDT variant="mono" size={32} />
                         </div>
                         <div className="">
                           <p className="text-tight font-semibold">USDT/USD</p>
@@ -303,15 +280,7 @@ export default async function Pairs({ accountID }: { accountID: string }) {
                       {/* Left */}
                       <div className="flex items-center justify-start gap-x-2">
                         <div className="bg-muted flex h-10 w-10 items-center justify-center rounded-full">
-                          <Image
-                            src={
-                              "https://s3-symbol-logo.tradingview.com/crypto/XTVCXRP--big.svg"
-                            }
-                            alt="btc/usd"
-                            height={20}
-                            width={20}
-                            className="h-full w-full rounded-full dark:opacity-90"
-                          />
+                          <TokenXRP variant="mono" size={32} />
                         </div>
                         <div className="">
                           <p className="text-tight font-semibold">XRP/USD</p>

@@ -289,7 +289,7 @@ export default function InvestmentForm() {
           <div className="bg-muted/30 hidden h-full flex-col items-center justify-center p-12 lg:flex">
             <div className="max-w-md space-y-6 text-center">
               <img
-                src="/placeholder.svg?height=400&width=400"
+                src="/asset.png?height=400&width=400"
                 alt="Investment Property Hero"
                 className="h-64 w-full rounded-lg object-cover shadow-lg"
               />

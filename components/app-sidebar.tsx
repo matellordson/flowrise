@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import {
+  IconAddressBook,
   IconBuildingBank,
   IconBuildingEstate,
   IconCamera,
@@ -16,8 +17,10 @@ import {
   IconFolder,
   IconHelp,
   IconInnerShadowTop,
+  IconLock,
   IconPlus,
   IconReport,
+  IconScript,
   IconSearch,
   IconSettings,
   IconUsers,
@@ -37,6 +40,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import Logo from "./logo";
 
 const data = {
   user: {
@@ -74,9 +78,19 @@ const data = {
 
   navSecondary: [
     {
-      title: "Add asset",
-      url: "/dashboard/invest/asset/new-asset",
-      icon: IconPlus,
+      title: "Privacy Policy",
+      url: "#",
+      icon: IconLock,
+    },
+    {
+      title: "Terms and Condition",
+      url: "#",
+      icon: IconScript,
+    },
+    {
+      title: "Contact",
+      url: "#",
+      icon: IconAddressBook,
     },
   ],
   documents: [
@@ -109,8 +123,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               className="data-[slot=sidebar-menu-button]:!p-1.5"
             >
               <a href="#">
-                <IconInnerShadowTop className="!size-5" />
-                <span className="text-base font-semibold">Flowrise Co.</span>
+                <Logo />
               </a>
             </SidebarMenuButton>
           </SidebarMenuItem>

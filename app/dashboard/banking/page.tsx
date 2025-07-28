@@ -4,6 +4,7 @@ import SendMoney from "./send";
 import { sql } from "@/lib/sql";
 import { auth } from "@/auth";
 import BankHistory from "./history";
+import Image from "next/image";
 
 interface dataType {
   balance: number;
@@ -52,14 +53,22 @@ export default async function Banking() {
           <ExchangeMoney />
         </div>
 
-        <div className="m-10 mx-auto mt-10 h-[15rem] w-full rounded-xl border">
-          <div className="h-[60%] w-full"></div>
-          <div className="h-[40%] w-full rounded-b-xl border border-t p-2">
-            <p className="text-sm lg:text-base">Lorem, ipsum dolor.</p>
+        <div className="m-10 mx-auto mt-10 h-[16rem] w-full rounded-xl border">
+          <div className="h-[55%] w-full">
+            <Image
+              src={"/exchange.png"}
+              alt="banner"
+              height={1000}
+              width={1000}
+              className="h-full w-full rounded-t-xl object-cover"
+            />
+          </div>
+          <div className="h-[35%] w-full rounded-b-xl border border-t p-2">
+            <p className="text-sm lg:text-base">Crypto to Cash, Instantly</p>
             <p className="text-muted-foreground text-xs leading-5 lg:text-sm lg:leading-6">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit.
-              Accusantium ea suscipit magni beatae tempora alias fugit facilis
-              ratione hic quibusdam!
+              Easily convert your crypto into cash and withdraw directly to your
+              bank account. No delays, no hassle — just fast, secure access to
+              your money whenever you need it.
             </p>
           </div>
         </div>
