@@ -75,7 +75,7 @@ export default function LandingPage() {
           <div className="mt-[18rem] lg:mt-24">
             <div className="mx-auto grid max-w-7xl grid-cols-1 gap-3 px-3 lg:grid-cols-2 lg:px-0">
               {/* Crypto Wallet */}
-              <div className="from-primary to-primary/50 flex h-32 w-full items-center justify-between overflow-hidden rounded-xl border bg-gradient-to-tr p-3 px-4">
+              <div className="from-primary to-primary/50 bg-primary flex h-32 w-full items-center justify-between overflow-hidden rounded-xl border bg-gradient-to-tr p-3 px-4">
                 <div className="">
                   <p className="text-sm font-semibold tracking-tight text-neutral-100 dark:text-neutral-900">
                     Crypto Wallet
@@ -89,7 +89,7 @@ export default function LandingPage() {
                 </div>
               </div>
               {/* Assets */}
-              <div className="from-primary to-primary/50 flex h-32 w-full items-center justify-between overflow-hidden rounded-xl border bg-gradient-to-tr p-3 px-4">
+              <div className="from-primary to-primary/50 bg-primary flex h-32 w-full items-center justify-between overflow-hidden rounded-xl border bg-gradient-to-tr p-3 px-4">
                 <div className="">
                   <p className="text-sm font-semibold tracking-tight text-neutral-100 dark:text-neutral-900">
                     Asset Investing
@@ -106,7 +106,7 @@ export default function LandingPage() {
                 </div>
               </div>
               {/* Banking */}
-              <div className="from-primary to-primary/50 flex h-32 w-full items-center justify-between overflow-hidden rounded-xl border bg-gradient-to-tr p-3 px-4">
+              <div className="from-primary to-primary/50 bg-primary flex h-32 w-full items-center justify-between overflow-hidden rounded-xl border bg-gradient-to-tr p-3 px-4">
                 <div className="">
                   <p className="text-sm font-semibold tracking-tight text-neutral-100 dark:text-neutral-900">
                     Banking
@@ -123,7 +123,7 @@ export default function LandingPage() {
                 </div>
               </div>
               {/* Trading */}
-              <div className="from-primary to-primary/50 flex h-32 w-full items-center justify-between overflow-hidden rounded-xl border bg-gradient-to-tr p-3 px-4">
+              <div className="from-primary to-primary/50 bg-primary flex h-32 w-full items-center justify-between overflow-hidden rounded-xl border bg-gradient-to-tr p-3 px-4">
                 <div className="">
                   <p className="text-sm font-semibold tracking-tight text-neutral-100 dark:text-neutral-900">
                     Trading
