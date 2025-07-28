@@ -245,8 +245,8 @@ export default async function BalanceDashboard() {
         <Card className="bg-primary/10">
           <CardContent className="p-4">
             <div className="flex items-center space-x-3">
-              <div className="bg-primary/20 rounded-lg p-2">
-                <ArrowUpRight className="text-primary h-5 w-5" />
+              <div className="bg-secondary rounded-lg p-2">
+                <ArrowUpRight className="h-5 w-5" />
               </div>
               <div>
                 <p className="text-muted-foreground text-sm font-medium">
