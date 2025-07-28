@@ -25,11 +25,7 @@ interface Balance {
   last_updated: string;
 }
 
-export default async function BalanceDashboard({
-  balances,
-}: {
-  balances?: Balance[];
-}) {
+export default async function BalanceDashboard() {
   // Fetch crypto balance
   const session = await auth();
 
@@ -71,7 +67,7 @@ export default async function BalanceDashboard({
         }, 0)
       : 0;
 
-  const mockBalances: Balance[] = balances || [
+  const mockBalances: Balance[] = [
     {
       id: "1",
       type: "crypto",
