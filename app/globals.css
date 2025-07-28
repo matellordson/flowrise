@@ -228,21 +228,22 @@
   --shadow-2xl: var(--shadow-2xl);
 }
 
-@layer base {
-  * {
-    @apply border-border outline-ring/50 text-neutral-700 dark:text-neutral-200;
-  }
-  body {
-    @apply bg-background text-foreground;
-    letter-spacing: var(--tracking-normal);
-  }
+.box {
+  background-color: #e5e5f7;
+  opacity: 0.1;
+  background-image:
+    linear-gradient(#444cf7 0.8px, transparent 0.8px),
+    linear-gradient(to right, #444cf7 0.8px, #e5e5f7 0.8px);
+  background-size: 16px 16px;
 }
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border outline-ring/50 text-neutral-700 dark:text-neutral-200;
   }
+
   body {
     @apply bg-background text-foreground;
+    letter-spacing: var(--tracking-normal);
   }
 }
