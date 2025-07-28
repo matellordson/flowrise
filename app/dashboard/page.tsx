@@ -25,13 +25,11 @@ interface Balance {
   last_updated: string;
 }
 
-interface BalanceDashboardProps {
-  balances?: Balance[];
-}
-
 export default async function BalanceDashboard({
   balances,
-}: BalanceDashboardProps) {
+}: {
+  balances?: Balance[];
+}) {
   // Fetch crypto balance
   const session = await auth();
 
