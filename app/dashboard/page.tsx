@@ -249,10 +249,10 @@ export default async function BalanceDashboard() {
                 <ArrowUpRight className="h-5 w-5" />
               </div>
               <div>
-                <p className="text-muted-foreground text-sm font-medium">
+                <p className="text-secondary text-sm font-medium">
                   Positive Change
                 </p>
-                <p className="text-2xl font-bold">
+                <p className="text-secondary/80 text-2xl font-bold">
                   {mockBalances.filter((b) => (b.change_24h || 0) > 0).length}
                 </p>
               </div>
