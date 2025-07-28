@@ -291,7 +291,7 @@ export default function InvestmentForm() {
               <img
                 src="/asset.png?height=400&width=400"
                 alt="Investment Property Hero"
-                className="h-64 w-full rounded-lg object-cover shadow-lg"
+                className="h-64 w-full rounded-lg border object-cover"
               />
               <div className="space-y-4">
                 <h1 className="text-foreground text-3xl font-bold">

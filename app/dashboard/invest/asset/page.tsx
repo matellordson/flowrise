@@ -471,7 +471,7 @@ const UserDashboard = () => {
 
         <Button size={"sm"} asChild>
           <Link href={"/dashboard/invest/asset/new-asset"}>
-            <Plus className="text-secondary" />
+            <Plus />
             New
           </Link>
         </Button>
