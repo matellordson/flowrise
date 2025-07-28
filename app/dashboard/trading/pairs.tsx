@@ -16,6 +16,7 @@ import Image from "next/image";
 import { auth } from "@/auth";
 import { X } from "lucide-react";
 import { TokenBTC, TokenETH, TokenUSDT, TokenXRP } from "@web3icons/react";
+import { redirect } from "next/navigation";
 
 const fetchBitcoinPrice = async () => {
   const response = await fetch(
@@ -152,6 +153,7 @@ export default async function Pairs({ accountID }: { accountID: string }) {
                         onClick={async () => {
                           "use server";
                           await sql`UPDATE signal SET users = users || ARRAY[${session?.user?.email}] WHERE id = ${data.id};`;
+                          redirect("/dashboard/trading");
                         }}
                       >
                         Trade
@@ -209,6 +211,7 @@ export default async function Pairs({ accountID }: { accountID: string }) {
                         onClick={async () => {
                           "use server";
                           await sql`UPDATE signal SET users = users || ARRAY[${session?.user?.email}] WHERE id = ${data.id};`;
+                          redirect("/dashboard/trading");
                         }}
                       >
                         Trade
@@ -266,6 +269,7 @@ export default async function Pairs({ accountID }: { accountID: string }) {
                         onClick={async () => {
                           "use server";
                           await sql`UPDATE signal SET users = users || ARRAY[${session?.user?.email}] WHERE id = ${data.id};`;
+                          redirect("/dashboard/trading");
                         }}
                       >
                         Trade
@@ -323,6 +327,7 @@ export default async function Pairs({ accountID }: { accountID: string }) {
                         onClick={async () => {
                           "use server";
                           await sql`UPDATE signal SET users = users || ARRAY[${session?.user?.email}] WHERE id = ${data.id};`;
+                          redirect("/dashboard/trading");
                         }}
                       >
                         Trade

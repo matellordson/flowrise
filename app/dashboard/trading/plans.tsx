@@ -34,6 +34,7 @@ import {
   Trees,
 } from "lucide-react";
 import { sql } from "@/lib/sql";
+import TradeDepositAccounts from "./deposit-accounts";
 
 // Mock component for demonstration
 const BankDepositAccounts = () => <div>Bank deposit accounts component</div>;
@@ -167,7 +168,7 @@ export default function TradingPlans() {
             </AlertDescription>
           </Alert>
 
-          <BankDepositAccounts />
+          <TradeDepositAccounts />
 
           <Form {...form}>
             <form

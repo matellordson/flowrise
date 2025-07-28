@@ -15,6 +15,7 @@ import { sql } from "@/lib/sql";
 import Image from "next/image";
 import { auth } from "@/auth";
 import { X } from "lucide-react";
+import { TokenBTC, TokenETH, TokenUSDT, TokenXRP } from "@web3icons/react";
 
 const fetchBitcoinPrice = async () => {
   const response = await fetch(
@@ -104,46 +105,36 @@ export default async function ActivePositions({
             <div key={data.id}>
               {data.pair == "BTC/USD" ? (
                 <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <div className="flex w-full cursor-pointer items-center justify-between rounded-xl border p-3">
-                      {/* Left */}
-                      <div className="flex items-center justify-start gap-x-2">
-                        <div className="bg-muted flex h-10 w-10 items-center justify-center rounded-full">
-                          <Image
-                            src={
-                              "https://s3-symbol-logo.tradingview.com/crypto/XTVCBTC--big.svg"
-                            }
-                            alt="btc/usd"
-                            height={20}
-                            width={20}
-                            className="h-full w-full rounded-full dark:opacity-90"
-                          />
-                        </div>
-                        <div className="">
-                          <p className="text-tight font-semibold">BTC/USD</p>
-                          <p className="text-muted-foreground text-sm">
-                            Bitcoin vs US Dollar{" "}
-                          </p>
-                        </div>
+                  <div className="flex w-full cursor-pointer items-center justify-between rounded-xl border p-3">
+                    {/* Left */}
+                    <div className="flex items-center justify-start gap-x-2">
+                      <div className="bg-muted flex h-10 w-10 items-center justify-center rounded-full">
+                        <TokenBTC variant="mono" size={32} />
                       </div>
-
-                      {/* Right */}
-                      <div className="flex flex-col items-end justify-center">
-                        <p className="font-semibold">
-                          {Number(bitcoinPrice.price).toLocaleString()}
-                        </p>
-                        <p
-                          className={
-                            bitcoinPrice.change24h >= 0
-                              ? "text-sm text-green-500 dark:text-green-300"
-                              : "text-sm text-red-500 dark:text-red-300"
-                          }
-                        >
-                          {bitcoinPrice.change24h.toFixed(2)}%
+                      <div className="">
+                        <p className="text-tight font-semibold">BTC/USD</p>
+                        <p className="text-muted-foreground text-sm">
+                          Bitcoin vs US Dollar{" "}
                         </p>
                       </div>
                     </div>
-                  </AlertDialogTrigger>
+
+                    {/* Right */}
+                    <div className="flex flex-col items-end justify-center">
+                      <p className="font-semibold">
+                        {Number(bitcoinPrice.price).toLocaleString()}
+                      </p>
+                      <p
+                        className={
+                          bitcoinPrice.change24h >= 0
+                            ? "text-sm text-green-500 dark:text-green-300"
+                            : "text-sm text-red-500 dark:text-red-300"
+                        }
+                      >
+                        {bitcoinPrice.change24h.toFixed(2)}%
+                      </p>
+                    </div>
+                  </div>
                   <AlertDialogContent>
                     <AlertDialogHeader>
                       <AlertDialogTitle>
@@ -169,46 +160,36 @@ export default async function ActivePositions({
                 </AlertDialog>
               ) : data.pair == "ETH/USD" ? (
                 <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <div className="flex w-full cursor-pointer items-center justify-between rounded-xl border p-3">
-                      {/* Left */}
-                      <div className="flex items-center justify-start gap-x-2">
-                        <div className="bg-muted flex h-10 w-10 items-center justify-center rounded-full">
-                          <Image
-                            src={
-                              "https://s3-symbol-logo.tradingview.com/crypto/XTVCETH--big.svg"
-                            }
-                            alt="btc/usd"
-                            height={20}
-                            width={20}
-                            className="h-full w-full rounded-full dark:opacity-90"
-                          />
-                        </div>
-                        <div className="">
-                          <p className="text-tight font-semibold">ETH/USD</p>
-                          <p className="text-muted-foreground text-sm">
-                            Ethereum vs US Dollar{" "}
-                          </p>
-                        </div>
+                  <div className="flex w-full cursor-pointer items-center justify-between rounded-xl border p-3">
+                    {/* Left */}
+                    <div className="flex items-center justify-start gap-x-2">
+                      <div className="bg-muted flex h-10 w-10 items-center justify-center rounded-full">
+                        <TokenETH variant="mono" size={32} />
                       </div>
-
-                      {/* Right */}
-                      <div className="flex flex-col items-end justify-center">
-                        <p className="font-semibold">
-                          {Number(ethereumPrice.price).toLocaleString()}
-                        </p>
-                        <p
-                          className={
-                            ethereumPrice.change24h >= 0
-                              ? "text-sm text-green-500 dark:text-green-300"
-                              : "text-sm text-red-500 dark:text-red-300"
-                          }
-                        >
-                          {ethereumPrice.change24h.toFixed(2)}%
+                      <div className="">
+                        <p className="text-tight font-semibold">ETH/USD</p>
+                        <p className="text-muted-foreground text-sm">
+                          Ethereum vs US Dollar{" "}
                         </p>
                       </div>
                     </div>
-                  </AlertDialogTrigger>
+
+                    {/* Right */}
+                    <div className="flex flex-col items-end justify-center">
+                      <p className="font-semibold">
+                        {Number(ethereumPrice.price).toLocaleString()}
+                      </p>
+                      <p
+                        className={
+                          ethereumPrice.change24h >= 0
+                            ? "text-sm text-green-500 dark:text-green-300"
+                            : "text-sm text-red-500 dark:text-red-300"
+                        }
+                      >
+                        {ethereumPrice.change24h.toFixed(2)}%
+                      </p>
+                    </div>
+                  </div>
                   <AlertDialogContent>
                     <AlertDialogHeader>
                       <AlertDialogTitle>
@@ -234,46 +215,36 @@ export default async function ActivePositions({
                 </AlertDialog>
               ) : data.pair == "USDT/USD" ? (
                 <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <div className="flex w-full cursor-pointer items-center justify-between rounded-xl border p-3">
-                      {/* Left */}
-                      <div className="flex items-center justify-start gap-x-2">
-                        <div className="bg-muted flex h-10 w-10 items-center justify-center rounded-full">
-                          <Image
-                            src={
-                              "https://s3-symbol-logo.tradingview.com/crypto/XTVCUSDT--big.svg"
-                            }
-                            alt="btc/usd"
-                            height={20}
-                            width={20}
-                            className="h-full w-full rounded-full dark:opacity-90"
-                          />
-                        </div>
-                        <div className="">
-                          <p className="text-tight font-semibold">USDT/USD</p>
-                          <p className="text-muted-foreground text-sm">
-                            Tether vs US Dollar{" "}
-                          </p>
-                        </div>
+                  <div className="flex w-full cursor-pointer items-center justify-between rounded-xl border p-3">
+                    {/* Left */}
+                    <div className="flex items-center justify-start gap-x-2">
+                      <div className="bg-muted flex h-10 w-10 items-center justify-center rounded-full">
+                        <TokenUSDT variant="mono" size={32} />
                       </div>
-
-                      {/* Right */}
-                      <div className="flex flex-col items-end justify-center">
-                        <p className="font-semibold">
-                          {Number(usdtPrice.price).toLocaleString()}
-                        </p>
-                        <p
-                          className={
-                            usdtPrice.change24h >= 0
-                              ? "text-sm text-green-500 dark:text-green-300"
-                              : "text-sm text-red-500 dark:text-red-300"
-                          }
-                        >
-                          {usdtPrice.change24h.toFixed(2)}%
+                      <div className="">
+                        <p className="text-tight font-semibold">USDT/USD</p>
+                        <p className="text-muted-foreground text-sm">
+                          Tether vs US Dollar{" "}
                         </p>
                       </div>
                     </div>
-                  </AlertDialogTrigger>
+
+                    {/* Right */}
+                    <div className="flex flex-col items-end justify-center">
+                      <p className="font-semibold">
+                        {Number(usdtPrice.price).toLocaleString()}
+                      </p>
+                      <p
+                        className={
+                          usdtPrice.change24h >= 0
+                            ? "text-sm text-green-500 dark:text-green-300"
+                            : "text-sm text-red-500 dark:text-red-300"
+                        }
+                      >
+                        {usdtPrice.change24h.toFixed(2)}%
+                      </p>
+                    </div>
+                  </div>
                   <AlertDialogContent>
                     <AlertDialogHeader>
                       <AlertDialogTitle>
@@ -299,46 +270,36 @@ export default async function ActivePositions({
                 </AlertDialog>
               ) : data.pair == "XRP/USD" ? (
                 <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <div className="flex w-full cursor-pointer items-center justify-between rounded-xl border p-3">
-                      {/* Left */}
-                      <div className="flex items-center justify-start gap-x-2">
-                        <div className="bg-muted flex h-10 w-10 items-center justify-center rounded-full">
-                          <Image
-                            src={
-                              "https://s3-symbol-logo.tradingview.com/crypto/XTVCXRP--big.svg"
-                            }
-                            alt="btc/usd"
-                            height={20}
-                            width={20}
-                            className="h-full w-full rounded-full dark:opacity-90"
-                          />
-                        </div>
-                        <div className="">
-                          <p className="text-tight font-semibold">XRP/USD</p>
-                          <p className="text-muted-foreground text-sm">
-                            XRP vs US Dollar{" "}
-                          </p>
-                        </div>
+                  <div className="flex w-full cursor-pointer items-center justify-between rounded-xl border p-3">
+                    {/* Left */}
+                    <div className="flex items-center justify-start gap-x-2">
+                      <div className="bg-muted flex h-10 w-10 items-center justify-center rounded-full">
+                        <TokenXRP variant="mono" size={32} />
                       </div>
-
-                      {/* Right */}
-                      <div className="flex flex-col items-end justify-center">
-                        <p className="font-semibold">
-                          {Number(xrpPrice.price).toLocaleString()}
-                        </p>
-                        <p
-                          className={
-                            xrpPrice.change24h >= 0
-                              ? "text-sm text-green-500 dark:text-green-300"
-                              : "text-sm text-red-500 dark:text-red-300"
-                          }
-                        >
-                          {xrpPrice.change24h.toFixed(2)}%
+                      <div className="">
+                        <p className="text-tight font-semibold">XRP/USD</p>
+                        <p className="text-muted-foreground text-sm">
+                          XRP vs US Dollar{" "}
                         </p>
                       </div>
                     </div>
-                  </AlertDialogTrigger>
+
+                    {/* Right */}
+                    <div className="flex flex-col items-end justify-center">
+                      <p className="font-semibold">
+                        {Number(xrpPrice.price).toLocaleString()}
+                      </p>
+                      <p
+                        className={
+                          xrpPrice.change24h >= 0
+                            ? "text-sm text-green-500 dark:text-green-300"
+                            : "text-sm text-red-500 dark:text-red-300"
+                        }
+                      >
+                        {xrpPrice.change24h.toFixed(2)}%
+                      </p>
+                    </div>
+                  </div>
                   <AlertDialogContent>
                     <AlertDialogHeader>
                       <AlertDialogTitle>

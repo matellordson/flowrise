@@ -2,6 +2,8 @@ import { sql } from "@/lib/sql";
 import { columns, Payment } from "./columns";
 import { DataTable } from "./data-table";
 
+export const revalidate = 0;
+
 interface dataType {
   id: string;
   user: string;

@@ -61,21 +61,43 @@ interface UserInvestmentType {
 }
 
 interface CalculatedInvestmentType extends UserInvestmentType {
-  monthly_return: number;
-  overall_roi: number;
+  monthly_return_amount: number; // Actual monthly cash flow
+  monthly_return_rate: number; // Monthly return as percentage
+  overall_roi: number; // Total ROI percentage
+  annualized_return: number; // Annualized return percentage
   months_invested: number;
+  total_return: number; // Total profit/loss
 }
 
-// Utility functions for calculations
+// CORRECTED UTILITY FUNCTIONS
+
+/**
+ * Calculate months invested more accurately using date difference
+ */
 const calculateMonthsInvested = (createdAt: string): number => {
   const createdDate = new Date(createdAt);
   const currentDate = new Date();
-  const diffTime = Math.abs(currentDate.getTime() - createdDate.getTime());
-  const diffMonths = Math.ceil(diffTime / (1000 * 60 * 60 * 24 * 30.44)); // Average days per month
-  return Math.max(diffMonths, 1); // Minimum 1 month to avoid division by zero
+
+  // Calculate the difference in months more accurately
+  const yearDiff = currentDate.getFullYear() - createdDate.getFullYear();
+  const monthDiff = currentDate.getMonth() - createdDate.getMonth();
+  const dayDiff = currentDate.getDate() - createdDate.getDate();
+
+  let totalMonths = yearDiff * 12 + monthDiff;
+
+  // Add partial month if we've passed the day
+  if (dayDiff > 0) {
+    totalMonths += dayDiff / 30; // Approximate partial month
+  }
+
+  return Math.max(totalMonths, 0.1); // Minimum to avoid division by zero
 };
 
-const calculateMonthlyReturn = (
+/**
+ * Calculate monthly return amount (average monthly profit/loss)
+ * This represents the average monthly cash flow from the investment
+ */
+const calculateMonthlyReturnAmount = (
   currentValue: number,
   investmentAmount: number,
   monthsInvested: number,
@@ -84,6 +106,26 @@ const calculateMonthlyReturn = (
   return totalReturn / monthsInvested;
 };
 
+/**
+ * Calculate monthly return rate as a percentage
+ * This is the compound monthly growth rate
+ */
+const calculateMonthlyReturnRate = (
+  currentValue: number,
+  investmentAmount: number,
+  monthsInvested: number,
+): number => {
+  if (investmentAmount <= 0 || monthsInvested <= 0) return 0;
+
+  // Compound monthly growth rate: (current/initial)^(1/months) - 1
+  const monthlyRate =
+    Math.pow(currentValue / investmentAmount, 1 / monthsInvested) - 1;
+  return monthlyRate * 100; // Convert to percentage
+};
+
+/**
+ * Calculate overall ROI (total return percentage)
+ */
 const calculateOverallROI = (
   currentValue: number,
   investmentAmount: number,
@@ -92,14 +134,39 @@ const calculateOverallROI = (
   return ((currentValue - investmentAmount) / investmentAmount) * 100;
 };
 
-// Fetch and process user investment data
+/**
+ * Calculate annualized return rate
+ */
+const calculateAnnualizedReturn = (
+  currentValue: number,
+  investmentAmount: number,
+  monthsInvested: number,
+): number => {
+  if (investmentAmount <= 0 || monthsInvested <= 0) return 0;
+
+  const years = monthsInvested / 12;
+  if (years < 0.1) return 0; // Too short period for meaningful annualized return
+
+  // Annualized return: (current/initial)^(1/years) - 1
+  const annualizedRate =
+    Math.pow(currentValue / investmentAmount, 1 / years) - 1;
+  return annualizedRate * 100;
+};
+
+// Fetch and process user investment data from your database
 const userData = (await getUserInvestmentData()) as UserInvestmentType[];
 
-// Add calculated fields to each investment
+// CORRECTED DATA PROCESSING
 const userInvestments: CalculatedInvestmentType[] = userData.map(
   (investment) => {
     const monthsInvested = calculateMonthsInvested(investment.created_at);
-    const monthlyReturn = calculateMonthlyReturn(
+    const totalReturn = investment.current_value - investment.investment_amount;
+    const monthlyReturnAmount = calculateMonthlyReturnAmount(
+      investment.current_value,
+      investment.investment_amount,
+      monthsInvested,
+    );
+    const monthlyReturnRate = calculateMonthlyReturnRate(
       investment.current_value,
       investment.investment_amount,
       monthsInvested,
@@ -108,33 +175,58 @@ const userInvestments: CalculatedInvestmentType[] = userData.map(
       investment.current_value,
       investment.investment_amount,
     );
+    const annualizedReturn = calculateAnnualizedReturn(
+      investment.current_value,
+      investment.investment_amount,
+      monthsInvested,
+    );
 
     return {
       ...investment,
-      monthly_return: monthlyReturn,
+      monthly_return_amount: monthlyReturnAmount,
+      monthly_return_rate: monthlyReturnRate,
       overall_roi: overallROI,
+      annualized_return: annualizedReturn,
       months_invested: monthsInvested,
+      total_return: totalReturn,
     };
   },
 );
 
-// Calculate dashboard stats
+// CORRECTED DASHBOARD STATS
 const totalInvested = userInvestments.reduce(
   (sum, item) => sum + item.investment_amount,
   0,
 );
+
 const totalCurrentValue = userInvestments.reduce(
   (sum, item) => sum + item.current_value,
   0,
 );
-const totalMonthlyReturn = userInvestments.reduce(
-  (sum, item) => sum + item.monthly_return,
+
+// Total monthly return amount (sum of all monthly cash flows)
+const totalMonthlyReturnAmount = userInvestments.reduce(
+  (sum, item) => sum + item.monthly_return_amount,
   0,
 );
-const overallROI =
+
+// Portfolio-level ROI
+const portfolioROI =
   totalInvested > 0
     ? ((totalCurrentValue - totalInvested) / totalInvested) * 100
     : 0;
+
+// Portfolio-level annualized return (weighted by investment amounts)
+const portfolioAnnualizedReturn = (() => {
+  if (totalInvested === 0) return 0;
+
+  const weightedAnnualizedReturn = userInvestments.reduce((sum, investment) => {
+    const weight = investment.investment_amount / totalInvested;
+    return sum + investment.annualized_return * weight;
+  }, 0);
+
+  return weightedAnnualizedReturn;
+})();
 
 const columns: ColumnDef<CalculatedInvestmentType>[] = [
   {
@@ -169,11 +261,11 @@ const columns: ColumnDef<CalculatedInvestmentType>[] = [
       }),
   },
   {
-    accessorKey: "monthly_return",
-    header: "Monthly Return",
+    accessorKey: "total_return",
+    header: "Total Return",
     cell: ({ row }) => {
-      const monthlyReturn = Number(row.getValue("monthly_return"));
-      const isPositive = monthlyReturn >= 0;
+      const totalReturn = Number(row.original.total_return);
+      const isPositive = totalReturn >= 0;
       return (
         <span
           className={
@@ -182,7 +274,7 @@ const columns: ColumnDef<CalculatedInvestmentType>[] = [
               : "text-red-400 dark:text-red-300"
           }
         >
-          {monthlyReturn.toLocaleString("en-US", {
+          {totalReturn.toLocaleString("en-US", {
             style: "currency",
             currency: "USD",
           })}
@@ -205,6 +297,25 @@ const columns: ColumnDef<CalculatedInvestmentType>[] = [
           }
         >
           {roi.toFixed(2)}%
+        </span>
+      );
+    },
+  },
+  {
+    accessorKey: "annualized_return",
+    header: "Annualized Return",
+    cell: ({ row }) => {
+      const annualizedReturn = Number(row.getValue("annualized_return"));
+      const isPositive = annualizedReturn >= 0;
+      return (
+        <span
+          className={
+            isPositive
+              ? "text-green-500 dark:text-green-300"
+              : "text-red-400 dark:text-red-300"
+          }
+        >
+          {annualizedReturn.toFixed(2)}%
         </span>
       );
     },
@@ -246,7 +357,6 @@ const ActionsCell = ({
 
   const handleDelete = async () => {
     if (!deletingInvestment) return;
-
     setIsLoading(true);
     try {
       await sql`DELETE FROM asset_request WHERE id = ${deletingInvestment.id}`;
@@ -320,21 +430,38 @@ const ActionsCell = ({
                 )}
               </p>
               <p className="font-mono">
-                <strong>Monthly Return:</strong>{" "}
+                <strong>Total Return:</strong>{" "}
                 <span
                   className={
-                    Number(viewingInvestment?.monthly_return) >= 0
+                    Number(viewingInvestment?.total_return) >= 0
                       ? "text-green-500 dark:text-green-300"
                       : "text-red-400 dark:text-red-300"
                   }
                 >
-                  {Number(viewingInvestment?.monthly_return).toLocaleString(
+                  {Number(viewingInvestment?.total_return).toLocaleString(
                     "en-US",
                     {
                       style: "currency",
                       currency: "USD",
                     },
                   )}
+                </span>
+              </p>
+              <p className="font-mono">
+                <strong>Monthly Return (Avg):</strong>{" "}
+                <span
+                  className={
+                    Number(viewingInvestment?.monthly_return_amount) >= 0
+                      ? "text-green-500 dark:text-green-300"
+                      : "text-red-400 dark:text-red-300"
+                  }
+                >
+                  {Number(
+                    viewingInvestment?.monthly_return_amount,
+                  ).toLocaleString("en-US", {
+                    style: "currency",
+                    currency: "USD",
+                  })}
                 </span>
               </p>
               <p className="font-mono">
@@ -349,9 +476,21 @@ const ActionsCell = ({
                   {Number(viewingInvestment?.overall_roi).toFixed(2)}%
                 </span>
               </p>
+              <p className="font-mono">
+                <strong>Annualized Return:</strong>{" "}
+                <span
+                  className={
+                    Number(viewingInvestment?.annualized_return) >= 0
+                      ? "text-green-500 dark:text-green-300"
+                      : "text-red-400 dark:text-red-300"
+                  }
+                >
+                  {Number(viewingInvestment?.annualized_return).toFixed(2)}%
+                </span>
+              </p>
               <p className="text-sm text-gray-600">
                 <strong>Months Invested:</strong>{" "}
-                {viewingInvestment?.months_invested}
+                {viewingInvestment?.months_invested.toFixed(1)}
               </p>
               <p>
                 <strong>Status:</strong>{" "}
@@ -439,6 +578,7 @@ const ActionsCell = ({
 
 const UserDashboard = () => {
   const [searchTerm, setSearchTerm] = useState("");
+
   const filteredInvestments = userInvestments.filter(
     (investment) =>
       investment.property_name
@@ -468,7 +608,6 @@ const UserDashboard = () => {
           onChange={(e) => setSearchTerm(e.target.value)}
           className="max-w-sm"
         />
-
         <Button size={"sm"} asChild>
           <Link href={"/dashboard/invest/asset/new-asset"}>
             <Plus />
@@ -477,7 +616,7 @@ const UserDashboard = () => {
         </Button>
       </div>
 
-      {/* Stats Cards */}
+      {/* CORRECTED Stats Cards */}
       <div className="mb-8 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
         <div className="bg-card rounded-lg border p-4">
           <h2 className="mb-2 text-lg font-semibold">Total Invested</h2>
@@ -488,6 +627,7 @@ const UserDashboard = () => {
             })}
           </div>
         </div>
+
         <div className="bg-card rounded-lg border p-4">
           <h2 className="mb-2 text-lg font-semibold">Current Value</h2>
           <div className="font-mono text-2xl font-bold">
@@ -497,35 +637,30 @@ const UserDashboard = () => {
             })}
           </div>
         </div>
+
         <div className="bg-card rounded-lg border p-4">
-          <h2 className="mb-2 text-lg font-semibold">Monthly Return</h2>
-          <div className="font-mono text-2xl font-bold">
-            <span
-              className={
-                totalMonthlyReturn <= 0
-                  ? "text-red-400 dark:text-red-300"
-                  : "text-green-500 dark:text-green-300"
-              }
-            >
-              {totalMonthlyReturn.toLocaleString("en-US", {
-                style: "currency",
-                currency: "USD",
-              })}
-            </span>
+          <h2 className="mb-2 text-lg font-semibold">Portfolio ROI</h2>
+          <div
+            className={`font-mono text-2xl font-bold ${
+              portfolioROI >= 0
+                ? "text-green-500 dark:text-green-300"
+                : "text-red-400 dark:text-red-300"
+            }`}
+          >
+            {portfolioROI.toFixed(2)}%
           </div>
         </div>
+
         <div className="bg-card rounded-lg border p-4">
-          <h2 className="mb-2 text-lg font-semibold">Overall ROI</h2>
-          <div className="font-mono text-2xl font-bold">
-            <span
-              className={
-                totalMonthlyReturn <= 0
-                  ? "text-red-400 dark:text-red-300"
-                  : "text-green-500 dark:text-green-300"
-              }
-            >
-              {overallROI.toFixed(2)}%
-            </span>
+          <h2 className="mb-2 text-lg font-semibold">Annualized Return</h2>
+          <div
+            className={`font-mono text-2xl font-bold ${
+              portfolioAnnualizedReturn >= 0
+                ? "text-green-500 dark:text-green-300"
+                : "text-red-400 dark:text-red-300"
+            }`}
+          >
+            {portfolioAnnualizedReturn.toFixed(2)}%
           </div>
         </div>
       </div>
