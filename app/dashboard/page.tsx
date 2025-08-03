@@ -130,17 +130,6 @@ export default async function BalanceDashboard() {
     }).format(amount);
   };
 
-  const formatChange = (change: number) => {
-    if (change === 0)
-      return { icon: Minus, text: "0.00%", color: "text-muted-foreground" };
-    const isPositive = change > 0;
-    return {
-      icon: isPositive ? ArrowUpRight : ArrowDownRight,
-      text: `${isPositive ? "+" : ""}${change.toFixed(2)}%`,
-      color: isPositive ? "text-primary" : "text-destructive",
-    };
-  };
-
   const getTotalBalance = () => {
     return mockBalances.reduce((total, balance) => {
       const amount = Number(balance.amount) || 0;
@@ -179,8 +168,6 @@ export default async function BalanceDashboard() {
         {mockBalances.map((balance) => {
           const config = balanceConfig[balance.type];
           const IconComponent = config.icon;
-          const changeData = formatChange(balance.change_24h || 0);
-          const ChangeIcon = changeData.icon;
 
           return (
             <Card key={balance.id} className="border-2">
@@ -200,12 +187,7 @@ export default async function BalanceDashboard() {
                       balance.currency,
                     )}
                   </div>
-                  <div className="flex items-center space-x-1">
-                    <ChangeIcon className={`h-4 w-4 ${changeData.color}`} />
-                    <span className={`text-sm font-medium ${changeData.color}`}>
-                      {changeData.text}
-                    </span>
-                  </div>
+
                   {(Number(balance.amount) || 0) === 0 && (
                     <div className="bg-muted mt-3 rounded-lg border p-3">
                       <p className="text-muted-foreground text-center text-xs">
@@ -242,23 +224,7 @@ export default async function BalanceDashboard() {
             </div>
           </CardContent>
         </Card>
-        <Card className="bg-primary/10">
-          <CardContent className="p-4">
-            <div className="flex items-center space-x-3">
-              <div className="bg-secondary rounded-lg p-2">
-                <ArrowUpRight className="h-5 w-5" />
-              </div>
-              <div>
-                <p className="text-muted-foreground text-sm font-medium">
-                  Positive Change
-                </p>
-                <p className="text-2xl font-bold">
-                  {mockBalances.filter((b) => (b.change_24h || 0) > 0).length}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+
         <Card className="bg-secondary/50">
           <CardContent className="p-4">
             <div className="flex items-center space-x-3">

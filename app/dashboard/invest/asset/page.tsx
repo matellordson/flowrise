@@ -608,12 +608,14 @@ const UserDashboard = () => {
           onChange={(e) => setSearchTerm(e.target.value)}
           className="max-w-sm"
         />
-        <Button size={"sm"} asChild>
-          <Link href={"/dashboard/invest/asset/new-asset"}>
-            <Plus />
-            New
-          </Link>
-        </Button>
+
+        <Link
+          href={"/dashboard/invest/asset/new-asset"}
+          className="flex items-center justify-between text-sm underline-offset-2 hover:underline"
+        >
+          <Plus size={14} />
+          New
+        </Link>
       </div>
 
       {/* CORRECTED Stats Cards */}
