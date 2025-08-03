@@ -79,17 +79,17 @@ const data = {
   navSecondary: [
     {
       title: "Privacy Policy",
-      url: "#",
+      url: "/privacy",
       icon: IconLock,
     },
     {
       title: "Terms and Condition",
-      url: "#",
+      url: "/terms",
       icon: IconScript,
     },
     {
       title: "Contact",
-      url: "#",
+      url: "/contact",
       icon: IconAddressBook,
     },
   ],
