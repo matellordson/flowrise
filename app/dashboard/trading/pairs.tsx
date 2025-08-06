@@ -15,7 +15,7 @@ import { auth } from "@/auth";
 import { X } from "lucide-react";
 import { TokenBTC, TokenETH, TokenUSDT, TokenXRP } from "@web3icons/react";
 import { redirect } from "next/navigation";
-import { RealtimeChart } from "@/components/realtime-chart";
+import { CryptoChart } from "@/components/crypto-chart";
 
 const fetchBitcoinPrice = async () => {
   const response = await fetch(
@@ -74,40 +74,40 @@ export default async function Pairs({ accountID }: { accountID: string }) {
     amount: number;
   }
 
-  const getSignal = (await sql`SELECT id, pair, amount, created_at, users  
-    FROM signal   
-    WHERE open = true   
-    AND (users IS NULL OR NOT (users @> ARRAY[${session?.user?.email}]))  
-    ORDER BY created_at DESC;`) as dataType[];
+  const getSignal = (await sql`SELECT id, pair, amount, created_at, users
+  FROM signal 
+  WHERE open = true 
+  AND (users IS NULL OR NOT (users @> ARRAY[${session?.user?.email}]))
+  ORDER BY created_at DESC;`) as dataType[];
 
-  const pairConfigs = {
+  const coinConfig = {
     "BTC/USD": {
+      coinId: "bitcoin",
+      coinName: "Bitcoin",
       icon: <TokenBTC variant="mono" size={32} />,
-      name: "BTC/USD",
       description: "Bitcoin vs US Dollar",
-      price: bitcoinPrice.price,
-      change: bitcoinPrice.change24h,
+      price: bitcoinPrice,
     },
     "ETH/USD": {
+      coinId: "ethereum",
+      coinName: "Ethereum",
       icon: <TokenETH variant="mono" size={32} />,
-      name: "ETH/USD",
       description: "Ethereum vs US Dollar",
-      price: ethereumPrice.price,
-      change: ethereumPrice.change24h,
+      price: ethereumPrice,
     },
     "USDT/USD": {
+      coinId: "tether",
+      coinName: "Tether",
       icon: <TokenUSDT variant="mono" size={32} />,
-      name: "USDT/USD",
       description: "Tether vs US Dollar",
-      price: usdtPrice.price,
-      change: usdtPrice.change24h,
+      price: usdtPrice,
     },
     "XRP/USD": {
+      coinId: "ripple",
+      coinName: "XRP",
       icon: <TokenXRP variant="mono" size={32} />,
-      name: "XRP/USD",
       description: "XRP vs US Dollar",
-      price: xrpPrice.price,
-      change: xrpPrice.change24h,
+      price: xrpPrice,
     },
   };
 
@@ -131,7 +131,7 @@ export default async function Pairs({ accountID }: { accountID: string }) {
       ) : (
         <div className="space-y-2 overflow-scroll">
           {getSignal.map((data) => {
-            const config = pairConfigs[data.pair as keyof typeof pairConfigs];
+            const config = coinConfig[data.pair as keyof typeof coinConfig];
 
             if (!config) return null;
 
@@ -147,7 +147,7 @@ export default async function Pairs({ accountID }: { accountID: string }) {
                         </div>
                         <div className="">
                           <p className="text-tight font-semibold">
-                            {config.name}
+                            {data.pair}
                           </p>
                           <p className="text-muted-foreground text-sm">
                             {config.description}
@@ -157,70 +157,68 @@ export default async function Pairs({ accountID }: { accountID: string }) {
                       {/* Right */}
                       <div className="flex flex-col items-end justify-center">
                         <p className="font-semibold">
-                          ${Number(config.price).toLocaleString()}
+                          ${Number(config.price.price).toLocaleString()}
                         </p>
                         <p
                           className={
-                            config.change >= 0
+                            config.price.change24h >= 0
                               ? "text-sm text-green-500 dark:text-green-300"
                               : "text-sm text-red-500 dark:text-red-300"
                           }
                         >
-                          {config.change >= 0 ? "+" : ""}
-                          {config.change.toFixed(2)}%
+                          {config.price.change24h.toFixed(2)}%
                         </p>
                       </div>
                     </div>
                   </AlertDialogTrigger>
-                  <AlertDialogContent className="max-w-2xl">
+                  <AlertDialogContent className="max-h-[90vh] max-w-full overflow-y-auto sm:max-w-2xl">
                     <AlertDialogHeader>
                       <AlertDialogTitle className="flex items-center gap-2">
                         <div className="bg-muted flex h-8 w-8 items-center justify-center rounded-full">
                           {config.icon}
                         </div>
-                        Execute Trade - {config.name}
+                        Execute Trade - {data.pair}
                       </AlertDialogTitle>
                       <AlertDialogDescription>
-                        This action will execute the trade based on the current
-                        signal. Review the live chart below before proceeding.
-                        This action cannot be undone.
+                        Review the chart below and confirm if you want to
+                        execute this trade. This action cannot be undone.
                       </AlertDialogDescription>
                     </AlertDialogHeader>
 
-                    {/* Current Price Info */}
-                    <div className="bg-muted/30 flex items-center justify-between rounded-lg p-4">
+                    <div className="my-4">
+                      <CryptoChart
+                        coinId={config.coinId}
+                        coinName={config.coinName}
+                        days={7}
+                      />
+                    </div>
+
+                    <div className="bg-muted/30 grid grid-cols-2 gap-4 rounded-lg p-4">
                       <div>
                         <p className="text-muted-foreground text-sm">
                           Current Price
                         </p>
-                        <p className="text-2xl font-bold">
-                          ${Number(config.price).toLocaleString()}
+                        <p className="text-lg font-semibold">
+                          ${Number(config.price.price).toLocaleString()}
                         </p>
                       </div>
-                      <div className="text-right">
+                      <div>
                         <p className="text-muted-foreground text-sm">
                           24h Change
                         </p>
                         <p
                           className={`text-lg font-semibold ${
-                            config.change >= 0
+                            config.price.change24h >= 0
                               ? "text-green-500 dark:text-green-300"
                               : "text-red-500 dark:text-red-300"
                           }`}
                         >
-                          {config.change >= 0 ? "+" : ""}
-                          {config.change.toFixed(2)}%
+                          {config.price.change24h.toFixed(2)}%
                         </p>
                       </div>
                     </div>
 
-                    {/* Realtime Chart */}
-                    <RealtimeChart
-                      pair={data.pair}
-                      currentPrice={Number(config.price)}
-                    />
-
-                    <AlertDialogFooter className="mt-5">
+                    <AlertDialogFooter>
                       <AlertDialogCancel>Cancel</AlertDialogCancel>
                       <AlertDialogAction
                         onClick={async () => {
@@ -228,7 +226,6 @@ export default async function Pairs({ accountID }: { accountID: string }) {
                           await sql`UPDATE signal SET users = users || ARRAY[${session?.user?.email}] WHERE id = ${data.id};`;
                           redirect("/dashboard/trading");
                         }}
-                        className="bg-secondary text-secondary-foreground hover:bg-secondary/80"
                       >
                         Execute Trade
                       </AlertDialogAction>
