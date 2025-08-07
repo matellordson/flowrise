@@ -9,6 +9,7 @@ interface dataType {
   amount: number;
   pair: string;
   created_at: string;
+  users: string[];
 }
 
 async function getData(): Promise<Payment[]> {
