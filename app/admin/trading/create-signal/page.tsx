@@ -27,18 +27,24 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
 import { useState } from "react";
+import { CalendarIcon } from "lucide-react";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
 import { sql } from "@/lib/sql"; // Assuming this is a server-side import or a client-side wrapper
 
 // Form validation schema
 const formSchema = z.object({
-  amount: z.coerce // Coerce the input value to a number
-    .number({
-      error: "Amount must be a number",
-    })
-    .min(0.01, "Amount must be at least 0.01") // Changed to 0.01 for practical minimum
-    .positive("Amount must be a positive number"),
   pair: z.string().min(1, "Please select a trading pair"),
+  tradeTimeline: z.date({
+    error: "Please select a trade timeline date",
+  }),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -57,22 +63,22 @@ export default function TradingForm() {
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      amount: 0, // Changed to number
       pair: "",
+      tradeTimeline: undefined,
     },
   });
 
   const onSubmit = async (data: FormData) => {
     setIsSubmitting(true);
-
     try {
-      // Ensure sql is used in a server context (e.g., via a Server Action or API route)
-      // If `sql` is directly imported here in a client component, it won't work as expected.
-      // For client-side forms, you'd typically send data to a Next.js API route or Server Action.
-      // For demonstration, I'll keep the `sql` call as you provided, but note the client/server boundary.
-      // This `sql` call should ideally be wrapped in a Server Action or an API route.
-      // For example: await submitTradeAction(data);
-      await sql`INSERT INTO signal (amount, pair) VALUES (${data.amount}, ${data.pair})`;
+      // Format the date for database insertion
+      const formattedDate = data.tradeTimeline.toISOString();
+
+      // Insert into database with trade_timeline column
+      await sql`
+        INSERT INTO signal (pair, trade_end) 
+        VALUES (${data.pair}, ${formattedDate})
+      `;
 
       // Simulate API delay
       await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -92,35 +98,13 @@ export default function TradingForm() {
       <CardHeader>
         <CardTitle>New Signal</CardTitle>
         <CardDescription>
-          Enter the amount and select a trading pair to submit your signal.
+          Enter the amount, select a trading pair, and choose a timeline date to
+          submit your signal.
         </CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <FormField
-              control={form.control}
-              name="amount"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Amount</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      step="0.01"
-                      placeholder="Enter amount"
-                      {...field}
-                      onChange={(e) =>
-                        field.onChange(Number.parseFloat(e.target.value))
-                      } // Parse to float for number type
-                      value={field.value === 0 ? "" : field.value} // Display empty string for 0
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
             <FormField
               control={form.control}
               name="pair"
@@ -144,6 +128,46 @@ export default function TradingForm() {
                       ))}
                     </SelectContent>
                   </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="tradeTimeline"
+              render={({ field }) => (
+                <FormItem className="flex flex-col">
+                  <FormLabel>Trade End</FormLabel>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant={"outline"}
+                          className={cn(
+                            "w-full pl-3 text-left font-normal",
+                            !field.value && "text-muted-foreground",
+                          )}
+                        >
+                          {field.value ? (
+                            format(field.value, "PPP")
+                          ) : (
+                            <span>Pick a date</span>
+                          )}
+                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={field.value}
+                        onSelect={field.onChange}
+                        disabled={(date) => date < new Date("1900-01-01")}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
                   <FormMessage />
                 </FormItem>
               )}

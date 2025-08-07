@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 
-export default function BTCChartDark() {
+export default function XRPChartDark() {
   useEffect(() => {
     const script = document.createElement("script");
     script.src =
@@ -33,7 +33,7 @@ export default function BTCChartDark() {
   );
 }
 
-export function BTCChartLight() {
+export function XRPChartLight() {
   useEffect(() => {
     const script = document.createElement("script");
     script.src =

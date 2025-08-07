@@ -76,11 +76,10 @@ export default async function ActivePositions({
   interface dataType {
     id: string;
     pair: string;
-    amount: number;
   }
 
   const getSignal =
-    (await sql`SELECT id, pair, amount FROM signal WHERE open = true AND ${session?.user?.email} = ANY(users) ORDER BY created_at DESC;`) as dataType[];
+    (await sql`SELECT id, pair FROM signal WHERE open = true AND ${session?.user?.email} = ANY(users) ORDER BY created_at DESC;`) as dataType[];
 
   return (
     <div className="">

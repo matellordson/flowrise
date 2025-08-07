@@ -1,4 +1,5 @@
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -11,11 +12,16 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { sql } from "@/lib/sql";
+import Image from "next/image";
 import { auth } from "@/auth";
 import { X } from "lucide-react";
 import { TokenBTC, TokenETH, TokenUSDT, TokenXRP } from "@web3icons/react";
-import { redirect } from "next/navigation";
-import { CryptoChart } from "@/components/crypto-chart";
+import BTCChartDark, { BTCChartLight } from "../crypto/btc/chart";
+import { ETHChartLight, ETHChartDark } from "../crypto/eth/chart";
+import USDTChartDark from "../crypto/usdt/chart";
+import { USDTChartLight } from "../crypto/usdt/chart";
+import { XRPChartLight } from "../crypto/xrp/chart";
+import XRPChartDark from "../crypto/xrp/chart";
 
 const fetchBitcoinPrice = async () => {
   const response = await fetch(
@@ -71,45 +77,14 @@ export default async function Pairs({ accountID }: { accountID: string }) {
   interface dataType {
     id: string;
     pair: string;
-    amount: number;
+    trade_end: Date;
   }
 
-  const getSignal = (await sql`SELECT id, pair, amount, created_at, users
-  FROM signal 
-  WHERE open = true 
-  AND (users IS NULL OR NOT (users @> ARRAY[${session?.user?.email}]))
+  const getSignal = (await sql`SELECT id, pair, created_at, users, trade_end  
+  FROM signal   
+  WHERE open = true   
+  AND (users IS NULL OR NOT (users @> ARRAY[${session?.user?.email}]))  
   ORDER BY created_at DESC;`) as dataType[];
-
-  const coinConfig = {
-    "BTC/USD": {
-      coinId: "bitcoin",
-      coinName: "Bitcoin",
-      icon: <TokenBTC variant="mono" size={32} />,
-      description: "Bitcoin vs US Dollar",
-      price: bitcoinPrice,
-    },
-    "ETH/USD": {
-      coinId: "ethereum",
-      coinName: "Ethereum",
-      icon: <TokenETH variant="mono" size={32} />,
-      description: "Ethereum vs US Dollar",
-      price: ethereumPrice,
-    },
-    "USDT/USD": {
-      coinId: "tether",
-      coinName: "Tether",
-      icon: <TokenUSDT variant="mono" size={32} />,
-      description: "Tether vs US Dollar",
-      price: usdtPrice,
-    },
-    "XRP/USD": {
-      coinId: "ripple",
-      coinName: "XRP",
-      icon: <TokenXRP variant="mono" size={32} />,
-      description: "XRP vs US Dollar",
-      price: xrpPrice,
-    },
-  };
 
   return (
     <div className="">
@@ -130,111 +105,281 @@ export default async function Pairs({ accountID }: { accountID: string }) {
         </div>
       ) : (
         <div className="space-y-2 overflow-scroll">
-          {getSignal.map((data) => {
-            const config = coinConfig[data.pair as keyof typeof coinConfig];
-
-            if (!config) return null;
-
-            return (
-              <div key={data.id}>
+          {getSignal.map((data) => (
+            <div key={data.id}>
+              {data.pair == "BTC/USD" ? (
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
                     <div className="hover:bg-muted/50 flex w-full cursor-pointer items-center justify-between rounded-xl border p-3 transition-colors">
                       {/* Left */}
                       <div className="flex items-center justify-start gap-x-2">
                         <div className="bg-muted flex h-10 w-10 items-center justify-center rounded-full">
-                          {config.icon}
+                          <TokenBTC variant="mono" size={32} />
                         </div>
                         <div className="">
-                          <p className="text-tight font-semibold">
-                            {data.pair}
-                          </p>
+                          <p className="text-tight font-semibold">BTC/USD</p>
                           <p className="text-muted-foreground text-sm">
-                            {config.description}
+                            Bitcoin vs US Dollar{" "}
                           </p>
                         </div>
                       </div>
                       {/* Right */}
                       <div className="flex flex-col items-end justify-center">
                         <p className="font-semibold">
-                          ${Number(config.price.price).toLocaleString()}
+                          {Number(bitcoinPrice.price).toLocaleString("en-US", {
+                            currency: "USD",
+                            style: "currency",
+                          })}
                         </p>
                         <p
                           className={
-                            config.price.change24h >= 0
+                            bitcoinPrice.change24h >= 0
                               ? "text-sm text-green-500 dark:text-green-300"
                               : "text-sm text-red-500 dark:text-red-300"
                           }
                         >
-                          {config.price.change24h.toFixed(2)}%
+                          {bitcoinPrice.change24h.toFixed(2)}%
                         </p>
                       </div>
                     </div>
                   </AlertDialogTrigger>
-                  <AlertDialogContent className="max-h-[90vh] max-w-full overflow-y-auto sm:max-w-2xl">
+                  <AlertDialogContent className="h-[33rem] w-full overflow-scroll">
                     <AlertDialogHeader>
-                      <AlertDialogTitle className="flex items-center gap-2">
-                        <div className="bg-muted flex h-8 w-8 items-center justify-center rounded-full">
-                          {config.icon}
-                        </div>
-                        Execute Trade - {data.pair}
-                      </AlertDialogTitle>
+                      <AlertDialogTitle>Execute BTC/USD</AlertDialogTitle>
                       <AlertDialogDescription>
-                        Review the chart below and confirm if you want to
-                        execute this trade. This action cannot be undone.
+                        <p className="font-semibold">
+                          Trade ends:{" "}
+                          <span className="font-normal">
+                            {data.trade_end.toLocaleDateString()}
+                          </span>{" "}
+                        </p>
                       </AlertDialogDescription>
                     </AlertDialogHeader>
-
-                    <div className="my-4">
-                      <CryptoChart
-                        coinId={config.coinId}
-                        coinName={config.coinName}
-                        days={7}
-                      />
+                    <div className="dark:hidden">
+                      <BTCChartLight />
                     </div>
-
-                    <div className="bg-muted/30 grid grid-cols-2 gap-4 rounded-lg p-4">
-                      <div>
-                        <p className="text-muted-foreground text-sm">
-                          Current Price
-                        </p>
-                        <p className="text-lg font-semibold">
-                          ${Number(config.price.price).toLocaleString()}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-muted-foreground text-sm">
-                          24h Change
-                        </p>
-                        <p
-                          className={`text-lg font-semibold ${
-                            config.price.change24h >= 0
-                              ? "text-green-500 dark:text-green-300"
-                              : "text-red-500 dark:text-red-300"
-                          }`}
-                        >
-                          {config.price.change24h.toFixed(2)}%
-                        </p>
-                      </div>
+                    <div className="hidden dark:block">
+                      <BTCChartDark />
                     </div>
-
                     <AlertDialogFooter>
                       <AlertDialogCancel>Cancel</AlertDialogCancel>
                       <AlertDialogAction
                         onClick={async () => {
                           "use server";
                           await sql`UPDATE signal SET users = users || ARRAY[${session?.user?.email}] WHERE id = ${data.id};`;
-                          redirect("/dashboard/trading");
                         }}
                       >
-                        Execute Trade
+                        Trade
                       </AlertDialogAction>
                     </AlertDialogFooter>
                   </AlertDialogContent>
                 </AlertDialog>
-              </div>
-            );
-          })}
+              ) : data.pair == "ETH/USD" ? (
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <div className="hover:bg-muted/50 flex w-full cursor-pointer items-center justify-between rounded-xl border p-3 transition-colors">
+                      {/* Left */}
+                      <div className="flex items-center justify-start gap-x-2">
+                        <div className="bg-muted flex h-10 w-10 items-center justify-center rounded-full">
+                          <TokenETH variant="mono" size={32} />
+                        </div>
+                        <div className="">
+                          <p className="text-tight font-semibold">ETH/USD</p>
+                          <p className="text-muted-foreground text-sm">
+                            Ethereum vs US Dollar{" "}
+                          </p>
+                        </div>
+                      </div>
+                      {/* Right */}
+                      <div className="flex flex-col items-end justify-center">
+                        <p className="font-semibold">
+                          {Number(ethereumPrice.price).toLocaleString("en-US", {
+                            currency: "USD",
+                            style: "currency",
+                          })}
+                        </p>
+                        <p
+                          className={
+                            ethereumPrice.change24h >= 0
+                              ? "text-sm text-green-500 dark:text-green-300"
+                              : "text-sm text-red-500 dark:text-red-300"
+                          }
+                        >
+                          {ethereumPrice.change24h.toFixed(2)}%
+                        </p>
+                      </div>
+                    </div>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent className="h-[33rem] w-full overflow-scroll">
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Execute ETH/USD</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        <p className="font-semibold">
+                          Trade ends:{" "}
+                          <span className="font-normal">
+                            {data.trade_end.toLocaleDateString()}
+                          </span>{" "}
+                        </p>
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <div className="dark:hidden">
+                      <ETHChartLight />
+                    </div>
+                    <div className="hidden dark:block">
+                      <ETHChartDark />
+                    </div>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={async () => {
+                          "use server";
+                          await sql`UPDATE signal SET users = users || ARRAY[${session?.user?.email}] WHERE id = ${data.id};`;
+                        }}
+                      >
+                        Trade
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              ) : data.pair == "USDT/USD" ? (
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <div className="hover:bg-muted/50 flex w-full cursor-pointer items-center justify-between rounded-xl border p-3 transition-colors">
+                      {/* Left */}
+                      <div className="flex items-center justify-start gap-x-2">
+                        <div className="bg-muted flex h-10 w-10 items-center justify-center rounded-full">
+                          <TokenUSDT variant="mono" size={32} />
+                        </div>
+                        <div className="">
+                          <p className="text-tight font-semibold">USDT/USD</p>
+                          <p className="text-muted-foreground text-sm">
+                            Tether vs US Dollar{" "}
+                          </p>
+                        </div>
+                      </div>
+                      {/* Right */}
+                      <div className="flex flex-col items-end justify-center">
+                        <p className="font-semibold">
+                          {Number(usdtPrice.price).toLocaleString("en-US", {
+                            currency: "USD",
+                            style: "currency",
+                          })}
+                        </p>
+                        <p
+                          className={
+                            usdtPrice.change24h >= 0
+                              ? "text-sm text-green-500 dark:text-green-300"
+                              : "text-sm text-red-500 dark:text-red-300"
+                          }
+                        >
+                          {usdtPrice.change24h.toFixed(2)}%
+                        </p>
+                      </div>
+                    </div>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent className="h-[33rem] w-full overflow-scroll">
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Execute USDT/USD</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        <p className="font-semibold">
+                          Trade ends:{" "}
+                          <span className="font-normal">
+                            {data.trade_end.toLocaleDateString()}
+                          </span>{" "}
+                        </p>
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <div className="dark:hidden">
+                      <USDTChartLight />
+                    </div>
+                    <div className="hidden dark:block">
+                      <USDTChartDark />
+                    </div>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={async () => {
+                          "use server";
+                          await sql`UPDATE signal SET users = users || ARRAY[${session?.user?.email}] WHERE id = ${data.id};`;
+                        }}
+                      >
+                        Trade
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              ) : data.pair == "XRP/USD" ? (
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <div className="hover:bg-muted/50 flex w-full cursor-pointer items-center justify-between rounded-xl border p-3 transition-colors">
+                      {/* Left */}
+                      <div className="flex items-center justify-start gap-x-2">
+                        <div className="bg-muted flex h-10 w-10 items-center justify-center rounded-full">
+                          <TokenXRP variant="mono" size={32} />
+                        </div>
+                        <div className="">
+                          <p className="text-tight font-semibold">XRP/USD</p>
+                          <p className="text-muted-foreground text-sm">
+                            XRP vs US Dollar{" "}
+                          </p>
+                        </div>
+                      </div>
+                      {/* Right */}
+                      <div className="flex flex-col items-end justify-center">
+                        <p className="font-semibold">
+                          {Number(xrpPrice.price).toLocaleString("en-US", {
+                            currency: "USD",
+                            style: "currency",
+                          })}
+                        </p>
+                        <p
+                          className={
+                            xrpPrice.change24h >= 0
+                              ? "text-sm text-green-500 dark:text-green-300"
+                              : "text-sm text-red-500 dark:text-red-300"
+                          }
+                        >
+                          {xrpPrice.change24h.toFixed(2)}%
+                        </p>
+                      </div>
+                    </div>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent className="h-[33rem] w-full overflow-scroll">
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Execute XRP/USD</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        <p className="font-semibold">
+                          Trade ends:{" "}
+                          <span className="font-normal">
+                            {data.trade_end.toLocaleDateString()}
+                          </span>{" "}
+                        </p>
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <div className="dark:hidden">
+                      <XRPChartLight />
+                    </div>
+                    <div className="hidden dark:block">
+                      <XRPChartDark />
+                    </div>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={async () => {
+                          "use server";
+                          await sql`UPDATE signal SET users = users || ARRAY[${session?.user?.email}] WHERE id = ${data.id};`;
+                        }}
+                      >
+                        Trade
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              ) : (
+                ""
+              )}
+            </div>
+          ))}
         </div>
       )}
     </div>
