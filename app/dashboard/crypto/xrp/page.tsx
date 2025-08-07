@@ -3,7 +3,8 @@ import { ChevronLeft, ExternalLink, Globe, Twitter } from "lucide-react";
 import Link from "next/link";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import BTCBalance from "./balance";
-import BTCChart, { BTCChartLight } from "./chart";
+import { XRPChartLight } from "./chart";
+import XRPChartDark from "./chart";
 import { DepositDrawer } from "../deposit";
 import SendDrawer from "../send";
 import SwapDrawer from "../swap";
@@ -35,10 +36,10 @@ export default function BNBPage() {
           <SwapDrawer />
         </div>
         <div className="dark:hidden">
-          <BTCChartLight />
+          <XRPChartLight />
         </div>
         <div className="hidden dark:block">
-          <BTCChartDark />
+          <XRPChartDark />
         </div>
       </div>
       <div className="lg:bg-card h-full w-full rounded-xl p-3 lg:w-[50%]">

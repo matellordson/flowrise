@@ -3,12 +3,12 @@ import { ChevronLeft, ExternalLink, Globe, Twitter } from "lucide-react";
 import Link from "next/link";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import BTCBalance from "./balance";
-import BTCChart, { BTCChartLight } from "./chart";
+import USDTChartDark from "./chart";
+import { USDTChartLight } from "./chart";
 import { DepositDrawer } from "../deposit";
 import SendDrawer from "../send";
 import SwapDrawer from "../swap";
 import { IconBrandTwitter } from "@tabler/icons-react";
-import BTCChartDark from "./chart";
 
 export default function BNBPage() {
   return (
@@ -35,10 +35,10 @@ export default function BNBPage() {
           <SwapDrawer />
         </div>
         <div className="dark:hidden">
-          <BTCChartLight />
+          <USDTChartLight />
         </div>
         <div className="hidden dark:block">
-          <BTCChartDark />
+          <USDTChartDark />
         </div>
       </div>
       <div className="lg:bg-card h-full w-full rounded-xl p-3 lg:w-[50%]">
