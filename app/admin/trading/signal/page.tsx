@@ -6,10 +6,10 @@ export const revalidate = 0;
 
 interface dataType {
   id: string;
-  amount: number;
   pair: string;
   created_at: string;
-  users: string[];
+  trade_end: string;
+  users: string[]; // Array of user names/emails as strings
 }
 
 async function getData(): Promise<Payment[]> {
