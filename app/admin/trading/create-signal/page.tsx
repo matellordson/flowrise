@@ -55,6 +55,7 @@ const tradingPairs = [
   { value: "ETH/USD", label: "ETH/USD" },
   { value: "USDT/USD", label: "USDT/USD" },
   { value: "XRP/USD", label: "XRP/USD" },
+  { value: "GOLD/USD", label: "GOLD/USD" },
 ];
 
 export default function TradingForm() {

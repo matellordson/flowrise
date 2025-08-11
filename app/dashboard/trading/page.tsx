@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Bot } from "lucide-react";
 import Pairs from "./pairs";
 import ActivePositions from "./active-positions";
+import DailyProfit from "./daily_profit";
 
 export default async function Trading() {
   const session = await auth();
@@ -47,6 +48,7 @@ export default async function Trading() {
             <div className="mx-auto flex w-fit items-center justify-between gap-x-2">
               <SendTrade />
               <DepositTrade />
+              <DailyProfit />
             </div>
             <div className="mt-10 h-[25rem] space-y-3 px-3">
               <Badge variant={"outline"} className="">
@@ -57,7 +59,7 @@ export default async function Trading() {
               <Pairs accountID={data[0].id} />
             </div>
           </div>
-          <div className="bg-card h-[30rem] w-full overflow-scroll rounded-xl p-4 lg:h-screen lg:w-[50%]">
+          <div className="bg-card h-[40rem] w-full overflow-scroll rounded-xl p-4 lg:h-screen lg:w-[50%]">
             <ActivePositions accountID={data[0].id} />
           </div>
         </div>
