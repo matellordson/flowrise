@@ -64,7 +64,7 @@ export default async function Trading() {
                   <span className="relative inline-flex size-3 rounded-full bg-green-300"></span>
                 </span>
               </Badge>
-              <div className="h-[50rem] overflow-scroll lg:h-full">
+              <div className="h-full overflow-scroll pb-10 lg:h-full">
                 <Pairs />
               </div>
             </div>
