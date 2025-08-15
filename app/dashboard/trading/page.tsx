@@ -1,5 +1,4 @@
 import { sql } from "@/lib/sql";
-import TradingPlans from "./plans";
 import { auth } from "@/auth";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -9,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Bot } from "lucide-react";
 import Pairs from "./pairs";
 import DailyProfit from "./daily_profit";
-import Image from "next/image";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 export default async function Trading() {
   const session = await auth();
@@ -40,37 +39,105 @@ export default async function Trading() {
           </div>
         </div>
       ) : (
-        <div className="flex h-screen flex-col gap-y-2 lg:flex-row lg:gap-x-2">
-          <div className="bg-card h-[40rem] w-full rounded-xl lg:h-screen lg:w-[50%]">
-            <div className="mt-5 flex flex-col items-center justify-center space-y-2">
-              <Badge className="capitalize">{data[0].plan} plan</Badge>
-              <p className="py-2 font-mono text-3xl font-semibold lg:text-4xl">
-                {Number(data[0].balance).toLocaleString("en-US", {
-                  style: "currency",
-                  currency: "USD",
-                })}
-              </p>
-            </div>
-            <div className="mx-auto flex w-fit items-center justify-between gap-x-2">
-              <SendTrade />
-              <DepositTrade />
-            </div>
-            <div className="mt-10 h-[25rem] space-y-3 px-3">
-              <Badge variant={"outline"} className="py-1">
-                <Bot /> Bot signal
-                <span className="relative flex size-3">
-                  {" "}
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-300 opacity-75"></span>{" "}
-                  <span className="relative inline-flex size-3 rounded-full bg-green-300"></span>
-                </span>
-              </Badge>
-              <div className="h-full overflow-scroll pb-10 lg:h-full">
-                <Pairs />
+        <div className="mx-auto flex flex-col gap-4 lg:flex-row lg:gap-6 lg:p-4">
+          {/* Mobile Tabs Layout (hidden on lg) */}
+          <div className="lg:hidden">
+            <div className="bg-card mb-4 rounded-xl p-6">
+              <div className="flex flex-col items-center justify-center space-y-4">
+                <Badge className="capitalize">{data[0].plan} plan</Badge>
+                <p className="font-mono text-3xl font-semibold">
+                  {Number(data[0].balance).toLocaleString("en-US", {
+                    style: "currency",
+                    currency: "USD",
+                  })}
+                </p>
+                <div className="flex items-center justify-center gap-x-3">
+                  <SendTrade />
+                  <DepositTrade />
+                </div>
               </div>
             </div>
+
+            <Tabs defaultValue="pairs" className="w-full">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="pairs" className="flex items-center gap-2">
+                  <Bot className="h-4 w-4" />
+                  Trading Pairs
+                </TabsTrigger>
+                <TabsTrigger value="profit">Daily Profit</TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="pairs" className="mt-4">
+                <div className="bg-card rounded-xl p-4">
+                  <div className="mb-4">
+                    <Badge variant={"outline"} className="py-1">
+                      <Bot className="mr-1 h-3 w-3" /> Bot signal
+                      <span className="relative ml-2 flex size-3">
+                        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-300 opacity-75"></span>
+                        <span className="relative inline-flex size-3 rounded-full bg-green-300"></span>
+                      </span>
+                    </Badge>
+                  </div>
+                  <div className="max-h-[60vh] overflow-y-auto">
+                    <Pairs />
+                  </div>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="profit" className="mt-4">
+                <div className="bg-card rounded-xl p-4">
+                  <div className="max-h-[60vh] overflow-y-auto">
+                    <DailyProfit />
+                  </div>
+                </div>
+              </TabsContent>
+            </Tabs>
           </div>
-          <div className="bg-card mt-7 h-full w-full overflow-scroll rounded-xl p-4 lg:h-screen lg:w-[50%]">
-            <DailyProfit />
+
+          {/* Desktop Two-Column Layout (visible on lg+) */}
+          <div className="hidden w-full lg:flex lg:gap-6">
+            {/* Left Column: Account Balance + Trading Pairs */}
+            <div className="flex flex-col gap-6 lg:w-1/2">
+              {/* Account Balance Section */}
+              <div className="bg-card rounded-xl p-6">
+                <div className="flex flex-col items-center justify-center space-y-4">
+                  <Badge className="capitalize">{data[0].plan} plan</Badge>
+                  <p className="font-mono text-3xl font-semibold lg:text-4xl">
+                    {Number(data[0].balance).toLocaleString("en-US", {
+                      style: "currency",
+                      currency: "USD",
+                    })}
+                  </p>
+                  <div className="flex items-center justify-center gap-x-3">
+                    <SendTrade />
+                    <DepositTrade />
+                  </div>
+                </div>
+              </div>
+
+              {/* Trading Pairs Section */}
+              <div className="bg-card rounded-xl p-6">
+                <div className="mb-6">
+                  <Badge variant={"outline"} className="px-3 py-2">
+                    <Bot className="mr-2 h-4 w-4" /> Bot signal
+                    <span className="relative ml-2 flex size-3">
+                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-300 opacity-75"></span>
+                      <span className="relative inline-flex size-3 rounded-full bg-green-300"></span>
+                    </span>
+                  </Badge>
+                </div>
+                <div className="max-h-[60vh] overflow-y-auto pr-2">
+                  <Pairs />
+                </div>
+              </div>
+            </div>
+
+            {/* Right Column: Daily Profit */}
+            <div className="bg-card rounded-xl p-6 lg:w-1/2">
+              <div className="max-h-[80vh] overflow-y-auto pr-2">
+                <DailyProfit />
+              </div>
+            </div>
           </div>
         </div>
       )}

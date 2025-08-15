@@ -36,7 +36,7 @@ export default async function DailyProfit() {
                   <ArrowDown size={20} />
                 </div>
                 <div className="text-sm">
-                  <p className="text-card-foreground w-[12rem] truncate lg:w-[20rem]">
+                  <p className="text-card-foreground w-[12rem] truncate lg:w-[10rem]">
                     Received daily Profit
                   </p>
                   <p className="text-muted-foreground text-xs">
@@ -46,7 +46,6 @@ export default async function DailyProfit() {
               </div>
               <div className="">
                 <p className="text-right font-mono font-semibold text-green-500 dark:text-green-300">
-                  +
                   {Number(data.amount).toLocaleString("en-US", {
                     currency: "USD",
                     style: "currency",
