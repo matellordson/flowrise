@@ -69,7 +69,7 @@ export default async function Trading() {
               </div>
             </div>
           </div>
-          <div className="bg-card h-[40rem] w-full overflow-scroll rounded-xl p-4 lg:h-screen lg:w-[50%]">
+          <div className="bg-card mt-7 h-full w-full overflow-scroll rounded-xl p-4 lg:h-screen lg:w-[50%]">
             <DailyProfit />
           </div>
         </div>
