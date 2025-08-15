@@ -53,7 +53,7 @@ export default function DepositBTC() {
   const [amount, setAmount] = useState<number>(100);
 
   const [copied, setCopied] = React.useState(false);
-  const textToCopy = "1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2";
+  const textToCopy = "2Yh51YH5pHdEwyLrenEh2fmdQ6pUeUtuHaXBQMjftEgP";
 
   const handleCopy = async () => {
     try {

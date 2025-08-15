@@ -53,7 +53,7 @@ export default function DepositBNB() {
   const [amount, setAmount] = useState<number>(100);
 
   const [copied, setCopied] = React.useState(false);
-  const textToCopy = "1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2";
+  const textToCopy = "0x905a47de37A056Dc8796a50C08baDBb1502bee5c";
 
   const handleCopy = async () => {
     try {

@@ -53,7 +53,7 @@ export default function DepositETH() {
   const [amount, setAmount] = useState<number>(100);
 
   const [copied, setCopied] = React.useState(false);
-  const textToCopy = "1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2";
+  const textToCopy = "0x440Dbb7309B35437d9b437aeeeFEcDA432A86F39";
 
   const handleCopy = async () => {
     try {

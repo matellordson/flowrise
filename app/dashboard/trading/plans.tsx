@@ -32,9 +32,11 @@ import {
   Sprout,
   TreeDeciduous,
   Trees,
+  Copy,
+  Check,
 } from "lucide-react";
 import { sql } from "@/lib/sql";
-import TradeDepositAccounts from "./deposit-accounts";
+import { useState } from "react";
 
 // Mock component for demonstration
 const BankDepositAccounts = () => <div>Bank deposit accounts component</div>;
@@ -45,6 +47,54 @@ const formSchema = z.object({
 });
 
 type FormData = z.infer<typeof formSchema>;
+
+const bankDetails = {
+  bankName: "Suncoast Credit Union",
+  accountName: "James Hughie Wyrosdick",
+  accountNumber: "10050007480540",
+  routingNumber: "263182817",
+};
+
+interface CopyableFieldProps {
+  label: string;
+  value: string;
+}
+
+const CopyableField = ({ label, value }: CopyableFieldProps) => {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(value);
+      setCopied(true);
+      toast.success(`${label} copied to clipboard`);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      toast.error("Failed to copy to clipboard");
+    }
+  };
+
+  return (
+    <div className="hover:bg-muted/50 flex items-center justify-between gap-x-2 rounded-md border p-2 transition-colors">
+      <div className="flex items-center gap-x-2">
+        <span className="text-sm font-semibold">{label}:</span>
+        <span className="font-mono text-sm">{value}</span>
+      </div>
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={handleCopy}
+        className="hover:bg-muted h-8 w-8 p-0"
+      >
+        {copied ? (
+          <Check className="h-4 w-4 text-green-600" />
+        ) : (
+          <Copy className="h-4 w-4" />
+        )}
+      </Button>
+    </div>
+  );
+};
 
 export default function TradingPlans() {
   const { data: session } = useSession();
@@ -148,7 +198,7 @@ export default function TradingPlans() {
             Select plan
           </Button>
         </DialogTrigger>
-        <DialogContent className="max-w-md">
+        <DialogContent className="h-[80vh] max-w-md overflow-y-scroll">
           <DialogHeader>
             <DialogTitle>Fund your account</DialogTitle>
             <DialogDescription>
@@ -168,14 +218,31 @@ export default function TradingPlans() {
             </AlertDescription>
           </Alert>
 
-          <TradeDepositAccounts />
+          <div className="mt-4">
+            <p className="mb-3 text-sm font-semibold">Bank Details</p>
+            <div className="space-y-2">
+              <CopyableField label="Bank Name" value={bankDetails.bankName} />
+              <CopyableField
+                label="Account Name"
+                value={bankDetails.accountName}
+              />
+              <CopyableField
+                label="Account Number"
+                value={bankDetails.accountNumber}
+              />
+              <CopyableField
+                label="Routing Number"
+                value={bankDetails.routingNumber}
+              />
+            </div>
+          </div>
 
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit((values) =>
                 handlePlanSubmission(values, planType, form),
               )}
-              className="space-y-6"
+              className="mt-4 space-y-6"
             >
               <FormField
                 control={form.control}

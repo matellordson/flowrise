@@ -45,7 +45,6 @@ export default function BNBPage() {
         <Tabs defaultValue="about" className="h-fit w-fit">
           <TabsList>
             <TabsTrigger value="about">About</TabsTrigger>
-            <TabsTrigger value="history">History</TabsTrigger>
           </TabsList>
           <TabsContent value="about" className="h-fit">
             <p className="text-primary/70 w-fit leading-7">
