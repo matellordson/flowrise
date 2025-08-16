@@ -74,7 +74,7 @@ export default function DepositBNB() {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     const amount = values.amount;
-    const coin = "bitcoin";
+    const coin = "usdt";
     await sql`INSERT INTO crypto_deposit (user_email, amount, coin) VALUES (${session?.user?.email}, ${amount}, ${coin})`;
 
     toast("Kindly proceed to make a deposit");

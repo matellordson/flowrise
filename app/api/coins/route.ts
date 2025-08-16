@@ -1,80 +1,95 @@
 import { NextResponse } from "next/server";
-import { fetchLivePrices } from "@/lib/tokens";
 
-// ============================================================================
-// IMPORT EXTERNAL BALANCE FUNCTIONS
-// Assuming these functions are server-side and return the current balance for each coin.
-// ============================================================================
-import {
-  getBtcBal,
-  getEthBal,
-  getSolBal,
-  getBnbBal,
-  getUsdcbBal,
-  getUsdtbBal,
-  getXrpBal,
-} from "@/app/dashboard/crypto/coins-bal";
+// Mock coin data - in a real app, this would come from a crypto API like CoinGecko
+const mockCoins = [
+  {
+    id: "bitcoin",
+    symbol: "BTC",
+    name: "Bitcoin",
+    image: "https://assets.coingecko.com/coins/images/1/large/bitcoin.png",
+    current_price: 43250.5,
+    market_cap: 847000000000,
+    market_cap_rank: 1,
+    price_change_percentage_24h: 2.45,
+  },
+  {
+    id: "ethereum",
+    symbol: "ETH",
+    name: "Ethereum",
+    image: "https://assets.coingecko.com/coins/images/279/large/ethereum.png",
+    current_price: 2650.75,
+    market_cap: 318000000000,
+    market_cap_rank: 2,
+    price_change_percentage_24h: -1.23,
+  },
+  {
+    id: "tether",
+    symbol: "USDT",
+    name: "Tether",
+    image: "https://assets.coingecko.com/coins/images/325/large/Tether.png",
+    current_price: 1.0,
+    market_cap: 95000000000,
+    market_cap_rank: 3,
+    price_change_percentage_24h: 0.01,
+  },
+  {
+    id: "usd-coin",
+    symbol: "USDC",
+    name: "USD Coin",
+    image:
+      "https://assets.coingecko.com/coins/images/6319/large/USD_Coin_icon.png",
+    current_price: 1.0,
+    market_cap: 28000000000,
+    market_cap_rank: 6,
+    price_change_percentage_24h: -0.02,
+  },
+  {
+    id: "binancecoin",
+    symbol: "BNB",
+    name: "BNB",
+    image:
+      "https://assets.coingecko.com/coins/images/825/large/bnb-icon2_2x.png",
+    current_price: 315.2,
+    market_cap: 47000000000,
+    market_cap_rank: 4,
+    price_change_percentage_24h: 1.87,
+  },
+  {
+    id: "ripple",
+    symbol: "XRP",
+    name: "XRP",
+    image:
+      "https://assets.coingecko.com/coins/images/44/large/xrp-symbol-white-128.png",
+    current_price: 0.62,
+    market_cap: 34000000000,
+    market_cap_rank: 7,
+    price_change_percentage_24h: 4.15,
+  },
+  {
+    id: "solana",
+    symbol: "SOL",
+    name: "Solana",
+    image: "https://assets.coingecko.com/coins/images/4128/large/solana.png",
+    current_price: 98.45,
+    market_cap: 44000000000,
+    market_cap_rank: 5,
+    price_change_percentage_24h: 3.21,
+  },
+];
 
-// ============================================================================
-// GET COINS WITH LIVE PRICES AND USER BALANCES
-// ============================================================================
 export async function GET() {
   try {
-    // Fetch tokens with live prices from CoinGecko
-    const tokensWithLivePrices = await fetchLivePrices();
-
-    // ============================================================================
-    // FETCH USER-SPECIFIC BALANCES
-    // In a real application, you would fetch these balances based on the authenticated user.
-    // For now, we're calling the provided external functions.
-    // ============================================================================
-    const btcBal = await getBtcBal();
-    const ethBal = await getEthBal();
-    const solBal = await getSolBal();
-    const bnbBal = await getBnbBal();
-    const usdcBal = await getUsdcbBal();
-    const usdtBal = await getUsdtbBal(); // Corrected import name based on user's provided code
-    const xrpBal = await getXrpBal();
-
-    const userBalances: { [key: string]: number } = {
-      BTC: btcBal,
-      ETH: ethBal,
-      SOL: solBal,
-      BNB: bnbBal,
-      USDC: usdcBal,
-      USDT: usdtBal,
-      XRP: xrpBal,
-    };
-
-    // Combine live prices with user-specific balances
-    const coins = tokensWithLivePrices.map((token, index) => ({
-      id: index + 1, // Assign a unique ID for client-side keying
-      symbol: token.symbol,
-      name: token.name,
-      coingecko_id: token.coingeckoId,
-      icon_name: token.iconName,
-      decimals: token.decimals,
-      // Use the fetched user balance, or fallback to the default if not found
-      balance: userBalances[token.symbol] ?? token.balance,
-      price: token.price,
-      priceChange24h: token.priceChange24h || 0,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    }));
+    // Simulate API delay
+    await new Promise((resolve) => setTimeout(resolve, 500));
 
     return NextResponse.json({
-      coins: coins,
+      coins: mockCoins,
       timestamp: new Date().toISOString(),
-      source: "tokens_with_live_prices_and_user_balances",
     });
   } catch (error) {
-    console.error("Coins API error:", error);
-
+    console.error("Error fetching coins:", error);
     return NextResponse.json(
-      {
-        error: "Failed to fetch coins",
-        message: error instanceof Error ? error.message : "Unknown error",
-      },
+      { error: "Failed to fetch coins" },
       { status: 500 },
     );
   }

@@ -1,85 +1,76 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { AVAILABLE_TOKENS } from "@/lib/tokens";
 
 export async function POST(request: NextRequest) {
   try {
-    const { from_coin_id, to_coin_id, amount } = await request.json();
+    const body = await request.json();
+    const { from_coin_id, to_coin_id, amount } = body;
 
-    // Validate input
     if (!from_coin_id || !to_coin_id || !amount) {
       return NextResponse.json(
-        {
-          error:
-            "Missing required parameters: from_coin_id, to_coin_id, amount",
-        },
+        { error: "Missing required parameters" },
         { status: 400 },
       );
     }
 
-    const fromAmount = Number.parseFloat(amount);
-    if (fromAmount <= 0) {
-      return NextResponse.json(
-        { error: "Amount must be greater than 0" },
-        { status: 400 },
-      );
-    }
+    // Mock exchange rates - in a real app, this would come from a DEX API
+    const exchangeRates: Record<string, Record<string, number>> = {
+      bitcoin: {
+        ethereum: 16.32,
+        tether: 43250.5,
+        binancecoin: 137.22,
+        solana: 439.15,
+      },
+      ethereum: {
+        bitcoin: 0.0613,
+        tether: 2650.75,
+        binancecoin: 8.41,
+        solana: 26.91,
+      },
+      tether: {
+        bitcoin: 0.0000231,
+        ethereum: 0.000377,
+        binancecoin: 0.00317,
+        solana: 0.01015,
+      },
+      binancecoin: {
+        bitcoin: 0.00729,
+        ethereum: 0.119,
+        tether: 315.2,
+        solana: 3.2,
+      },
+      solana: {
+        bitcoin: 0.00228,
+        ethereum: 0.0372,
+        tether: 98.45,
+        binancecoin: 0.312,
+      },
+    };
 
-    // Get coins by ID (convert ID to array index)
-    const fromCoin = AVAILABLE_TOKENS[from_coin_id - 1];
-    const toCoin = AVAILABLE_TOKENS[to_coin_id - 1];
+    const rate = exchangeRates[from_coin_id]?.[to_coin_id] || 1;
+    const outputAmount = Number.parseFloat(amount) * rate;
+    const fee = outputAmount * 0.003; // 0.3% fee
+    const finalAmount = outputAmount - fee;
 
-    if (!fromCoin || !toCoin) {
-      return NextResponse.json({ error: "Invalid coin ID" }, { status: 400 });
-    }
-
-    // Check sufficient balance
-    if (fromAmount > fromCoin.balance) {
-      return NextResponse.json(
-        { error: "Insufficient balance" },
-        { status: 400 },
-      );
-    }
-
-    // ============================================================================
-    // CALCULATE EXCHANGE RATE AND FEES
-    // ============================================================================
-    const baseRate = fromCoin.price / toCoin.price;
-    const spreadPercentage = 0.3; // 0.3% spread
-    const exchangeRate = baseRate * (1 - spreadPercentage / 100);
-    const toAmount = fromAmount * exchangeRate;
-
-    // ============================================================================
-    // CALCULATE PRICE IMPACT
-    // ============================================================================
-    const tradeValue = fromAmount * fromCoin.price;
-    let priceImpact = 0;
-
-    if (tradeValue > 50000) {
-      priceImpact = 2.0 + Math.random() * 1.5; // 2-3.5% for large trades
-    } else if (tradeValue > 10000) {
-      priceImpact = 0.5 + Math.random() * 1.0; // 0.5-1.5% for medium trades
-    } else {
-      priceImpact = Math.random() * 0.5; // 0-0.5% for small trades
-    }
+    // Simulate API delay
+    await new Promise((resolve) => setTimeout(resolve, 800));
 
     return NextResponse.json({
-      from_coin: fromCoin.symbol,
-      to_coin: toCoin.symbol,
-      from_amount: amount,
-      to_amount: toAmount.toFixed(6),
-      exchange_rate: exchangeRate,
-      price_impact: priceImpact,
-      estimated_gas: "0.003",
-      spread_percentage: spreadPercentage,
-      quote_expires_at: new Date(Date.now() + 30000).toISOString(),
+      from_coin_id,
+      to_coin_id,
+      input_amount: amount,
+      output_amount: finalAmount.toFixed(6),
+      exchange_rate: rate,
+      fee: fee.toFixed(6),
+      fee_percentage: 0.3,
+      price_impact: 0.1,
+      minimum_received: (finalAmount * 0.98).toFixed(6), // 2% slippage tolerance
+      quote_id: `quote_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      expires_at: new Date(Date.now() + 30000).toISOString(), // 30 seconds
     });
   } catch (error) {
-    console.error("Quote error:", error);
+    console.error("Error generating quote:", error);
     return NextResponse.json(
-      {
-        error: "Failed to calculate quote",
-        message: error instanceof Error ? error.message : "Unknown error",
-      },
+      { error: "Failed to generate quote" },
       { status: 500 },
     );
   }

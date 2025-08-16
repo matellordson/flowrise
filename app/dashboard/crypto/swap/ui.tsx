@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -13,6 +13,7 @@ import {
   TrendingUp,
   RefreshCw,
   Settings,
+  Coins,
 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -38,69 +39,52 @@ import {
 } from "@/components/ui/popover";
 
 // ============================================================================
-// COIN ICON IMPORTS - Import actual icon components for each coin
-// ============================================================================
-import {
-  TokenBNB,
-  TokenBTC,
-  TokenETH,
-  TokenSOL,
-  TokenUSDC,
-  TokenUSDT,
-  TokenXRP,
-} from "@web3icons/react";
-
-// ============================================================================
 // TYPES & INTERFACES - Customize these based on your database schema
 // ============================================================================
 
 interface Coin {
-  id: number;
+  id: string;
   symbol: string;
   name: string;
-  price: number;
-  balance: number;
-  decimals: number;
-  coingecko_id: string;
-  icon_name: string;
-  created_at?: string;
-  updated_at?: string;
+  image: string;
+  current_price: number;
+  market_cap: number;
+  market_cap_rank: number;
+  price_change_percentage_24h: number;
 }
 
 interface SwapQuote {
-  from_coin: string;
-  to_coin: string;
-  from_amount: string;
-  to_amount: string;
+  from_coin_id: string;
+  to_coin_id: string;
+  input_amount: string;
+  output_amount: string;
   exchange_rate: number;
+  fee: string;
+  fee_percentage: number;
   price_impact: number;
-  estimated_gas: string;
+  minimum_received: string;
+  quote_id: string;
+  expires_at: string;
 }
 
 interface SwapResult {
   success: boolean;
-  transaction_id: string;
-  from_coin: string;
-  to_coin: string;
-  from_amount: string;
-  received_amount: string;
-  actual_slippage: string;
-  gas_used: string;
+  transaction_hash: string;
+  from_coin_id: string;
+  to_coin_id: string;
+  input_amount: string;
+  actual_output: string;
+  fee_paid: string;
   timestamp: string;
+  block_number: number;
+  gas_used: number;
 }
 
-// ============================================================================
-// ICON COMPONENT MAPPER - Maps coin symbol to actual React component
-// ============================================================================
-const IconComponents = {
-  BTC: TokenBTC,
-  ETH: TokenETH,
-  SOL: TokenSOL,
-  BNB: TokenBNB,
-  USDC: TokenUSDC,
-  USDT: TokenUSDT,
-  XRP: TokenXRP,
-} as const;
+interface CoinBalance {
+  coin_id: string;
+  balance: number; // Amount of coins user owns
+  usd_value: number; // Current USD value of the balance
+}
 
 // ============================================================================
 // UTILITY FUNCTIONS - Customize number formatting as needed
@@ -108,7 +92,7 @@ const IconComponents = {
 
 function formatNumber(num: number, decimals = 4): string {
   if (typeof num !== "number" || isNaN(num)) {
-    return "0.00"; // Return a default string for invalid numbers
+    return "0.00";
   }
   if (num === 0) return "0";
   if (num < 0.0001) return num.toExponential(2);
@@ -139,36 +123,37 @@ function formatPrice(price: number): string {
 }
 
 // ============================================================================
-// COIN ICON COMPONENT - Uses imported React icon components
+// COIN ICON COMPONENT - Using coin images instead of web3icons
 // ============================================================================
-function CoinIcon({ symbol, size = 24 }: { symbol: string; size?: number }) {
-  // Get the icon component from the mapping
-  const IconComponent = IconComponents[symbol as keyof typeof IconComponents];
-
-  // If no icon component found, show fallback
-  if (!IconComponent) {
-    return (
+function CoinIcon({ coin, size = 24 }: { coin: Coin; size?: number }) {
+  return (
+    <div className="relative">
+      <img
+        src={coin.image || "/placeholder.svg"}
+        alt={coin.name}
+        width={size}
+        height={size}
+        className="rounded-full"
+        onError={(e) => {
+          // Fallback to text-based icon if image fails to load
+          const target = e.target as HTMLImageElement;
+          target.style.display = "none";
+          const fallback = target.nextElementSibling as HTMLElement;
+          if (fallback) fallback.style.display = "flex";
+        }}
+      />
       <div
-        className="bg-muted text-muted-foreground flex items-center justify-center rounded-full text-xs font-medium"
+        className="bg-muted text-muted-foreground absolute inset-0 hidden items-center justify-center rounded-full text-xs font-medium"
         style={{ width: size, height: size }}
       >
-        {symbol.slice(0, 2).toUpperCase()}
+        {coin.symbol.slice(0, 2).toUpperCase()}
       </div>
-    );
-  }
-
-  // Render the actual icon component
-  return (
-    <IconComponent
-      size={size}
-      variant="mono" // Use monochrome variant for consistency
-      className="rounded-full"
-    />
+    </div>
   );
 }
 
 // ============================================================================
-// COIN SELECTOR COMPONENT - Customize dropdown behavior
+// COIN SELECTOR COMPONENT - Improved responsive design
 // ============================================================================
 function CoinSelector({
   selectedCoin,
@@ -183,7 +168,7 @@ function CoinSelector({
 }) {
   const [open, setOpen] = useState(false);
   const availableCoins = coins.filter(
-    (coin) => !excludeCoin || coin.symbol !== excludeCoin.symbol,
+    (coin) => !excludeCoin || coin.id !== excludeCoin.id,
   );
 
   return (
@@ -193,12 +178,12 @@ function CoinSelector({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="bg-background/50 border-border/50 hover:bg-background/80 h-11 min-w-[140px] justify-between backdrop-blur-sm transition-all duration-200"
+          className="bg-background/50 border-border/50 hover:bg-background/80 h-12 min-w-[120px] justify-between backdrop-blur-sm transition-all duration-200 sm:min-w-[140px]"
         >
           {selectedCoin ? (
-            <div className="flex items-center gap-2.5">
-              <CoinIcon symbol={selectedCoin.symbol} size={20} />
-              <span className="text-sm font-semibold">
+            <div className="flex items-center gap-2">
+              <CoinIcon coin={selectedCoin} size={20} />
+              <span className="truncate text-sm font-semibold">
                 {selectedCoin.symbol}
               </span>
             </div>
@@ -208,13 +193,13 @@ function CoinSelector({
           <ArrowUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="border-border/50 bg-background/95 w-[340px] p-0 backdrop-blur-sm">
+      <PopoverContent className="border-border/50 bg-background/95 w-[90vw] p-0 backdrop-blur-sm sm:w-[340px]">
         <Command className="bg-transparent">
           <CommandInput
             placeholder="Search coins..."
             className="h-12 border-0 bg-transparent"
           />
-          <CommandList className="max-h-[320px]">
+          <CommandList className="max-h-[280px] sm:max-h-[320px]">
             <CommandEmpty className="text-muted-foreground py-6 text-center text-sm">
               No coin found.
             </CommandEmpty>
@@ -227,23 +212,26 @@ function CoinSelector({
                     onCoinSelect(coin);
                     setOpen(false);
                   }}
-                  className="hover:bg-muted/50 flex cursor-pointer items-center justify-between rounded-lg p-3 transition-colors duration-150"
+                  className="hover:bg-muted/50 flex min-h-[60px] cursor-pointer items-center justify-between rounded-lg p-3 transition-colors duration-150 sm:p-4"
                 >
-                  <div className="flex items-center gap-3">
-                    <CoinIcon symbol={coin.symbol} size={32} />
-                    <div className="flex flex-col">
+                  <div className="flex min-w-0 flex-1 items-center gap-3">
+                    <CoinIcon coin={coin} size={32} />
+                    <div className="flex min-w-0 flex-col">
                       <div className="text-sm font-semibold">{coin.symbol}</div>
-                      <div className="text-muted-foreground max-w-[120px] truncate text-xs">
+                      <div className="text-muted-foreground truncate text-xs">
                         {coin.name}
                       </div>
                     </div>
                   </div>
-                  <div className="flex flex-col items-end text-right">
+                  <div className="ml-2 flex flex-col items-end text-right">
                     <div className="text-sm font-medium">
-                      {formatPrice(coin.price)}
+                      {formatPrice(coin.current_price)}
                     </div>
-                    <div className="text-muted-foreground text-xs">
-                      {formatNumber(coin.balance)}
+                    <div
+                      className={`text-xs ${coin.price_change_percentage_24h >= 0 ? "text-green-500" : "text-red-500"}`}
+                    >
+                      {coin.price_change_percentage_24h >= 0 ? "+" : ""}
+                      {coin.price_change_percentage_24h.toFixed(2)}%
                     </div>
                   </div>
                 </CommandItem>
@@ -296,8 +284,8 @@ function SwapSettings({
           <Settings className="h-4 w-4" />
         </Button>
       </DialogTrigger>
-      <DialogContent className="bg-background/95 border-border/50 backdrop-blur-sm sm:max-w-[425px]">
-        <DialogHeader>
+      <DialogContent className="max-h-[80vh] overflow-y-auto sm:max-w-md">
+        <DialogHeader className="space-y-3">
           <DialogTitle className="text-xl font-bold">Swap Settings</DialogTitle>
           <DialogDescription className="text-muted-foreground">
             Adjust your swap preferences and slippage tolerance.
@@ -352,7 +340,7 @@ function SwapSettings({
 }
 
 // ============================================================================
-// MAIN SWAP COMPONENT - Customize UI layout and behavior
+// MAIN SWAP COMPONENT - Improved responsive layout and cleaner design
 // ============================================================================
 export default function SwapPage() {
   // State management
@@ -369,8 +357,98 @@ export default function SwapPage() {
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [balanceError, setBalanceError] = useState<string | null>(null);
 
+  const [userBalances, setUserBalances] = useState<CoinBalance[]>([]);
+  const [balancesLoading, setBalancesLoading] = useState(false);
+
+  const fetchUserBalances = useCallback(async () => {
+    setBalancesLoading(true);
+    try {
+      const response = await fetch("/api/balances");
+      if (!response.ok) throw new Error("Failed to fetch balances");
+
+      const data = await response.json();
+      console.log("[v0] Fetched balances from database:", data.balances);
+
+      // Convert database response to CoinBalance format
+      const balances: CoinBalance[] = data.balances.map((balance: any) => ({
+        coin_id:
+          balance.coin_symbol.toLowerCase() === "btc"
+            ? "bitcoin"
+            : balance.coin_symbol.toLowerCase() === "eth"
+              ? "ethereum"
+              : balance.coin_symbol.toLowerCase() === "bnb"
+                ? "binancecoin"
+                : balance.coin_symbol.toLowerCase() === "sol"
+                  ? "solana"
+                  : balance.coin_symbol.toLowerCase() === "ada"
+                    ? "cardano"
+                    : balance.coin_symbol.toLowerCase() === "xrp"
+                      ? "ripple"
+                      : balance.coin_symbol.toLowerCase() === "usdc"
+                        ? "usd-coin"
+                        : balance.coin_symbol.toLowerCase() === "usdt"
+                          ? "tether"
+                          : balance.coin_symbol.toLowerCase(),
+        balance: balance.balance,
+        usd_value: balance.usd_value,
+      }));
+
+      setUserBalances(balances);
+    } catch (error) {
+      console.error("Failed to fetch user balances:", error);
+      toast.error("Failed to load balance data");
+    } finally {
+      setBalancesLoading(false);
+    }
+  }, []);
+
+  const validateBalance = useCallback(() => {
+    if (!fromCoin || !fromAmount || Number.parseFloat(fromAmount) <= 0) {
+      setBalanceError(null);
+      return;
+    }
+
+    const userBalance = userBalances.find((b) => b.coin_id === fromCoin.id);
+    if (!userBalance) {
+      setBalanceError("No balance found for this coin");
+      return;
+    }
+
+    const requestedAmount = Number.parseFloat(fromAmount);
+    const requestedUsdValue = requestedAmount * fromCoin.current_price;
+    const availableUsdValue = userBalance.balance * fromCoin.current_price;
+
+    console.log("[v0] Balance validation:", {
+      coin: fromCoin.symbol,
+      requested: requestedAmount,
+      available: userBalance.balance,
+      requestedUSD: requestedUsdValue,
+      availableUSD: availableUsdValue,
+    });
+
+    if (requestedAmount > userBalance.balance) {
+      setBalanceError(
+        `Insufficient ${fromCoin.symbol} balance. Available: ${userBalance.balance.toFixed(4)} ${fromCoin.symbol}`,
+      );
+      return;
+    }
+
+    if (requestedUsdValue > availableUsdValue) {
+      setBalanceError(
+        `Insufficient balance. Available: ${formatPrice(availableUsdValue)}`,
+      );
+      return;
+    }
+
+    setBalanceError(null);
+  }, [fromCoin, fromAmount, userBalances]);
+
+  useEffect(() => {
+    validateBalance();
+  }, [validateBalance]);
+
   // ============================================================================
-  // FETCH COINS FROM DATABASE - Customize this endpoint
+  // FETCH COINS FROM DATABASE - Updated to match API response structure
   // ============================================================================
   const fetchCoins = useCallback(async () => {
     try {
@@ -397,7 +475,7 @@ export default function SwapPage() {
   }, [fromCoin, toCoin]);
 
   // ============================================================================
-  // GET SWAP QUOTE - Customize quote calculation
+  // GET SWAP QUOTE - Updated to match API response structure
   // ============================================================================
   const fetchSwapQuote = useCallback(async () => {
     if (
@@ -409,22 +487,14 @@ export default function SwapPage() {
       setToAmount("");
       setExchangeRate(null);
       setPriceImpact(0);
-      setBalanceError(null); // Clear any previous balance errors
       return;
     }
 
-    // Check for insufficient balance in real-time
-    const fromAmountNum = Number.parseFloat(fromAmount);
-    if (fromAmountNum > fromCoin.balance) {
-      setBalanceError(
-        `Insufficient ${fromCoin.symbol} balance. You have ${formatNumber(fromCoin.balance)} ${fromCoin.symbol} but trying to swap ${formatNumber(fromAmountNum)} ${fromCoin.symbol}`,
-      );
+    if (balanceError) {
       setToAmount("");
       setExchangeRate(null);
       setPriceImpact(0);
       return;
-    } else {
-      setBalanceError(null); // Clear error if balance is sufficient
     }
 
     setIsLoading(true);
@@ -442,7 +512,7 @@ export default function SwapPage() {
       if (!response.ok) throw new Error("Failed to get quote");
 
       const quote: SwapQuote = await response.json();
-      setToAmount(quote.to_amount);
+      setToAmount(quote.output_amount);
       setExchangeRate(quote.exchange_rate);
       setPriceImpact(quote.price_impact);
     } catch (error) {
@@ -451,10 +521,10 @@ export default function SwapPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [fromCoin, toCoin, fromAmount]);
+  }, [fromCoin, toCoin, fromAmount, balanceError]);
 
   // ============================================================================
-  // EXECUTE SWAP - Customize swap execution and database updates
+  // EXECUTE SWAP - Updated to match API response structure
   // ============================================================================
   const executeSwap = useCallback(async () => {
     if (
@@ -467,23 +537,17 @@ export default function SwapPage() {
       return;
     }
 
-    if (Number.parseFloat(fromAmount) > fromCoin.balance) {
-      toast.error("Insufficient balance");
-      return;
-    }
-
     setIsSwapping(true);
     try {
       const response = await fetch("/api/swap/execute", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          quote_id: `quote_${Date.now()}`,
           from_coin_id: fromCoin.id,
           to_coin_id: toCoin.id,
-          from_amount: fromAmount,
-          to_amount: toAmount,
-          slippage: slippage,
-          user_id: 1, // Replace with actual user ID from auth
+          input_amount: fromAmount,
+          expected_output: toAmount,
         }),
       });
 
@@ -494,7 +558,7 @@ export default function SwapPage() {
 
       const result: SwapResult = await response.json();
       toast.success(
-        `Successfully swapped ${fromAmount} ${fromCoin.symbol} for ${result.received_amount} ${toCoin.symbol}`,
+        `Successfully swapped ${fromAmount} ${fromCoin.symbol} for ${result.actual_output} ${toCoin.symbol}`,
       );
 
       // Reset form and refresh balances
@@ -502,24 +566,15 @@ export default function SwapPage() {
       setToAmount("");
       setExchangeRate(null);
       setPriceImpact(0);
-      fetchCoins(); // Refresh balances from database
+      fetchCoins();
+      fetchUserBalances();
     } catch (error: any) {
       console.error("Swap error:", error);
       toast.error(error.message || "Swap failed. Please try again.");
     } finally {
       setIsSwapping(false);
     }
-  }, [fromCoin, toCoin, fromAmount, toAmount, slippage, fetchCoins]);
-
-  // Swap coin positions
-  const swapCoins = useCallback(() => {
-    const tempCoin = fromCoin;
-    const tempAmount = fromAmount;
-    setFromCoin(toCoin);
-    setToCoin(tempCoin);
-    setFromAmount(toAmount);
-    setToAmount(tempAmount);
-  }, [fromCoin, toCoin, fromAmount, toAmount]);
+  }, [fromCoin, toCoin, fromAmount, toAmount, fetchCoins, fetchUserBalances]);
 
   // Auto-fetch quote when inputs change
   useEffect(() => {
@@ -527,36 +582,39 @@ export default function SwapPage() {
     return () => clearTimeout(timeoutId);
   }, [fetchSwapQuote]);
 
-  // Load coins on mount and refresh every minute
   useEffect(() => {
     fetchCoins();
-    const interval = setInterval(fetchCoins, 60000);
+    fetchUserBalances();
+    const interval = setInterval(() => {
+      fetchCoins();
+      fetchUserBalances();
+    }, 60000);
     return () => clearInterval(interval);
-  }, [fetchCoins]);
+  }, [fetchCoins, fetchUserBalances]);
 
   // ============================================================================
-  // RENDER UI - Customize layout and styling
+  // RENDER UI - Cleaner, more responsive layout
   // ============================================================================
   return (
-    <main className="">
-      <div className="">
-        {/* Swap Card */}
-        <div className="border-border/50 bg-background/95 max-h-[36rem] shadow-xl backdrop-blur-sm">
-          <div className="space-y-0 pb-4">
+    <main className="flex min-h-screen items-center justify-center p-4">
+      <div className="w-full max-w-md space-y-6">
+        <div className="border-border/50 bg-background/95 rounded-2xl border p-4 shadow-xl backdrop-blur-sm sm:p-6">
+          <div className="space-y-6">
             <div className="flex items-center justify-between">
-              <CardTitle className="flex items-center gap-2 text-xl font-bold">
+              <CardTitle className="flex items-center gap-2 text-lg font-bold sm:text-xl">
+                <Coins className="h-5 w-5 sm:h-6 sm:w-6" />
                 Swap Coins
               </CardTitle>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1 sm:gap-2">
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={fetchCoins}
-                  disabled={isLoading}
-                  className="h-8 w-8 p-0"
+                  disabled={isLoading || balancesLoading}
+                  className="hover:bg-muted/50 h-8 w-8 p-0"
                 >
                   <RefreshCw
-                    className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`}
+                    className={`h-4 w-4 ${isLoading || balancesLoading ? "animate-spin" : ""}`}
                   />
                 </Button>
                 <SwapSettings
@@ -565,200 +623,213 @@ export default function SwapPage() {
                 />
               </div>
             </div>
+
             {lastUpdated && (
               <p className="text-muted-foreground text-xs">
                 Updated {lastUpdated.toLocaleTimeString()}
               </p>
             )}
-          </div>
 
-          <div className="h-[28rem] w-full space-y-1 overflow-y-auto py-4">
-            {/* From Coin Input */}
-            <div className="space-y-3">
-              <Label className="text-muted-foreground text-sm font-medium">
-                From
-              </Label>
-              <div className="bg-muted/30 border-border/50 focus-within:border-primary/50 flex items-center rounded-xl border transition-colors duration-200">
-                <Input
-                  type="number"
-                  placeholder="0.0"
-                  value={fromAmount}
-                  onChange={(e) => setFromAmount(e.target.value)}
-                  className="h-16 flex-1 border-0 bg-transparent px-4 text-xl font-semibold focus-visible:ring-0 focus-visible:ring-offset-0"
-                />
-                <div className="pr-3">
-                  <CoinSelector
-                    selectedCoin={fromCoin}
-                    onCoinSelect={setFromCoin}
-                    excludeCoin={toCoin}
-                    coins={coins}
+            <div className="space-y-4">
+              <div className="space-y-3">
+                <Label className="text-muted-foreground text-sm font-medium">
+                  From
+                </Label>
+                <div className="bg-muted/30 border-border/50 focus-within:border-primary/50 flex items-center rounded-xl border transition-colors duration-200">
+                  <Input
+                    type="number"
+                    placeholder="0.0"
+                    value={fromAmount}
+                    onChange={(e) => setFromAmount(e.target.value)}
+                    className="h-14 flex-1 border-0 bg-transparent px-3 text-lg font-semibold focus-visible:ring-0 focus-visible:ring-offset-0 sm:h-16 sm:px-4 sm:text-xl"
                   />
+                  <div className="pr-2 sm:pr-3">
+                    <CoinSelector
+                      selectedCoin={fromCoin}
+                      onCoinSelect={setFromCoin}
+                      excludeCoin={toCoin}
+                      coins={coins}
+                    />
+                  </div>
                 </div>
-              </div>
-              {fromCoin && (
-                <div className="flex justify-between px-1 text-sm">
-                  <span className="text-muted-foreground">
-                    Balance: {formatNumber(fromCoin.balance / fromCoin.price)}{" "}
-                    {fromCoin.symbol}
-                  </span>
-                  <span className="font-medium">
-                    {formatPrice(
-                      fromCoin.price * Number.parseFloat(fromAmount || "0"),
-                    )}
-                  </span>
-                </div>
-              )}
-            </div>
-
-            {/* Balance Error Alert */}
-            {balanceError && (
-              <div className="border-destructive/20 bg-destructive/10 mx-1 mb-2 flex items-start gap-3 rounded-lg border p-3">
-                <div className="bg-destructive/20 mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full">
-                  <span className="text-destructive text-xs font-bold">!</span>
-                </div>
-                <div className="flex-1">
-                  <p className="text-destructive text-sm font-medium">
-                    Insufficient Balance
-                  </p>
-                  <p className="text-destructive/80 mt-1 text-xs">
-                    {balanceError}
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {/* Swap Button */}
-            <div className="flex justify-center py-2">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={swapCoins}
-                className="hover:bg-primary/10 hover:text-primary border-border/50 h-10 w-10 rounded-full border p-3 transition-all duration-200"
-              >
-                <ArrowUpDown className="h-4 w-4" />
-              </Button>
-            </div>
-
-            {/* To Coin Input */}
-            <div className="space-y-3">
-              <Label className="text-muted-foreground text-sm font-medium">
-                To
-              </Label>
-              <div className="bg-muted/30 border-border/50 flex items-center rounded-xl border">
-                <Input
-                  type="number"
-                  placeholder="0.0"
-                  value={toAmount}
-                  readOnly
-                  className="text-muted-foreground h-16 flex-1 border-0 bg-transparent px-4 text-xl font-semibold focus-visible:ring-0 focus-visible:ring-offset-0"
-                />
-                <div className="pr-3">
-                  <CoinSelector
-                    selectedCoin={toCoin}
-                    onCoinSelect={setToCoin}
-                    excludeCoin={fromCoin}
-                    coins={coins}
-                  />
-                </div>
-              </div>
-              {toCoin && toAmount && (
-                <div className="flex justify-between px-1 text-sm">
-                  <span className="text-muted-foreground">
-                    Balance: {formatNumber(toCoin.balance)} {toCoin.symbol}
-                  </span>
-                  <span className="font-medium">
-                    {formatPrice(
-                      toCoin.price * Number.parseFloat(toAmount || "0"),
-                    )}
-                  </span>
-                </div>
-              )}
-            </div>
-
-            {/* Exchange Rate Info */}
-            {exchangeRate && fromCoin && toCoin && (
-              <div className="space-y-4 pt-4">
-                <Separator className="bg-border/50" />
-                <div className="bg-muted/20 space-y-3 rounded-lg p-4 text-sm">
-                  <div className="flex items-center justify-between">
-                    <span className="text-muted-foreground font-medium">
-                      Exchange Rate
+                {fromCoin && (
+                  <div className="flex items-center justify-between px-1 text-sm">
+                    <span className="text-muted-foreground">
+                      {formatPrice(fromCoin.current_price)}
                     </span>
-                    <div className="flex items-center gap-2">
-                      <span className="font-semibold">
-                        1 {fromCoin.symbol} = {formatNumber(exchangeRate)}{" "}
-                        {toCoin.symbol}
+                    <span className="font-medium">
+                      {formatPrice(
+                        fromCoin.current_price *
+                          Number.parseFloat(fromAmount || "0"),
+                      )}
+                    </span>
+                  </div>
+                )}
+                {fromCoin && (
+                  <div className="flex items-center justify-between px-1 text-xs">
+                    <span className="text-muted-foreground">
+                      Balance:{" "}
+                      {balancesLoading
+                        ? "Loading..."
+                        : `${userBalances.find((b) => b.coin_id === fromCoin.id)?.balance.toFixed(4) || "0.0000"} ${fromCoin.symbol}`}
+                    </span>
+                    <span className="text-muted-foreground">
+                      {balancesLoading
+                        ? "..."
+                        : formatPrice(
+                            (userBalances.find((b) => b.coin_id === fromCoin.id)
+                              ?.balance || 0) * fromCoin.current_price,
+                          )}
+                    </span>
+                  </div>
+                )}
+                {balanceError && (
+                  <div className="bg-destructive/10 border-destructive/20 text-destructive rounded-lg border p-2 text-sm font-medium">
+                    {balanceError}
+                  </div>
+                )}
+              </div>
+
+              <div className="flex justify-center py-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    const tempCoin = fromCoin;
+                    const tempAmount = fromAmount;
+                    setFromCoin(toCoin);
+                    setToCoin(tempCoin);
+                    setFromAmount(toAmount);
+                    setToAmount(tempAmount);
+                  }}
+                  className="hover:bg-primary/10 hover:text-primary border-border/50 h-12 w-12 rounded-full border p-3 transition-all duration-200"
+                >
+                  <ArrowUpDown className="h-5 w-5" />
+                </Button>
+              </div>
+
+              <div className="space-y-3">
+                <Label className="text-muted-foreground text-sm font-medium">
+                  To
+                </Label>
+                <div className="bg-muted/30 border-border/50 flex items-center rounded-xl border">
+                  <Input
+                    type="number"
+                    placeholder="0.0"
+                    value={toAmount}
+                    readOnly
+                    className="text-muted-foreground h-14 flex-1 border-0 bg-transparent px-3 text-lg font-semibold focus-visible:ring-0 focus-visible:ring-offset-0 sm:h-16 sm:px-4 sm:text-xl"
+                  />
+                  <div className="pr-2 sm:pr-3">
+                    <CoinSelector
+                      selectedCoin={toCoin}
+                      onCoinSelect={setToCoin}
+                      excludeCoin={fromCoin}
+                      coins={coins}
+                    />
+                  </div>
+                </div>
+                {toCoin && toAmount && (
+                  <div className="flex items-center justify-between px-1 text-sm">
+                    <span className="text-muted-foreground">
+                      {formatPrice(toCoin.current_price)}
+                    </span>
+                    <span className="font-medium">
+                      {formatPrice(
+                        toCoin.current_price *
+                          Number.parseFloat(toAmount || "0"),
+                      )}
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              {exchangeRate && fromCoin && toCoin && (
+                <div className="space-y-4 pt-4">
+                  <Separator className="bg-border/50" />
+                  <div className="bg-muted/20 space-y-3 rounded-lg p-3 text-sm sm:p-4">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-muted-foreground font-medium">
+                        Exchange Rate
                       </span>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={fetchSwapQuote}
-                        className="hover:bg-primary/10 h-7 w-7 p-0"
-                        disabled={isLoading}
+                      <div className="flex min-w-0 items-center gap-2">
+                        <span className="truncate text-right font-semibold">
+                          1 {fromCoin.symbol} = {formatNumber(exchangeRate)}{" "}
+                          {toCoin.symbol}
+                        </span>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={fetchSwapQuote}
+                          className="hover:bg-primary/10 h-7 w-7 shrink-0 p-0"
+                          disabled={isLoading || balancesLoading}
+                        >
+                          {isLoading || balancesLoading ? (
+                            <Loader2 className="h-3 w-3 animate-spin" />
+                          ) : (
+                            <TrendingUp className="h-3 w-3" />
+                          )}
+                        </Button>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                      <span className="text-muted-foreground font-medium">
+                        Price Impact
+                      </span>
+                      <Badge
+                        variant={
+                          priceImpact > 3
+                            ? "destructive"
+                            : priceImpact > 1
+                              ? "secondary"
+                              : "default"
+                        }
+                        className="font-semibold"
                       >
-                        {isLoading ? (
-                          <Loader2 className="h-3 w-3 animate-spin" />
-                        ) : (
-                          <TrendingUp className="h-3 w-3" />
-                        )}
-                      </Button>
+                        {priceImpact.toFixed(2)}%
+                      </Badge>
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                      <span className="text-muted-foreground font-medium">
+                        Slippage Tolerance
+                      </span>
+                      <span className="font-semibold">{slippage}%</span>
                     </div>
                   </div>
-
-                  <div className="flex items-center justify-between">
-                    <span className="text-muted-foreground font-medium">
-                      Price Impact
-                    </span>
-                    <Badge
-                      variant={
-                        priceImpact > 3
-                          ? "destructive"
-                          : priceImpact > 1
-                            ? "secondary"
-                            : "default"
-                      }
-                      className="font-semibold"
-                    >
-                      {priceImpact.toFixed(2)}%
-                    </Badge>
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <span className="text-muted-foreground font-medium">
-                      Slippage Tolerance
-                    </span>
-                    <span className="font-semibold">{slippage}%</span>
-                  </div>
                 </div>
-              </div>
-            )}
+              )}
 
-            {/* Execute Swap Button */}
-            <div className="pt-4">
-              <Button
-                onClick={executeSwap}
-                disabled={
-                  !fromAmount ||
-                  !fromCoin ||
-                  !toCoin ||
-                  isSwapping ||
-                  Number.parseFloat(fromAmount) <= 0 ||
-                  !!balanceError // Disable if there's a balance error
-                }
-                className="w-full"
-                size="lg"
-              >
-                {isSwapping ? (
-                  <>
-                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                    Processing Swap...
-                  </>
-                ) : balanceError ? (
-                  <>Insufficient Balance</>
-                ) : (
-                  <>Swap Coins</>
-                )}
-              </Button>
+              <div className="pt-4">
+                <Button
+                  onClick={executeSwap}
+                  disabled={
+                    !fromAmount ||
+                    !fromCoin ||
+                    !toCoin ||
+                    isSwapping ||
+                    Number.parseFloat(fromAmount) <= 0 ||
+                    !!balanceError ||
+                    balancesLoading
+                  }
+                  className="h-12 w-full text-base font-semibold sm:h-14"
+                  size="lg"
+                >
+                  {isSwapping ? (
+                    <>
+                      <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                      Processing Swap...
+                    </>
+                  ) : balanceError ? (
+                    <>Insufficient Balance</>
+                  ) : balancesLoading ? (
+                    <>Loading Balances...</>
+                  ) : (
+                    <>Swap Coins</>
+                  )}
+                </Button>
+              </div>
             </div>
           </div>
         </div>
