@@ -591,14 +591,15 @@ export default function SwapPage() {
     }, 60000);
     return () => clearInterval(interval);
   }, [fetchCoins, fetchUserBalances]);
+  cmt;
 
   // ============================================================================
   // RENDER UI - Cleaner, more responsive layout
   // ============================================================================
   return (
-    <main className="flex min-h-screen items-center justify-center p-4">
-      <div className="w-full max-w-md space-y-6">
-        <div className="border-border/50 bg-background/95 rounded-2xl border p-4 shadow-xl backdrop-blur-sm sm:p-6">
+    <main className="flex min-h-[80vh] max-w-full items-center justify-center">
+      <div className="w-full max-w-full space-y-6">
+        <div className="bg-background/95 rounded-2xl shadow-xl backdrop-blur-sm sm:p-6">
           <div className="space-y-6">
             <div className="flex items-center justify-between">
               <CardTitle className="flex items-center gap-2 text-lg font-bold sm:text-xl">
