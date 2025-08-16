@@ -591,7 +591,6 @@ export default function SwapPage() {
     }, 60000);
     return () => clearInterval(interval);
   }, [fetchCoins, fetchUserBalances]);
-  cmt;
 
   // ============================================================================
   // RENDER UI - Cleaner, more responsive layout
