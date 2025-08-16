@@ -137,7 +137,9 @@ export default function ContactPage() {
                   <Mail className="text-primary mt-0.5 h-5 w-5" />
                   <div>
                     <p className="font-medium">Email</p>
-                    <p className="text-muted-foreground">support@company.com</p>
+                    <p className="text-muted-foreground">
+                      flowrise.co@gmail.com
+                    </p>
                   </div>
                 </div>
 

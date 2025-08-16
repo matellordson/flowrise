@@ -499,8 +499,11 @@ export default async function Pairs() {
     trade_end: Date;
   }
 
-  const getSignal = (await sql`SELECT id, pair, created_at, trade_end, action
-  FROM signal 
+  const getSignal = (await sql`SELECT s.*
+FROM signal s
+JOIN trading_accounts t
+  ON s.plan = t.plan
+WHERE t."user" = ${session?.user?.email}
   ORDER BY created_at DESC;`) as dataType[];
   return (
     <div className="">

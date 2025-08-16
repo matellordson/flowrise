@@ -43,6 +43,7 @@ import { sql } from "@/lib/sql"; // Assuming this is a server-side import or a c
 const formSchema = z.object({
   pair: z.string().min(1, "Please select a trading pair"),
   action: z.string(),
+  plan: z.string(),
   tradeTimeline: z.date({
     error: "Please select a trade timeline date",
   }),
@@ -64,6 +65,12 @@ const actions = [
   { value: "sell", label: "Sell" },
 ];
 
+const plans = [
+  { value: "mini", label: "mini" },
+  { value: "pro", label: "pro" },
+  { value: "max", label: "max" },
+];
+
 export default function TradingForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -83,8 +90,8 @@ export default function TradingForm() {
 
       // Insert into database with trade_timeline column
       await sql`
-        INSERT INTO signal (pair, trade_end, action) 
-        VALUES (${data.pair}, ${formattedDate}, ${data.action})
+        INSERT INTO signal (pair, trade_end, action, plan) 
+        VALUES (${data.pair}, ${formattedDate}, ${data.action}, ${data.plan})
       `;
 
       // Simulate API delay
@@ -101,7 +108,7 @@ export default function TradingForm() {
   };
 
   return (
-    <Card className="mx-auto mt-10 w-full max-w-md">
+    <Card className="mx-auto mt-10 mb-10 w-full max-w-md">
       <CardHeader>
         <CardTitle>New Signal</CardTitle>
         <CardDescription>
@@ -159,6 +166,34 @@ export default function TradingForm() {
                       {actions.map((action) => (
                         <SelectItem key={action.value} value={action.value}>
                           {action.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="plan"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Plan</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a plan" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {plans.map((plan) => (
+                        <SelectItem key={plan.value} value={plan.value}>
+                          {plan.label}
                         </SelectItem>
                       ))}
                     </SelectContent>
