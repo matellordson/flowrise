@@ -143,24 +143,24 @@ export default function ContactPage() {
                   </div>
                 </div>
 
-                <div className="flex items-start space-x-3">
+                {/* <div className="flex items-start space-x-3">
                   <Phone className="text-primary mt-0.5 h-5 w-5" />
                   <div>
                     <p className="font-medium">Phone</p>
                     <p className="text-muted-foreground">+1 (555) 123-4567</p>
                   </div>
-                </div>
+                </div> */}
 
                 <div className="flex items-start space-x-3">
                   <MapPin className="text-primary mt-0.5 h-5 w-5" />
                   <div>
                     <p className="font-medium">Address</p>
                     <p className="text-muted-foreground">
-                      123 Business Street
+                      801 9th St NW
                       <br />
-                      Suite 100
+                      Washington, DC 20220
                       <br />
-                      City, State 12345
+                      United States
                     </p>
                   </div>
                 </div>
