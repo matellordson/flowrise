@@ -1,12 +1,11 @@
 "use client";
 
-import { GalleryVerticalEnd, Loader } from "lucide-react";
+import type React from "react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useActionState, useEffect } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
@@ -15,22 +14,24 @@ export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
-  // const [state, formAction, isPending] = useActionState(LoginAction, {
-  //   message: "",
-  // });
-
   const router = useRouter();
 
-  // Show toast when there's an error message
-  // useEffect(() => {
-  //   if (state?.message) {
-  //     toast(state.message);
-  //   }
-  // }, [state?.message, toast]);
-
-  const resendAction = (formData: FormData) => {
+  const resendAction = async (formData: FormData) => {
     const email = formData.get("email") as string;
-    signIn("resend", { email });
+
+    if (!email) {
+      toast.error("Please enter your email address");
+      return;
+    }
+
+    try {
+      await signIn("loops", {
+        email,
+        redirectTo: "/dashboard",
+      });
+    } catch (error) {
+      toast.error("Failed to sign in. Please try again.");
+    }
   };
 
   return (
@@ -71,13 +72,7 @@ export function LoginForm({
               <Label htmlFor="email">Email</Label>
               <Input id="email" type="email" name="email" required />
             </div>
-            <Button
-              type="submit"
-              className="w-full"
-              // disabled={isPending}
-              onClick={router.refresh}
-            >
-              {/* {isPending ? <Loader className="animate-spin" /> : "Signin"} */}
+            <Button type="submit" className="w-full">
               Signin
             </Button>
           </div>
@@ -90,7 +85,7 @@ export function LoginForm({
             <Button
               variant="outline"
               type="button"
-              className="w-full"
+              className="w-full bg-transparent"
               onClick={() => signIn("google", { redirectTo: "/dashboard" })}
             >
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">

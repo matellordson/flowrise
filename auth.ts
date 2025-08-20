@@ -1,8 +1,8 @@
 import NextAuth from "next-auth";
 import NeonAdapter from "@auth/neon-adapter";
 import { Pool } from "@neondatabase/serverless";
-import Resend from "next-auth/providers/resend";
 import Google from "next-auth/providers/google";
+import Loops from "next-auth/providers/loops";
 
 // *DO NOT* create a `Pool` here, outside the request handler.
 
@@ -11,7 +11,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth(() => {
   const pool = new Pool({ connectionString: process.env.DATABASE_URL });
   return {
     adapter: NeonAdapter(pool as any),
-    providers: [Resend, Google],
+    providers: [
+      Loops({
+        apiKey: process.env.AUTH_LOOPS_KEY!,
+        transactionalId: process.env.AUTH_LOOPS_TRANSACTIONAL_ID!,
+      }) as any, // Type assertion to resolve the provider type mismatch
+      Google,
+    ],
     pages: {
       signIn: "/sign-in",
     },
