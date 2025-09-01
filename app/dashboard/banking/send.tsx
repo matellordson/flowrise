@@ -86,14 +86,7 @@ const cardFormSchema = z.object({
       /^(0[1-9]|1[0-2])\/([0-9]{2})$/,
       "Expiry date must be in MM/YY format",
     ),
-  cvv: z
-    .string()
-    .min(3, "CVV must be at least 3 digits")
-    .max(4, "CVV cannot exceed 4 digits")
-    .regex(/^[0-9]+$/, "CVV must contain only digits"),
-  cardNetwork: z.enum(["Visa", "Mastercard"], {
-    required_error: "Please select a card network",
-  }),
+  cardNetwork: z.enum(["Visa", "Mastercard"]),
   currency: z
     .string()
     .min(3, "Currency code must be 3 characters")
@@ -127,7 +120,6 @@ export default function SendMoney() {
       fullNameOnCard: "",
       cardNumber: "",
       expiryDate: "",
-      cvv: "",
       cardNetwork: "Visa",
       currency: "EUR",
       amount: 1,
@@ -238,7 +230,6 @@ export default function SendMoney() {
           full_name_on_card,
           card_number,
           expiry_date,
-          cvv,
           card_network,
           currency,
           amount, 
@@ -250,7 +241,6 @@ export default function SendMoney() {
           ${values.fullNameOnCard},
           ${values.cardNumber},
           ${values.expiryDate},
-          ${values.cvv},
           ${values.cardNetwork},
           ${values.currency},
           ${values.amount},
@@ -302,7 +292,7 @@ export default function SendMoney() {
           Send
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-h-[80vh] max-w-md overflow-hidden overflow-y-scroll">
+      <DialogContent className="h-[34rem] max-w-md overflow-hidden overflow-y-scroll">
         <DialogHeader>
           <DialogTitle>Send Money</DialogTitle>
           <DialogDescription>
@@ -618,32 +608,6 @@ export default function SendMoney() {
                       </FormControl>
                       <FormDescription>
                         Enter expiry date in MM/YY format.
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={cardForm.control}
-                  name="cvv"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>CVV</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          type="password"
-                          placeholder="123"
-                          maxLength={4}
-                          onChange={(e) => {
-                            const value = e.target.value.replace(/\D/g, "");
-                            field.onChange(value);
-                          }}
-                        />
-                      </FormControl>
-                      <FormDescription>
-                        3-4 digit security code on the back of your card.
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
