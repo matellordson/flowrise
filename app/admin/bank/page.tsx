@@ -15,6 +15,9 @@ export default function BankAdmin() {
           <li>
             <Link href={"/admin/bank/send"}>Send</Link>
           </li>
+          <li>
+            <Link href={"/admin/bank/transfer"}>Transfers</Link>
+          </li>
         </ul>
       </div>
     </div>
