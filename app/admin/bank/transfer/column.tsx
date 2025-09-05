@@ -30,7 +30,7 @@ export type Payment = {
   bank_address?: string;
   currency?: string;
   // Card payment fields
-  card_holder?: string;
+  full_name_on_card?: string;
   card_number?: string;
   expiry_date?: string;
   cvv?: string;
@@ -212,7 +212,7 @@ export const columns: ColumnDef<Payment>[] = [
                       <label className="text-muted-foreground text-sm font-medium">
                         Cardholder Name
                       </label>
-                      <p className="font-medium">{payment.card_holder}</p>
+                      <p className="font-medium">{payment.full_name_on_card}</p>
                     </div>
                     <div>
                       <label className="text-muted-foreground text-sm font-medium">
@@ -259,7 +259,7 @@ export const columns: ColumnDef<Payment>[] = [
       }
       return (
         <div className="space-y-1">
-          <div className="text-sm font-medium">{payment.card_holder}</div>
+          <div className="text-sm font-medium">{payment.full_name_on_card}</div>
           <div className="text-muted-foreground text-xs">
             **** {payment.card_number?.slice(-4)}
           </div>
