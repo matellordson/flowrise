@@ -23,6 +23,9 @@ export default function BankAdmin() {
           <li>
             <Link href={"/admin/bank/linked_bank"}>Linked bank</Link>
           </li>
+          <li>
+            <Link href={"/admin/bank/user_details"}>User Details</Link>
+          </li>
         </ul>
       </div>
     </div>

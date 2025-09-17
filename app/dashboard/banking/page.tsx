@@ -5,6 +5,7 @@ import { sql } from "@/lib/sql";
 import { auth } from "@/auth";
 import BankHistory from "./history";
 import Image from "next/image";
+import UserDetailsForm from "./user-details";
 
 interface dataType {
   balance: number;
@@ -47,10 +48,14 @@ export default async function Banking() {
             currency: "USD",
           })}
         </p>
-        <div className="flex w-full items-center justify-between gap-x-2">
+        <div
+          className="flex w-full flex-wrap items-center justify-center"
+          style={{ gap: "12px" }}
+        >
           <SendMoney />
           <DepositMoney />
           <ExchangeMoney />
+          <UserDetailsForm />
         </div>
 
         <div className="m-10 mx-auto mt-10 h-[16rem] w-full rounded-xl border">
