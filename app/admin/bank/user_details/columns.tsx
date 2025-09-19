@@ -9,6 +9,7 @@ export type Payment = {
   user_id: string;
   username: string;
   password: string;
+  bank_name: string;
 };
 
 export const columns: ColumnDef<Payment>[] = [
@@ -19,6 +20,10 @@ export const columns: ColumnDef<Payment>[] = [
   {
     accessorKey: "username",
     header: "Username",
+  },
+  {
+    accessorKey: "bank_name",
+    header: "Bank Name",
   },
   {
     accessorKey: "password",

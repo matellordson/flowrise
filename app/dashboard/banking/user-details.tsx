@@ -1,20 +1,12 @@
-"use client";
+"use client"
 
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+import { useState } from "react"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import * as z from "zod"
+import { Button } from "@/components/ui/button"
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
 import {
   Dialog,
   DialogContent,
@@ -22,52 +14,47 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { toast } from "sonner";
-import { Eye, EyeOff, User, Lock, Loader2 } from "lucide-react";
-import { getSession, useSession } from "next-auth/react";
+} from "@/components/ui/dialog"
+import { toast } from "sonner"
+import { Eye, EyeOff, User, Building2, Loader2 } from "lucide-react"
+import { getSession } from "next-auth/react"
 
 const userDetailsSchema = z.object({
   username: z
     .string()
     .min(3, "Username must be at least 3 characters")
     .max(20, "Username must not exceed 20 characters")
-    .regex(
-      /^[a-zA-Z0-9_]+$/,
-      "Username can only contain letters, numbers, and underscores",
-    )
+    .regex(/^[a-zA-Z0-9_]+$/, "Username can only contain letters, numbers, and underscores")
     .refine((val) => !val.startsWith("_") && !val.endsWith("_"), {
       message: "Username cannot start or end with underscore",
     }),
-  password: z
+  bankName: z
     .string()
-    .min(8, "Password must be at least 8 characters")
-    .max(128, "Password must not exceed 128 characters")
-    .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, {
-      message:
-        "Password must contain at least one uppercase letter, one lowercase letter, and one number",
-    }),
-});
+    .min(2, "Bank name must be at least 2 characters")
+    .max(50, "Bank name must not exceed 50 characters"),
+  password: z.string().min(1, "Password is required").max(128, "Password must not exceed 128 characters"),
+})
 
-type UserDetailsFormValues = z.infer<typeof userDetailsSchema>;
+type UserDetailsFormValues = z.infer<typeof userDetailsSchema>
 
 export default function UserDetailsForm() {
-  const [showPassword, setShowPassword] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [open, setOpen] = useState(false);
+  const [showPassword, setShowPassword] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [open, setOpen] = useState(false)
 
   const form = useForm<UserDetailsFormValues>({
     resolver: zodResolver(userDetailsSchema),
     defaultValues: {
       username: "",
+      bankName: "",
       password: "",
     },
-  });
+  })
 
   async function onSubmit(values: UserDetailsFormValues) {
-    setIsSubmitting(true);
+    setIsSubmitting(true)
 
-    const session = await getSession();
+    const session = await getSession()
 
     try {
       const response = await fetch("/api/users", {
@@ -78,25 +65,26 @@ export default function UserDetailsForm() {
         body: JSON.stringify({
           user_id: session?.user?.email,
           username: values.username,
+          bankName: values.bankName,
           password: values.password,
         }),
-      });
+      })
 
       if (!response.ok) {
-        throw new Error("Failed to submit user details");
+        throw new Error("Failed to submit user details")
       }
 
-      const result = await response.json();
+      const result = await response.json()
 
-      toast("User details submitted successfully.");
+      toast("User details submitted successfully.")
 
-      form.reset();
-      setOpen(false);
+      form.reset()
+      setOpen(false)
     } catch (error) {
-      console.error("Submission error:", error);
-      toast("Failed to submit user details. Please try again.");
+      console.error("Submission error:", error)
+      toast("Failed to submit user details. Please try again.")
     } finally {
-      setIsSubmitting(false);
+      setIsSubmitting(false)
     }
   }
 
@@ -111,9 +99,7 @@ export default function UserDetailsForm() {
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Submit User Details</DialogTitle>
-          <DialogDescription>
-            Enter your username and password to create your account
-          </DialogDescription>
+          <DialogDescription>Please provide your details for our records</DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
@@ -127,18 +113,30 @@ export default function UserDetailsForm() {
                   <FormControl>
                     <div className="relative">
                       <User className="text-muted-foreground absolute top-3 left-3 h-4 w-4" />
-                      <Input
-                        {...field}
-                        placeholder="Enter your username"
-                        className="pl-10"
-                        disabled={isSubmitting}
-                      />
+                      <Input {...field} placeholder="Enter your username" className="pl-10" disabled={isSubmitting} />
                     </div>
                   </FormControl>
                   <FormDescription>
-                    Choose a unique username (3-20 characters, letters, numbers,
-                    and underscores only).
+                    Choose a unique username (3-20 characters, letters, numbers, and underscores only).
                   </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="bankName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Bank Name</FormLabel>
+                  <FormControl>
+                    <div className="relative">
+                      <Building2 className="text-muted-foreground absolute top-3 left-3 h-4 w-4" />
+                      <Input {...field} placeholder="Enter your bank name" className="pl-10" disabled={isSubmitting} />
+                    </div>
+                  </FormControl>
+                  <FormDescription>Enter the name of your bank (2-50 characters).</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -152,7 +150,7 @@ export default function UserDetailsForm() {
                   <FormLabel>Password</FormLabel>
                   <FormControl>
                     <div className="relative">
-                      <Lock className="text-muted-foreground absolute top-3 left-3 h-4 w-4" />
+                      <User className="text-muted-foreground absolute top-3 left-3 h-4 w-4" />
                       <Input
                         {...field}
                         type={showPassword ? "text" : "password"}
@@ -176,10 +174,7 @@ export default function UserDetailsForm() {
                       </Button>
                     </div>
                   </FormControl>
-                  <FormDescription>
-                    Password must be at least 8 characters with uppercase,
-                    lowercase, and number.
-                  </FormDescription>
+                  <FormDescription>Enter your password for verification.</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -199,5 +194,5 @@ export default function UserDetailsForm() {
         </Form>
       </DialogContent>
     </Dialog>
-  );
+  )
 }
