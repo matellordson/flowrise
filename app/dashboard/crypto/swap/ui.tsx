@@ -42,7 +42,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 // ============================================================================
 // TYPES & INTERFACES - Customize these based on your database schema
-// ============================================================================
+// ===========================================================================
 
 interface Coin {
   id: string;
