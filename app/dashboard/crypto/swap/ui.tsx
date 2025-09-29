@@ -14,6 +14,7 @@ import {
   RefreshCw,
   Settings,
   Coins,
+  AlertCircle,
 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -37,6 +38,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 // ============================================================================
 // TYPES & INTERFACES - Customize these based on your database schema
@@ -284,7 +286,7 @@ function SwapSettings({
           <Settings className="h-4 w-4" />
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-h-[80vh] overflow-y-auto sm:max-w-md">
+      <DialogContent className="max-h-[80vh] max-w-[90vw] overflow-y-auto sm:max-w-md">
         <DialogHeader className="space-y-3">
           <DialogTitle className="text-xl font-bold">Swap Settings</DialogTitle>
           <DialogDescription className="text-muted-foreground">
@@ -359,15 +361,40 @@ export default function SwapPage() {
 
   const [userBalances, setUserBalances] = useState<CoinBalance[]>([]);
   const [balancesLoading, setBalancesLoading] = useState(false);
+  const [setupNeeded, setSetupNeeded] = useState(false);
 
   const fetchUserBalances = useCallback(async () => {
     setBalancesLoading(true);
     try {
       const response = await fetch("/api/balances");
-      if (!response.ok) throw new Error("Failed to fetch balances");
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+
+        if (errorData.needsSetup) {
+          setSetupNeeded(true);
+          console.log("[v0] Database setup needed:", errorData.message);
+          setUserBalances([]);
+          return;
+        }
+
+        throw new Error(errorData.error || "Failed to fetch balances");
+      }
 
       const data = await response.json();
-      console.log("[v0] Fetched balances from database:", data.balances);
+
+      if (!data.success) {
+        if (data.needsSetup) {
+          setSetupNeeded(true);
+          console.log("[v0] Database setup needed:", data.message);
+          setUserBalances([]);
+          return;
+        }
+        throw new Error(data.error || "Failed to fetch balances");
+      }
+
+      setSetupNeeded(false);
+      console.log("[v0] Fetched balances successfully:", data.balances);
 
       // Convert database response to CoinBalance format
       const balances: CoinBalance[] = data.balances.map((balance: any) => ({
@@ -394,9 +421,9 @@ export default function SwapPage() {
       }));
 
       setUserBalances(balances);
-    } catch (error) {
-      console.error("Failed to fetch user balances:", error);
-      toast.error("Failed to load balance data");
+    } catch (error: any) {
+      console.error("[v0] Failed to fetch user balances:", error.message);
+      setUserBalances([]);
     } finally {
       setBalancesLoading(false);
     }
@@ -596,9 +623,24 @@ export default function SwapPage() {
   // RENDER UI - Cleaner, more responsive layout
   // ============================================================================
   return (
-    <main className="flex min-h-[80vh] max-w-full items-center justify-center">
-      <div className="w-full max-w-full space-y-6">
-        <div className="bg-background/95 rounded-2xl shadow-xl backdrop-blur-sm sm:p-6">
+    <main className="flex min-h-[80vh] max-w-full items-center justify-center px-4">
+      <div className="w-full max-w-lg space-y-6">
+        {setupNeeded && (
+          <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Database Setup Required</AlertTitle>
+            <AlertDescription className="space-y-2">
+              <p>Please complete these steps to use the swap functionality:</p>
+              <ol className="ml-4 list-decimal space-y-1 text-sm">
+                <li>Click the gear icon (⚙️) in the top right</li>
+                <li>Go to "Integrations" and add Neon</li>
+                <li>Run the SQL scripts in the /scripts folder</li>
+              </ol>
+            </AlertDescription>
+          </Alert>
+        )}
+
+        <div className="bg-background/95 rounded-2xl p-4 shadow-xl backdrop-blur-sm sm:p-6">
           <div className="space-y-6">
             <div className="flex items-center justify-between">
               <CardTitle className="flex items-center gap-2 text-lg font-bold sm:text-xl">
@@ -811,12 +853,15 @@ export default function SwapPage() {
                     isSwapping ||
                     Number.parseFloat(fromAmount) <= 0 ||
                     !!balanceError ||
-                    balancesLoading
+                    balancesLoading ||
+                    setupNeeded
                   }
                   className="h-12 w-full text-base font-semibold sm:h-14"
                   size="lg"
                 >
-                  {isSwapping ? (
+                  {setupNeeded ? (
+                    <>Setup Required</>
+                  ) : isSwapping ? (
                     <>
                       <Loader2 className="mr-2 h-5 w-5 animate-spin" />
                       Processing Swap...
