@@ -42,7 +42,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 // ============================================================================
 // TYPES & INTERFACES - Customize these based on your database schema
-// ===========================================================================
+// ============================================================================
 
 interface Coin {
   id: string;
@@ -441,28 +441,22 @@ export default function SwapPage() {
       return;
     }
 
-    const requestedAmount = Number.parseFloat(fromAmount);
-    const requestedUsdValue = requestedAmount * fromCoin.current_price;
-    const availableUsdValue = userBalance.balance * fromCoin.current_price;
+    const requestedCoinAmount = Number.parseFloat(fromAmount);
+    const requestedUsdValue = requestedCoinAmount * fromCoin.current_price;
+    const availableUsdValue = userBalance.usd_value; // Database stores USD values directly
 
     console.log("[v0] Balance validation:", {
       coin: fromCoin.symbol,
-      requested: requestedAmount,
-      available: userBalance.balance,
-      requestedUSD: requestedUsdValue,
-      availableUSD: availableUsdValue,
+      requestedCoinAmount,
+      requestedUsdValue,
+      availableUsdValue,
+      availableCoinAmount: userBalance.balance,
     });
 
-    if (requestedAmount > userBalance.balance) {
-      setBalanceError(
-        `Insufficient ${fromCoin.symbol} balance. Available: ${userBalance.balance.toFixed(4)} ${fromCoin.symbol}`,
-      );
-      return;
-    }
-
+    // Compare USD values for accurate validation
     if (requestedUsdValue > availableUsdValue) {
       setBalanceError(
-        `Insufficient balance. Available: ${formatPrice(availableUsdValue)}`,
+        `Insufficient ${fromCoin.symbol} balance. Available: ${userBalance.balance.toFixed(4)} ${fromCoin.symbol} (${formatPrice(availableUsdValue)})`,
       );
       return;
     }
@@ -623,7 +617,7 @@ export default function SwapPage() {
   // RENDER UI - Cleaner, more responsive layout
   // ============================================================================
   return (
-    <main className="flex min-h-[80vh] max-w-full items-center justify-center px-4">
+    <main className="flex h-[80vh] max-w-full items-center justify-center overflow-scroll px-4">
       <div className="w-full max-w-lg space-y-6">
         {setupNeeded && (
           <Alert variant="destructive">
@@ -640,7 +634,7 @@ export default function SwapPage() {
           </Alert>
         )}
 
-        <div className="bg-background/95 rounded-2xl p-4 shadow-xl backdrop-blur-sm sm:p-6">
+        <div className="bg-background rounded-2xl p-0 shadow-xl backdrop-blur-sm sm:p-6">
           <div className="space-y-6">
             <div className="flex items-center justify-between">
               <CardTitle className="flex items-center gap-2 text-lg font-bold sm:text-xl">
@@ -719,8 +713,8 @@ export default function SwapPage() {
                       {balancesLoading
                         ? "..."
                         : formatPrice(
-                            (userBalances.find((b) => b.coin_id === fromCoin.id)
-                              ?.balance || 0) * fromCoin.current_price,
+                            userBalances.find((b) => b.coin_id === fromCoin.id)
+                              ?.usd_value || 0,
                           )}
                     </span>
                   </div>

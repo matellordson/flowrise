@@ -68,7 +68,7 @@ export async function POST(request: NextRequest) {
       throw new Error("Price data unavailable");
     }
 
-    // Fetch FROM coin balance (stored as USD value in database)
+    // Fetch FROM coin balance (stored as USD in database)
     let fromBalanceResult;
     if (fromTable === "bitcoin") {
       fromBalanceResult =
@@ -93,7 +93,7 @@ export async function POST(request: NextRequest) {
         await sql`SELECT amount FROM solana WHERE "user" = ${userEmail} LIMIT 1`;
     }
 
-    // Fetch TO coin balance (stored as USD value in database)
+    // Fetch TO coin balance (stored as USD in database)
     let toBalanceResult;
     if (toTable === "bitcoin") {
       toBalanceResult =
@@ -125,6 +125,9 @@ export async function POST(request: NextRequest) {
       ? Number.parseFloat(toBalanceResult[0].amount)
       : 0;
 
+    const currentFromBalanceUSDDecimal = currentFromBalanceUSD / 100;
+    const currentToBalanceUSDDecimal = currentToBalanceUSD / 100;
+
     const inputAmountNum = Number.parseFloat(input_amount);
     const swapUsdValue = inputAmountNum * fromPrice; // USD value being swapped
 
@@ -132,14 +135,14 @@ export async function POST(request: NextRequest) {
       inputAmount: inputAmountNum,
       fromPrice,
       swapUsdValue,
-      currentFromBalanceUSD,
-      currentToBalanceUSD,
+      currentFromBalanceUSD: currentFromBalanceUSDDecimal,
+      currentToBalanceUSD: currentToBalanceUSDDecimal,
     });
 
-    if (swapUsdValue > currentFromBalanceUSD) {
+    if (swapUsdValue > currentFromBalanceUSDDecimal) {
       return NextResponse.json(
         {
-          error: `Insufficient balance. You have $${currentFromBalanceUSD.toFixed(2)} but trying to swap $${swapUsdValue.toFixed(2)}`,
+          error: `Insufficient balance. You have $${currentFromBalanceUSDDecimal.toFixed(2)} but trying to swap $${swapUsdValue.toFixed(2)}`,
         },
         { status: 400 },
       );
@@ -152,48 +155,52 @@ export async function POST(request: NextRequest) {
     const fee = swapUsdValue * 0.003; // 0.3% fee
     const usdToTransfer = swapUsdValue - fee;
 
-    const newFromBalanceUSD = currentFromBalanceUSD - swapUsdValue;
-    const newToBalanceUSD = currentToBalanceUSD + usdToTransfer;
+    const newFromBalanceUSD = currentFromBalanceUSDDecimal - swapUsdValue;
+    const newToBalanceUSD = currentToBalanceUSDDecimal + usdToTransfer;
+
+    // Convert to cents (multiply by 100) and round to nearest integer
+    const newFromBalanceCents = Math.round(newFromBalanceUSD * 100);
+    const newToBalanceCents = Math.round(newToBalanceUSD * 100);
 
     console.log("[v0] Balance updates:", {
-      newFromBalanceUSD,
-      newToBalanceUSD,
-      fee,
-      usdToTransfer,
+      newFromBalanceUSD: newFromBalanceUSD.toFixed(2),
+      newToBalanceUSD: newToBalanceUSD.toFixed(2),
+      newFromBalanceCents,
+      newToBalanceCents,
+      fee: fee.toFixed(2),
+      usdToTransfer: usdToTransfer.toFixed(2),
     });
 
-    // Update FROM coin balance (deduct USD value)
     if (fromTable === "bitcoin") {
-      await sql`UPDATE bitcoin SET amount = ${newFromBalanceUSD.toString()} WHERE "user" = ${userEmail}`;
+      await sql`UPDATE bitcoin SET amount = ${newFromBalanceCents} WHERE "user" = ${userEmail}`;
     } else if (fromTable === "ethereum") {
-      await sql`UPDATE ethereum SET amount = ${newFromBalanceUSD.toString()} WHERE "user" = ${userEmail}`;
+      await sql`UPDATE ethereum SET amount = ${newFromBalanceCents} WHERE "user" = ${userEmail}`;
     } else if (fromTable === "usdt") {
-      await sql`UPDATE usdt SET amount = ${newFromBalanceUSD.toString()} WHERE "user" = ${userEmail}`;
+      await sql`UPDATE usdt SET amount = ${newFromBalanceCents} WHERE "user" = ${userEmail}`;
     } else if (fromTable === "usdc") {
-      await sql`UPDATE usdc SET amount = ${newFromBalanceUSD.toString()} WHERE "user" = ${userEmail}`;
+      await sql`UPDATE usdc SET amount = ${newFromBalanceCents} WHERE "user" = ${userEmail}`;
     } else if (fromTable === "bnb") {
-      await sql`UPDATE bnb SET amount = ${newFromBalanceUSD.toString()} WHERE "user" = ${userEmail}`;
+      await sql`UPDATE bnb SET amount = ${newFromBalanceCents} WHERE "user" = ${userEmail}`;
     } else if (fromTable === "xrp") {
-      await sql`UPDATE xrp SET amount = ${newFromBalanceUSD.toString()} WHERE "user" = ${userEmail}`;
+      await sql`UPDATE xrp SET amount = ${newFromBalanceCents} WHERE "user" = ${userEmail}`;
     } else if (fromTable === "solana") {
-      await sql`UPDATE solana SET amount = ${newFromBalanceUSD.toString()} WHERE "user" = ${userEmail}`;
+      await sql`UPDATE solana SET amount = ${newFromBalanceCents} WHERE "user" = ${userEmail}`;
     }
 
-    // Update TO coin balance (add USD value)
     if (toTable === "bitcoin") {
-      await sql`UPDATE bitcoin SET amount = ${newToBalanceUSD.toString()} WHERE "user" = ${userEmail}`;
+      await sql`UPDATE bitcoin SET amount = ${newToBalanceCents} WHERE "user" = ${userEmail}`;
     } else if (toTable === "ethereum") {
-      await sql`UPDATE ethereum SET amount = ${newToBalanceUSD.toString()} WHERE "user" = ${userEmail}`;
+      await sql`UPDATE ethereum SET amount = ${newToBalanceCents} WHERE "user" = ${userEmail}`;
     } else if (toTable === "usdt") {
-      await sql`UPDATE usdt SET amount = ${newToBalanceUSD.toString()} WHERE "user" = ${userEmail}`;
+      await sql`UPDATE usdt SET amount = ${newToBalanceCents} WHERE "user" = ${userEmail}`;
     } else if (toTable === "usdc") {
-      await sql`UPDATE usdc SET amount = ${newToBalanceUSD.toString()} WHERE "user" = ${userEmail}`;
+      await sql`UPDATE usdc SET amount = ${newToBalanceCents} WHERE "user" = ${userEmail}`;
     } else if (toTable === "bnb") {
-      await sql`UPDATE bnb SET amount = ${newToBalanceUSD.toString()} WHERE "user" = ${userEmail}`;
+      await sql`UPDATE bnb SET amount = ${newToBalanceCents} WHERE "user" = ${userEmail}`;
     } else if (toTable === "xrp") {
-      await sql`UPDATE xrp SET amount = ${newToBalanceUSD.toString()} WHERE "user" = ${userEmail}`;
+      await sql`UPDATE xrp SET amount = ${newToBalanceCents} WHERE "user" = ${userEmail}`;
     } else if (toTable === "solana") {
-      await sql`UPDATE solana SET amount = ${newToBalanceUSD.toString()} WHERE "user" = ${userEmail}`;
+      await sql`UPDATE solana SET amount = ${newToBalanceCents} WHERE "user" = ${userEmail}`;
     }
 
     // Simulate transaction processing time

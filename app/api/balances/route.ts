@@ -93,6 +93,15 @@ export async function GET() {
       ]);
 
       console.log("[v0] Database query successful");
+      console.log("[v0] Raw database values:", {
+        bitcoin: bitcoinResult[0]?.amount,
+        ethereum: ethereumResult[0]?.amount,
+        solana: solanaResult[0]?.amount,
+        bnb: bnbResult[0]?.amount,
+        usdc: usdcResult[0]?.amount,
+        usdt: usdtResult[0]?.amount,
+        xrp: xrpResult[0]?.amount,
+      });
 
       mockUsdBalances = [
         {
@@ -138,6 +147,8 @@ export async function GET() {
             : 0,
         },
       ];
+
+      console.log("[v0] Converted USD values:", mockUsdBalances);
     } catch (dbError: any) {
       console.error("[v0] Database error:", dbError.message);
 
