@@ -125,8 +125,10 @@ export async function POST(request: NextRequest) {
       ? Number.parseFloat(toBalanceResult[0].amount)
       : 0;
 
-    const currentFromBalanceUSDDecimal = currentFromBalanceUSD / 100;
-    const currentToBalanceUSDDecimal = currentToBalanceUSD / 100;
+    // const currentFromBalanceUSDDecimal = currentFromBalanceUSD / 100;
+    // const currentToBalanceUSDDecimal = currentToBalanceUSD / 100;
+    const currentFromBalanceUSDDecimal = currentFromBalanceUSD;
+    const currentToBalanceUSDDecimal = currentToBalanceUSD;
 
     const inputAmountNum = Number.parseFloat(input_amount);
     const swapUsdValue = inputAmountNum * fromPrice; // USD value being swapped
