@@ -40,10 +40,6 @@ import {
 } from "@/components/ui/popover";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
-// ============================================================================
-// TYPES & INTERFACES - Customize these based on your database schema
-// ============================================================================
-
 interface Coin {
   id: string;
   symbol: string;
@@ -84,13 +80,9 @@ interface SwapResult {
 
 interface CoinBalance {
   coin_id: string;
-  balance: number; // Amount of coins user owns
-  usd_value: number; // Current USD value of the balance
+  balance: number;
+  usd_value: number;
 }
-
-// ============================================================================
-// UTILITY FUNCTIONS - Customize number formatting as needed
-// ============================================================================
 
 function formatNumber(num: number, decimals = 4): string {
   if (typeof num !== "number" || isNaN(num)) {
@@ -124,9 +116,6 @@ function formatPrice(price: number): string {
   return `$${formatNumber(price)}`;
 }
 
-// ============================================================================
-// COIN ICON COMPONENT - Using coin images instead of web3icons
-// ============================================================================
 function CoinIcon({ coin, size = 24 }: { coin: Coin; size?: number }) {
   return (
     <div className="relative">
@@ -137,7 +126,6 @@ function CoinIcon({ coin, size = 24 }: { coin: Coin; size?: number }) {
         height={size}
         className="rounded-full"
         onError={(e) => {
-          // Fallback to text-based icon if image fails to load
           const target = e.target as HTMLImageElement;
           target.style.display = "none";
           const fallback = target.nextElementSibling as HTMLElement;
@@ -154,9 +142,6 @@ function CoinIcon({ coin, size = 24 }: { coin: Coin; size?: number }) {
   );
 }
 
-// ============================================================================
-// COIN SELECTOR COMPONENT - Improved responsive design
-// ============================================================================
 function CoinSelector({
   selectedCoin,
   onCoinSelect,
@@ -195,7 +180,7 @@ function CoinSelector({
           <ArrowUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="border-border/50 bg-background/95 w-[90vw] p-0 backdrop-blur-sm sm:w-[340px]">
+      <PopoverContent className="border-border/50 bg-background/95 h-[80vh] w-[90vw] p-0 backdrop-blur-sm sm:w-[340px]">
         <Command className="bg-transparent">
           <CommandInput
             placeholder="Search coins..."
@@ -246,9 +231,6 @@ function CoinSelector({
   );
 }
 
-// ============================================================================
-// SWAP SETTINGS COMPONENT - Customize slippage options
-// ============================================================================
 function SwapSettings({
   slippage,
   onSlippageChange,
@@ -259,7 +241,6 @@ function SwapSettings({
   const [open, setOpen] = useState(false);
   const [customSlippage, setCustomSlippage] = useState(slippage.toString());
 
-  // Customize these preset values as needed
   const PRESET_SLIPPAGE = [0.1, 0.5, 1.0, 3.0];
 
   const handlePresetSlippage = (value: number) => {
@@ -286,7 +267,7 @@ function SwapSettings({
           <Settings className="h-4 w-4" />
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-h-[80vh] max-w-[90vw] overflow-y-auto sm:max-w-md">
+      <DialogContent className="h-[80vh] max-w-[90vw] overflow-y-auto sm:max-w-md">
         <DialogHeader className="space-y-3">
           <DialogTitle className="text-xl font-bold">Swap Settings</DialogTitle>
           <DialogDescription className="text-muted-foreground">
@@ -341,11 +322,7 @@ function SwapSettings({
   );
 }
 
-// ============================================================================
-// MAIN SWAP COMPONENT - Improved responsive layout and cleaner design
-// ============================================================================
 export default function SwapPage() {
-  // State management
   const [coins, setCoins] = useState<Coin[]>([]);
   const [fromCoin, setFromCoin] = useState<Coin | null>(null);
   const [toCoin, setToCoin] = useState<Coin | null>(null);
@@ -396,7 +373,6 @@ export default function SwapPage() {
       setSetupNeeded(false);
       console.log("[v0] Fetched balances successfully:", data.balances);
 
-      // Convert database response to CoinBalance format
       const balances: CoinBalance[] = data.balances.map((balance: any) => ({
         coin_id:
           balance.coin_symbol.toLowerCase() === "btc"
@@ -407,15 +383,13 @@ export default function SwapPage() {
                 ? "binancecoin"
                 : balance.coin_symbol.toLowerCase() === "sol"
                   ? "solana"
-                  : balance.coin_symbol.toLowerCase() === "ada"
-                    ? "cardano"
-                    : balance.coin_symbol.toLowerCase() === "xrp"
-                      ? "ripple"
-                      : balance.coin_symbol.toLowerCase() === "usdc"
-                        ? "usd-coin"
-                        : balance.coin_symbol.toLowerCase() === "usdt"
-                          ? "tether"
-                          : balance.coin_symbol.toLowerCase(),
+                  : balance.coin_symbol.toLowerCase() === "xrp"
+                    ? "ripple"
+                    : balance.coin_symbol.toLowerCase() === "usdc"
+                      ? "usd-coin"
+                      : balance.coin_symbol.toLowerCase() === "usdt"
+                        ? "tether"
+                        : balance.coin_symbol.toLowerCase(),
         balance: balance.balance,
         usd_value: balance.usd_value,
       }));
@@ -443,7 +417,7 @@ export default function SwapPage() {
 
     const requestedCoinAmount = Number.parseFloat(fromAmount);
     const requestedUsdValue = requestedCoinAmount * fromCoin.current_price;
-    const availableUsdValue = userBalance.usd_value; // Database stores USD values directly
+    const availableUsdValue = userBalance.usd_value;
 
     console.log("[v0] Balance validation:", {
       coin: fromCoin.symbol,
@@ -453,7 +427,6 @@ export default function SwapPage() {
       availableCoinAmount: userBalance.balance,
     });
 
-    // Compare USD values for accurate validation
     if (requestedUsdValue > availableUsdValue) {
       setBalanceError(
         `Insufficient ${fromCoin.symbol} balance. Available: ${userBalance.balance.toFixed(4)} ${fromCoin.symbol} (${formatPrice(availableUsdValue)})`,
@@ -468,9 +441,6 @@ export default function SwapPage() {
     validateBalance();
   }, [validateBalance]);
 
-  // ============================================================================
-  // FETCH COINS FROM DATABASE - Updated to match API response structure
-  // ============================================================================
   const fetchCoins = useCallback(async () => {
     try {
       const response = await fetch("/api/coins");
@@ -480,7 +450,6 @@ export default function SwapPage() {
       setCoins(data.coins);
       setLastUpdated(new Date(data.timestamp));
 
-      // Auto-select first two coins if none selected
       if (!fromCoin && !toCoin && data.coins.length >= 2) {
         setFromCoin(
           data.coins.find((c: Coin) => c.symbol === "BTC") || data.coins[0],
@@ -495,9 +464,6 @@ export default function SwapPage() {
     }
   }, [fromCoin, toCoin]);
 
-  // ============================================================================
-  // GET SWAP QUOTE - Updated to match API response structure
-  // ============================================================================
   const fetchSwapQuote = useCallback(async () => {
     if (
       !fromCoin ||
@@ -544,9 +510,6 @@ export default function SwapPage() {
     }
   }, [fromCoin, toCoin, fromAmount, balanceError]);
 
-  // ============================================================================
-  // EXECUTE SWAP - Updated to match API response structure
-  // ============================================================================
   const executeSwap = useCallback(async () => {
     if (
       !fromCoin ||
@@ -582,7 +545,6 @@ export default function SwapPage() {
         `Successfully swapped ${fromAmount} ${fromCoin.symbol} for ${result.actual_output} ${toCoin.symbol}`,
       );
 
-      // Reset form and refresh balances
       setFromAmount("");
       setToAmount("");
       setExchangeRate(null);
@@ -597,7 +559,6 @@ export default function SwapPage() {
     }
   }, [fromCoin, toCoin, fromAmount, toAmount, fetchCoins, fetchUserBalances]);
 
-  // Auto-fetch quote when inputs change
   useEffect(() => {
     const timeoutId = setTimeout(fetchSwapQuote, 500);
     return () => clearTimeout(timeoutId);
@@ -613,11 +574,8 @@ export default function SwapPage() {
     return () => clearInterval(interval);
   }, [fetchCoins, fetchUserBalances]);
 
-  // ============================================================================
-  // RENDER UI - Cleaner, more responsive layout
-  // ============================================================================
   return (
-    <main className="flex h-[80vh] max-w-full items-center justify-center overflow-scroll px-4">
+    <main className="flex h-[80vh] items-center justify-center overflow-scroll py-8 lg:px-1">
       <div className="w-full max-w-lg space-y-6">
         {setupNeeded && (
           <Alert variant="destructive">
@@ -626,22 +584,21 @@ export default function SwapPage() {
             <AlertDescription className="space-y-2">
               <p>Please complete these steps to use the swap functionality:</p>
               <ol className="ml-4 list-decimal space-y-1 text-sm">
-                <li>Click the gear icon (⚙️) in the top right</li>
-                <li>Go to "Integrations" and add Neon</li>
+                <li>Connect a database integration (Neon recommended)</li>
                 <li>Run the SQL scripts in the /scripts folder</li>
               </ol>
             </AlertDescription>
           </Alert>
         )}
 
-        <div className="bg-background rounded-2xl p-0 shadow-xl backdrop-blur-sm sm:p-6">
+        <div className="bg-background rounded-2xl p-0 shadow-xl backdrop-blur-sm">
           <div className="space-y-6">
             <div className="flex items-center justify-between">
-              <CardTitle className="flex items-center gap-2 text-lg font-bold sm:text-xl">
-                <Coins className="h-5 w-5 sm:h-6 sm:w-6" />
+              <CardTitle className="flex items-center gap-2 text-xl font-bold">
+                <Coins className="h-6 w-6" />
                 Swap Coins
               </CardTitle>
-              <div className="flex items-center gap-1 sm:gap-2">
+              <div className="flex items-center gap-2">
                 <Button
                   variant="ghost"
                   size="sm"
@@ -677,9 +634,9 @@ export default function SwapPage() {
                     placeholder="0.0"
                     value={fromAmount}
                     onChange={(e) => setFromAmount(e.target.value)}
-                    className="h-14 flex-1 border-0 bg-transparent px-3 text-lg font-semibold focus-visible:ring-0 focus-visible:ring-offset-0 sm:h-16 sm:px-4 sm:text-xl"
+                    className="h-16 flex-1 border-0 bg-transparent px-4 text-xl font-semibold focus-visible:ring-0 focus-visible:ring-offset-0"
                   />
-                  <div className="pr-2 sm:pr-3">
+                  <div className="pr-3">
                     <CoinSelector
                       selectedCoin={fromCoin}
                       onCoinSelect={setFromCoin}
@@ -754,9 +711,9 @@ export default function SwapPage() {
                     placeholder="0.0"
                     value={toAmount}
                     readOnly
-                    className="text-muted-foreground h-14 flex-1 border-0 bg-transparent px-3 text-lg font-semibold focus-visible:ring-0 focus-visible:ring-offset-0 sm:h-16 sm:px-4 sm:text-xl"
+                    className="text-muted-foreground h-16 flex-1 border-0 bg-transparent px-4 text-xl font-semibold focus-visible:ring-0 focus-visible:ring-offset-0"
                   />
-                  <div className="pr-2 sm:pr-3">
+                  <div className="pr-3">
                     <CoinSelector
                       selectedCoin={toCoin}
                       onCoinSelect={setToCoin}
@@ -783,7 +740,7 @@ export default function SwapPage() {
               {exchangeRate && fromCoin && toCoin && (
                 <div className="space-y-4 pt-4">
                   <Separator className="bg-border/50" />
-                  <div className="bg-muted/20 space-y-3 rounded-lg p-3 text-sm sm:p-4">
+                  <div className="bg-muted/20 space-y-3 rounded-lg p-4 text-sm">
                     <div className="flex items-center justify-between gap-2">
                       <span className="text-muted-foreground font-medium">
                         Exchange Rate
@@ -850,7 +807,7 @@ export default function SwapPage() {
                     balancesLoading ||
                     setupNeeded
                   }
-                  className="h-12 w-full text-base font-semibold sm:h-14"
+                  className="h-14 w-full text-base font-semibold"
                   size="lg"
                 >
                   {setupNeeded ? (

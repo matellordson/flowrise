@@ -32,15 +32,13 @@ export async function POST(request: NextRequest) {
     }
 
     const inputAmount = Number.parseFloat(amount);
-    const usdValue = inputAmount * fromPrice; // USD value of input
-    const fee = usdValue * 0.003; // 0.3% fee in USD
+    const usdValue = inputAmount * fromPrice;
+    const fee = usdValue * 0.003;
     const finalUsdValue = usdValue - fee;
-    const outputAmount = finalUsdValue / toPrice; // Convert back to output coin
+    const outputAmount = finalUsdValue / toPrice;
 
-    // Calculate exchange rate (how many output coins per input coin)
     const rate = outputAmount / inputAmount;
 
-    // Simulate API delay
     await new Promise((resolve) => setTimeout(resolve, 800));
 
     return NextResponse.json({
@@ -52,9 +50,9 @@ export async function POST(request: NextRequest) {
       fee: fee.toFixed(6),
       fee_percentage: 0.3,
       price_impact: 0.1,
-      minimum_received: (outputAmount * 0.98).toFixed(6), // 2% slippage tolerance
+      minimum_received: (outputAmount * 0.98).toFixed(6),
       quote_id: `quote_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-      expires_at: new Date(Date.now() + 30000).toISOString(), // 30 seconds
+      expires_at: new Date(Date.now() + 30000).toISOString(),
     });
   } catch (error) {
     console.error("Error generating quote:", error);

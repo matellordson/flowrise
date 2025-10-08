@@ -1,12 +1,10 @@
 import { NextResponse } from "next/server";
 
-// Mock coin data - in a real app, this would come from a crypto API like CoinGecko
 const COINGECKO_API_URL = "https://api.coingecko.com/api/v3/coins/markets";
 const COIN_IDS = "bitcoin,ethereum,tether,usd-coin,binancecoin,ripple,solana";
 
 export async function GET() {
   try {
-    // Simulate API delay
     await new Promise((resolve) => setTimeout(resolve, 500));
 
     const response = await fetch(
@@ -15,7 +13,6 @@ export async function GET() {
         headers: {
           Accept: "application/json",
         },
-        // Cache for 1 minute to avoid hitting rate limits
         next: { revalidate: 60 },
       },
     );
