@@ -50,7 +50,9 @@ export async function POST(request: NextRequest) {
 
     // Fetch current prices to calculate USD values
     const coinsResponse = await fetch(
-      `https://api.coingecko.com/api/v3/simple/price?ids=${from_coin_id},${to_coin_id}&vs_currencies=usd`,
+      `htmple/price?ids=${from_coin_id},${to_coin_id}&vs_currencies=usd`,
+      // `https://api.coingecko.com/api/v3/simple/price?ids=${from_coin_id},${to_coin_id}&vs_currencies=usd`,
+
       {
         next: { revalidate: 60 },
       },
