@@ -575,7 +575,7 @@ export default function SwapPage() {
   }, [fetchCoins, fetchUserBalances]);
 
   return (
-    <main className="flex h-[80vh] items-center justify-center overflow-scroll py-8 lg:px-1">
+    <main className="flex h-[90vh] items-center justify-center overflow-scroll py-8 lg:px-1">
       <div className="w-full max-w-lg space-y-6">
         {setupNeeded && (
           <Alert variant="destructive">
