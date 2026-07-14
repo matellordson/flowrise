@@ -1,6 +1,6 @@
 "use client";
 
-import * as React from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -10,14 +10,12 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
-import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Check, Copy, OctagonAlert } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -27,21 +25,9 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { TokenBTC } from "@web3icons/react";
-import { sql } from "@/lib/sql";
-import { redirect, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useSession } from "next-auth/react";
-
-async function getBtcPrice() {
-  const url = "https://api.coinpaprika.com/v1/tickers/btc-bitcoin";
-  const response = await fetch(url);
-  const price = await response.json();
-  const data = price?.quotes?.USD?.price || "0.00";
-
-  return data;
-}
-
-const btcPrice = await getBtcPrice();
 
 const formSchema = z.object({
   amount: z.coerce.number(),
@@ -49,10 +35,39 @@ const formSchema = z.object({
 
 export default function DepositBTC() {
   const [open, setOpen] = useState(false);
-  const [amount, setAmount] = useState<number>(100);
+  const [copied, setCopied] = useState(false);
+  const [btcPrice, setBtcPrice] = useState<number>(0);
 
-  const [copied, setCopied] = React.useState(false);
   const textToCopy = "bc1qwxclav0dzwt72rvfmst7xd87a0lfdmmrtseuh3";
+
+  const router = useRouter();
+  const { data: session } = useSession();
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: { amount: 100 },
+  });
+
+  const amount = form.watch("amount") as number;
+
+  useEffect(() => {
+    let mounted = true;
+    async function fetchPrice() {
+      try {
+        const url = "https://api.coinpaprika.com/v1/tickers/btc-bitcoin";
+        const response = await fetch(url);
+        const price = await response.json();
+        const data = Number(price?.quotes?.USD?.price) || 0;
+        if (mounted) setBtcPrice(data);
+      } catch (err) {
+        console.error("Failed to fetch BTC price", err);
+      }
+    }
+    fetchPrice();
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const handleCopy = async () => {
     try {
@@ -64,21 +79,33 @@ export default function DepositBTC() {
     }
   };
 
-  const { data: session } = useSession();
-
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: { amount: 100 },
-  });
-
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    const amount = values.amount;
+    const amt = values.amount;
     const coin = "bitcoin";
-    await sql`INSERT INTO crypto_deposit (user_email, amount, coin) VALUES (${session?.user?.email}, ${amount}, ${coin})`;
 
-    toast("Kindly proceed to make a deposit");
+    try {
+      const res = await fetch("/api/crypto/deposit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userEmail: session?.user?.email,
+          amount: amt,
+          coin,
+        }),
+      });
 
-    redirect("/dashboard");
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        toast("Failed to register deposit attempt: " + (data?.error || res.status));
+        return;
+      }
+
+      toast("Kindly proceed to make a deposit");
+      router.push("/dashboard");
+    } catch (err) {
+      console.error(err);
+      toast("Network error");
+    }
   }
 
   return (
@@ -99,10 +126,8 @@ export default function DepositBTC() {
           className="border border-[--warning-border] bg-[var(--warning)] text-[var(--warning-forground)]"
         >
           <OctagonAlert />
-          <AlertTitle className="font-semibold">
-            Deposit Instructions
-          </AlertTitle>
-          <AlertDescription className="text-[var(--warning-forground)">
+          <AlertTitle className="font-semibold">Deposit Instructions</AlertTitle>
+          <AlertDescription className="text-[var(--warning-foreground)]">
             Please copy the wallet address and send the coins to it. Once the
             transaction is confirmed on the network, your deposited coins will
             appear in your wallet.
@@ -126,9 +151,11 @@ export default function DepositBTC() {
                     </span>{" "}
                     ≈{" "}
                     <span className="text-primary font-semibold">
-                      {Number(amount / btcPrice)
-                        .toFixed(8)
-                        .replace(/\.?0+$/, "")}{" "}
+                      {btcPrice
+                        ? Number(Number(amount || 0) / btcPrice)
+                            .toFixed(8)
+                            .replace(/\.?0+$/, "")
+                        : "..."}{" "}
                       BTC
                     </span>
                   </p>
@@ -140,12 +167,10 @@ export default function DepositBTC() {
                       min={100}
                       onChange={(e) => {
                         const value = e.target.value;
-                        const num = Number(value);
-
-                        // Only allow positive numbers
-                        if (num >= 0 || value === "") {
-                          field.onChange(value); // Update form value
-                          setAmount(value as any); // Update local state
+                        // convert to number, fallback to 0 when empty
+                        const num = value === "" ? 0 : Number(value);
+                        if (!isNaN(num) && num >= 0) {
+                          field.onChange(num);
                         }
                       }}
                     />
